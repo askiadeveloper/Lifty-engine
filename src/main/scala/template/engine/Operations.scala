@@ -1,4 +1,6 @@
-package templateengine
+package template.engine
+
+case class Argument(optionName: String)
 
 trait Operation{}
 trait Create extends Operation{}
