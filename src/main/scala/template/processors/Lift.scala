@@ -6,7 +6,13 @@ trait DefaultLiftTemplate extends Template with Create with Delete{}
 
 object SnippetTemplate extends DefaultLiftTemplate {
 	
-	override def name = "snippet"
-	override def arguments = Nil
+	def name = "snippet"
+	def arguments = Nil
+	
+}
+
+object liftGen extends TemplateProcessor {
+	
+	def templates = SnippetTemplate :: Nil 
 	
 }

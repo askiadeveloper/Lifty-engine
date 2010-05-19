@@ -1,6 +1,6 @@
 package template.engine
 
-case class Argument(optionName: String)
+case class Argument(name: String, value: String)
 
 trait Operation{}
 trait Create extends Operation{}
