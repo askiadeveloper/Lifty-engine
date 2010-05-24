@@ -11,8 +11,15 @@ object SnippetTemplate extends DefaultLiftTemplate {
 	
 }	
 
+object MapperTemplate extends DefaultLiftTemplate {
+	def name = "mapper"
+	def arguments = Argument("name") :: Argument("field") :: Nil
+
+}
+
+
 object liftGen extends TemplateProcessor {
 	
-	def templates = SnippetTemplate :: Nil 
+	def templates = SnippetTemplate :: MapperTemplate :: Nil 
 	
 }
