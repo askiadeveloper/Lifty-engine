@@ -10,34 +10,31 @@ trait Template {
 	def name: String
 	def arguments: List[Argument]
 
-	def process(operation: String, argumentString: String) = {
+  //TODO: Should return a CommandResult
+	def process(operation: String, argumentsList: List[String]) = {
 
 		operation match {
-			case "create" if supportsOperation("create") => this.asInstanceOf[Create].create(argumentString)
-			case "delete" if supportsOperation("delete") => this.asInstanceOf[Delete].delete(argumentString)
+			case "create" if supportsOperation("create") => this.asInstanceOf[Create].create(argumentsList)
+			case "delete" if supportsOperation("delete") => this.asInstanceOf[Delete].delete(argumentsList)
 			case _ => ProcessResult("bollocks")
 		}
 	}
 	
 	// Protected 
 	
-	protected def parseArguments(argumentsString: String): Box[List[ArgumentResult]] = {
+	protected def parseArguments(argumentsList: List[String]): Box[List[ArgumentResult]] = {
 		val regxp = """\w+=\w+""".r
 		if (arguments.size > 0) {
-			val argumentresults = argumentsString.split(" ")
-				// filter out any invalid formed arguments 
-				.filter( str => !regxp.findFirstIn(str).isEmpty) 
-				// map them to ArgumentReulsts
-				.map{ argument: String => 
-					val nameAndValue = argument.split("=") 
-					val name = nameAndValue(0) 
-					val value = nameAndValue(1)
-					ArgumentResult(name, value)
-				}
-				// filter out whatever arguments we don't care for
-				.filter{ argumentResult: ArgumentResult => 
-					!arguments.forall( _.name != argumentResult.name)
-				}.toList
+			val argumentresults = argumentsList.filter( str => !regxp.findFirstIn(str).isEmpty) 
+				  .map{ argument: String => 
+					  val nameAndValue = argument.split("=") 
+  					val name = nameAndValue(0) 
+  					val value = nameAndValue(1)
+  					ArgumentResult(name, value)
+				  }
+				  .filter{ argumentResult: ArgumentResult => 
+					  !arguments.forall( _.name != argumentResult.name)
+				  }.toList
 				if (argumentresults.size == arguments.size) Full(argumentresults) else {
 					Failure("The template requires the following arguments %s but only recieved %s"
 									.format(arguments.mkString(","),argumentresults.mkString(",")))
