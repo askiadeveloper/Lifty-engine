@@ -19,7 +19,7 @@ trait TemplateProcessor extends Processor {
     def run(arguments: List[String]): CommandResult = {
       val templateName = arguments(0)
       findTemplate(templateName) match {
-        case Full(template) => template.process("create",arguments-arguments(0)); CommandResult("done")
+        case Full(template) => template.process("create",arguments-arguments(0));
         case Failure(msg,_,_) => CommandResult(msg)
       }
     }
@@ -30,7 +30,7 @@ trait TemplateProcessor extends Processor {
     def run(arguments: List[String]): CommandResult = {
       val templateName = arguments(0)
       findTemplate(templateName) match {
-        case Full(template) => template.process("delete",arguments-arguments(0)); CommandResult("done")
+        case Full(template) => template.process("delete",arguments-arguments(0));
         case Failure(msg,_,_) => CommandResult(msg)
       }
     }
@@ -64,8 +64,7 @@ trait TemplateProcessor extends Processor {
 
     val commandsList = commands.filter( command => command.keyword == keyword)
     val result = if (commandsList.size > 0) commandsList.first.run(arguments) else CommandResult("[error] Not supported")
-    println(result)
-    
+    println(result) 
   }
   
   private def findTemplate(name: String): Box[Template] = templates.filter( _.name == name) match {

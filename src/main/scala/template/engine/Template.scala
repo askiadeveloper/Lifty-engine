@@ -11,12 +11,12 @@ trait Template {
 	def arguments: List[Argument]
 
   //TODO: Should return a CommandResult
-	def process(operation: String, argumentsList: List[String]) = {
+	def process(operation: String, argumentsList: List[String]): CommandResult = {
 
 		operation match {
 			case "create" if supportsOperation("create") => this.asInstanceOf[Create].create(argumentsList)
 			case "delete" if supportsOperation("delete") => this.asInstanceOf[Delete].delete(argumentsList)
-			case _ => ProcessResult("bollocks")
+			case _ => CommandResult("bollocks")
 		}
 	}
 	
