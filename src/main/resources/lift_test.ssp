@@ -1,1 +1,2 @@
-snippet template!
+<%@ var name:String %>
+snippet template with name: ${name}!

@@ -13,11 +13,7 @@ trait Create extends Operation {
 
 	def create(argumentList: List[String]): CommandResult = {
 		this.parseArguments(argumentList) match {
-			case Full(list) => {
-			  runScalate(list)
-			  CommandResult("[success] would have invoked %s with arguments %s".format(this.name, list.mkString(",")))
-			}
-				
+			case Full(list) => runScalate(list)
 			case Failure(msg,_,_) => CommandResult("[error] " + msg)
 			case Empty => CommandResult("[error] It's empty")
 		}
@@ -30,11 +26,13 @@ trait Create extends Operation {
 	    val template = engine.load(file)
 	    val buffer = new StringWriter()
       val context = new DefaultRenderContext(new PrintWriter(buffer))
+      arguments.foreach{ argument => 
+        context.attributes(argument.name) = argument.value
+      }
       template.render(context)
-      println(buffer.toString)
       buffer.toString
 	  }
-    CommandResult("[success] did some rendering")
+    CommandResult("[success] Ran %s \n %s".format(this.name, bufferedFiles.mkString("\n")))
 	}
 }
 trait Delete extends Operation {

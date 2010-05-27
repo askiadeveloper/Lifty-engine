@@ -19,7 +19,7 @@ object MapperTemplate extends DefaultLiftTemplate {
 }
 
 
-object liftGen extends TemplateProcessor {
+object LiftGen extends TemplateProcessor {
 	
 	def templates = SnippetTemplate :: MapperTemplate :: Nil 
 	
