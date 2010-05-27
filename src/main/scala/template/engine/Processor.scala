@@ -12,6 +12,34 @@ trait Command {
 
 trait TemplateProcessor extends Processor {
   
+  def templates: List[Template]
+
+  def apply(project: Project, args: String) = { 
+    processInput(args)
+    new ProcessorResult() 
+  }
+  
+  def commands = List(CreateCommand, DeleteCommand, TemplatesCommand, HelpCommand)
+  
+  def processInput(args: String): Unit = {
+
+    val argsArr = args.split(" ")
+
+    val keyword = argsArr(0)
+    val arguments = argsArr.toList - keyword
+
+    val commandsList = commands.filter( command => command.keyword == keyword)
+    val result = if (commandsList.size > 0) commandsList.first.run(arguments) else CommandResult("[error] Not supported")
+    println(result) 
+  }
+  
+  private def findTemplate(name: String): Box[Template] = templates.filter( _.name == name) match {
+      case template :: rest => Full(template) 
+      case Nil => Failure("[error] No template with the name %s".format(name))
+  } 
+  
+  // #commands
+  
   // TODO: Both Create and DeleteCommand are almost identical - refactor slightly
   object CreateCommand extends Command {
     def keyword = "create"
@@ -45,31 +73,5 @@ trait TemplateProcessor extends Processor {
     def keyword = "help"
     def run(arguments: List[String]): CommandResult = CommandResult("[todo] This should list all commands")
   }
-  
-  def templates: List[Template]
-
-  def apply(project: Project, args: String) = { 
-    processInput(args)
-    new ProcessorResult() 
-  }
-  
-  def commands = List(CreateCommand, DeleteCommand, TemplatesCommand, HelpCommand)
-  
-  def processInput(args: String): Unit = {
-
-    val argsArr = args.split(" ")
-
-    val keyword = argsArr(0)
-    val arguments = argsArr.toList - keyword
-
-    val commandsList = commands.filter( command => command.keyword == keyword)
-    val result = if (commandsList.size > 0) commandsList.first.run(arguments) else CommandResult("[error] Not supported")
-    println(result) 
-  }
-  
-  private def findTemplate(name: String): Box[Template] = templates.filter( _.name == name) match {
-      case template :: rest => Full(template) 
-      case Nil => Failure("[error] No template with the name %s".format(name))
-  } 
   
 }

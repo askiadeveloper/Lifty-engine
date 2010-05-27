@@ -9,8 +9,8 @@ trait Template {
 		
 	def name: String
 	def arguments: List[Argument]
+	def files: List[String]
 
-  //TODO: Should return a CommandResult
 	def process(operation: String, argumentsList: List[String]): CommandResult = {
 
 		operation match {
@@ -20,7 +20,7 @@ trait Template {
 		}
 	}
 	
-	// Protected 
+	// #Protected 
 	
 	protected def parseArguments(argumentsList: List[String]): Box[List[ArgumentResult]] = {
 		val regxp = """\w+=\w+""".r
@@ -42,7 +42,7 @@ trait Template {
 		} else Empty
 	}
 	
-	// Private 
+	// #Private 
 	
 	private def supportsOperation(operation: String): Boolean = operation match {
 		case "create" => this.isInstanceOf[Create]
