@@ -14,6 +14,7 @@ trait TemplateProcessor {
   
   def templates: List[Template]
   def commands: List[Command] = List(CreateCommand, DeleteCommand, TemplatesCommand, HelpCommand)
+  def configuration: Configuration
   
   def processInput(args: String): Unit = {
 
@@ -72,6 +73,10 @@ trait TemplateProcessor {
 }
 
 trait SBTTemplateProcessor extends Processor with TemplateProcessor {
+  
+  //TODO: Need to get the real value. Should get the real values from the Project 
+  override def configuration = Configuration("template")
+  
   def apply(project: Project, args: String) = { 
     processInput(args)
     new ProcessorResult() 
@@ -79,6 +84,10 @@ trait SBTTemplateProcessor extends Processor with TemplateProcessor {
 }
 
 trait StandAloneTemplateProcessor extends TemplateProcessor {
+  
+  //TODO: Need to get the real value somehow
+  override def configuration = Configuration("template") 
+  
   def main(args: Array[String]): Unit = {
      processInput( args.mkString(" ") )
   }

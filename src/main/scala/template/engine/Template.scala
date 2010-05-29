@@ -7,7 +7,8 @@ trait Template {
 		
 	def name: String
 	def arguments: List[Argument]
-	def files: List[String]
+	def files: List[TemplateFile]
+  def fixedValues = List[ArgumentResult]()
 
 	def process(operation: String, argumentsList: List[String]): CommandResult = {
 		operation match {
