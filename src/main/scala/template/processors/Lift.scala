@@ -14,7 +14,15 @@ object SnippetTemplate extends DefaultLiftTemplate {
 
 object MapperTemplate extends DefaultLiftTemplate {
 	def name = "mapper"
-	def arguments = Argument("name") :: Argument("field") :: Nil
+	
+	def arguments = {
+	  object nameArgument extends Argument("name") with Default {
+	    def default = "defaultName"
+	  }
+  	object fieldArgument extends Argument("field") with Repeatable
+  	nameArgument :: fieldArgument :: Nil
+	}
+	
   def files: List[String] = Nil
 }
 

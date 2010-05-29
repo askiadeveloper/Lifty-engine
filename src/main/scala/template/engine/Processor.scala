@@ -38,7 +38,7 @@ trait TemplateProcessor extends Processor {
       case Nil => Failure("[error] No template with the name %s".format(name))
   } 
   
-  // #commands
+  //#commands
   
   // TODO: Both Create and DeleteCommand are almost identical - refactor slightly
   object CreateCommand extends Command {

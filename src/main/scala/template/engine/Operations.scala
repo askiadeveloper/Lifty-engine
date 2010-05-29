@@ -19,6 +19,8 @@ trait Create extends Operation {
 		}
 	}		
 	
+	//#private
+	
 	private def runScalate(arguments: List[ArgumentResult]): CommandResult = {
 	  
 	  val engine = new TemplateEngine
@@ -32,7 +34,8 @@ trait Create extends Operation {
       template.render(context)
       buffer.toString
 	  }
-    CommandResult("[success] Ran %s \n %s".format(this.name, bufferedFiles.mkString("\n")))
+    CommandResult("[success] Ran %s with arguments:\n - %s \n %s"
+      .format(this.name, arguments.mkString("\n - "),bufferedFiles.mkString("\n")))
 	}
 }
 trait Delete extends Operation {

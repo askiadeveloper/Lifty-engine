@@ -1,9 +1,7 @@
 package template.engine
 
 import net.liftweb.common.{Box, Empty, Failure, Full}
-
-case class Argument(name: String)
-case class ArgumentResult(name: String, value: String)
+import template.util.{BoxUtil}
 
 trait Template {
 		
@@ -12,7 +10,6 @@ trait Template {
 	def files: List[String]
 
 	def process(operation: String, argumentsList: List[String]): CommandResult = {
-
 		operation match {
 			case "create" if supportsOperation("create") => this.asInstanceOf[Create].create(argumentsList)
 			case "delete" if supportsOperation("delete") => this.asInstanceOf[Delete].delete(argumentsList)
@@ -20,30 +17,29 @@ trait Template {
 		}
 	}
 	
-	// #Protected 
+	//#Protected 
 	
+	//  Takes a list of argument formatted strings (i.e. name=value) and returns a boxed list of
+	//  ArgumentResults. The actual parsing of the values is done by each subclass of Argument
 	protected def parseArguments(argumentsList: List[String]): Box[List[ArgumentResult]] = {
-		val regxp = """\w+=\w+""".r
-		if (arguments.size > 0) {
-			val argumentresults = argumentsList.filter( str => !regxp.findFirstIn(str).isEmpty) 
-				  .map{ argument: String => 
-					  val nameAndValue = argument.split("=") 
-  					val name = nameAndValue(0) 
-  					val value = nameAndValue(1)
-  					ArgumentResult(name, value)
-				  }
-				  .filter{ argumentResult: ArgumentResult => 
-					  !arguments.forall( _.name != argumentResult.name)
-				  }.toList
-				if (argumentresults.size == arguments.size) Full(argumentresults) else {
-					Failure("The template requires the following arguments %s but only recieved %s"
-									.format(arguments.mkString(","),argumentresults.mkString(",")))
-				}
-		} else Empty
-	}
+
+    // List[net.liftweb.common.Box[List[template.engine.ArgumentResult]]]
+    val listOfBoxes = arguments.map( _.parseList(argumentsList))
+    val anyFailures = BoxUtil.containsAnyFailures(listOfBoxes)
+    if (anyFailures) {
+      val failureMsgs = 
+        listOfBoxes.filter( _.isInstanceOf[Failure]).map(_.asInstanceOf[Failure].msg).mkString("\n")
+      Failure(failureMsgs)
+    } else {
+      val boxedArguments = 
+        listOfBoxes.filter(_.isInstanceOf[Full[List[ArgumentResult]]]).flatMap(_.open_!)
+      Full(boxedArguments)
+    }
+  }
+  
+	//#Private 
 	
-	// #Private 
-	
+	//  Checks if a template supports the operation
 	private def supportsOperation(operation: String): Boolean = operation match {
 		case "create" => this.isInstanceOf[Create]
 		case "delete" => this.isInstanceOf[Delete] 
