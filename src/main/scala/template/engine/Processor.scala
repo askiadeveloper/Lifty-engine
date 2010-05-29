@@ -10,16 +10,10 @@ trait Command {
   def run(arguments: List[String]): CommandResult
 }
 
-trait TemplateProcessor extends Processor {
+trait TemplateProcessor {
   
   def templates: List[Template]
-
-  def apply(project: Project, args: String) = { 
-    processInput(args)
-    new ProcessorResult() 
-  }
-  
-  def commands = List(CreateCommand, DeleteCommand, TemplatesCommand, HelpCommand)
+  def commands: List[Command] = List(CreateCommand, DeleteCommand, TemplatesCommand, HelpCommand)
   
   def processInput(args: String): Unit = {
 
@@ -33,10 +27,11 @@ trait TemplateProcessor extends Processor {
     println(result) 
   }
   
-  private def findTemplate(name: String): Box[Template] = templates.filter( _.name == name) match {
+  //# Protected 
+  protected def findTemplate(name: String): Box[Template] = templates.filter( _.name == name) match {
       case template :: rest => Full(template) 
       case Nil => Failure("[error] No template with the name %s".format(name))
-  } 
+  }
   
   //#commands
   
@@ -74,4 +69,17 @@ trait TemplateProcessor extends Processor {
     def run(arguments: List[String]): CommandResult = CommandResult("[todo] This should list all commands")
   }
   
+}
+
+trait SBTTemplateProcessor extends Processor with TemplateProcessor {
+  def apply(project: Project, args: String) = { 
+    processInput(args)
+    new ProcessorResult() 
+  }
+}
+
+trait StandAloneTemplateProcessor extends TemplateProcessor {
+  def main(args: Array[String]): Unit = {
+     processInput( args.mkString(" ") )
+  }
 }

@@ -16,8 +16,8 @@ object MapperTemplate extends DefaultLiftTemplate {
 	def name = "mapper"
 	
 	def arguments = {
-	  object nameArgument extends Argument("name") with Default {
-	    def default = "defaultName"
+	  object nameArgument extends Argument("name") with Default {  
+	    def default = "defaultValue"
 	  }
   	object fieldArgument extends Argument("field") with Repeatable
   	nameArgument :: fieldArgument :: Nil
@@ -27,7 +27,7 @@ object MapperTemplate extends DefaultLiftTemplate {
 }
 
 
-object LiftGen extends TemplateProcessor {
+object LiftGen extends SBTTemplateProcessor with StandAloneTemplateProcessor {
 	
 	def templates = SnippetTemplate :: MapperTemplate :: Nil 
 	
