@@ -13,6 +13,7 @@ case class Argument(name: String){
           case argument :: rest => Full(List(argument))
           // TODO: feels a bit hackish to check the type
           case Nil if this.isInstanceOf[Default] => Full(List(ArgumentResult(name,this.asInstanceOf[Default].default)))
+          case Nil if this.isInstanceOf[Optional] => Empty
           case Nil => Failure("[error] The argument '%s' is required".format(this.name))
        }
     }) :: Nil
@@ -60,6 +61,8 @@ trait Repeatable {
   }) :: requirements
   
 }
+
+trait Optional {}
 
 trait Default {
   def default: String
