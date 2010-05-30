@@ -1,0 +1,20 @@
+
+
+
+package template.model.Test
+
+import net.liftweb._
+import mapper._
+import http._
+import SHtml._ 
+import util._
+
+class Test extends LongKeyedMapper[Test] with IdPK {
+
+	def getSingleton = Test
+
+	
+	
+}
+
+object Test extends Test with LongKeyedMetaMapper[Test]

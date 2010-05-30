@@ -3,6 +3,8 @@ package template.engine
 import net.liftweb.common.{Box, Empty, Failure, Full}
 import template.util.{BoxUtil}
 
+case class TemplateFile(file: String, destination: String)
+
 trait Template {
 		
 	def name: String
