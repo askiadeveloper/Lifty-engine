@@ -25,6 +25,11 @@ trait Delete extends Operation {
 	
 	this: Template with Delete => 
 	
-	def delete(argumentList: List[String]): CommandResult = CommandResult("Invkoed delete on template %s".format(this.name))
-
+	def delete(argumentList: List[String]): CommandResult = {
+		this.parseArguments(argumentList) match {
+			case Full(list) => this.deleteFiles(list)
+			case Failure(msg,_,_) => CommandResult("[error] " + msg)
+			case Empty => CommandResult("[error] It's empty")
+		}
+	}
 }

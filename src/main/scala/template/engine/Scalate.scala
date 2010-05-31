@@ -13,7 +13,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		val bufferedFiles = template.files.map{ templateFile =>
 			
 			val sclateTemplate = engine.load(templateFile.file)
-			val destinationPath = replaceVariablesInPath(templateFile.destination)
+			val destinationPath = Helper.replaceVariablesInPath(templateFile.destination,argumentResults)
 			val buffer = new StringWriter()
 			val context = new DefaultRenderContext(new PrintWriter(buffer))
 			addArgumentsToContext(context)
@@ -30,11 +30,18 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 				out.close();
 			} catch {
 				case e: Exception => println(e) //@DEBUG
+			}
 		}
+		val stroke = "-----------------%s------------------------------".format(template.name.map(_=>'-').mkString(""))
+		val header = "%s\nRunning %s with the following arguments:\n%s".format(stroke,template.name,stroke)
+		val arguments = "\n%s\n".format(argumentResults.map(arg => arg.name+" = "+arg.value).mkString("\n"))
+		val files = "%s\nResulted in the creation of the following files:\n%s\n%s\n%s"
+			.format(stroke,stroke,template.files.map( path => Helper.replaceVariablesInPath(path.destination,argumentResults)).mkString(""),stroke)
+		
+ 		CommandResult("%s%s%s".format(header,arguments,files))
 	}
- 	CommandResult("[success] Ran %s with arguments:\n - %s"
-		.format(template.name, argumentResults.mkString("\n - "),bufferedFiles.mkString("\n")))
-	}
+	
+	//# private
 	
 	// this runs through each of the ArgumentResults and adds them to the template context.
 	// repeatable arguments gets added as a list
@@ -61,30 +68,6 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		val allArgs = argumentResults:::template.fixedValues
 		if (allArgs.size > 0) {
 			addArgs(allArgs.first,allArgs)
-		}
-	}
- 
-	// looks through the path string for any variables (i.e ${someVal}) and replaces
-	// it with the acctual value passed to the operation
-	private def replaceVariablesInPath(path: String): String = {
-		var newPath = path
-		"""\$\{(.*)\}""".r.findAllIn(path).toList match {
-			case list if !list.isEmpty => {
-				list.map(_.toString).foreach{ variable => 
-					val argName = variable.replace("${","").replace("}","") //TODO: make prettier?
-					newPath = newPath.replace(variable,findValueForArgument(argName))
-				}
-				newPath
-			}
-			case _ => path
-		}
-	}
- 
-	private def findValueForArgument(name: String): String = {
-		try {
-			argumentResults.filter( _.name == name ).first.value
-		} catch {
-			case e: Exception => println(e);""
 		}
 	}
  

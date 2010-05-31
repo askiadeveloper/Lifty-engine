@@ -22,10 +22,12 @@ trait TemplateProcessor {
 
     val keyword = argsArr(0)
     val arguments = argsArr.toList - keyword
-
-    val commandsList = commands.filter( command => command.keyword == keyword)
-    val result = if (commandsList.size > 0) commandsList.first.run(arguments) else CommandResult("[error] Not supported")
-    println(result) 
+	
+    val result = commands.filter( command => command.keyword == keyword) match {
+			case commands if commands.size > 0 => commands.first.run(arguments)
+			case Nil => CommandResult("[error] Command is not supported")
+		}
+		println(result.message)
   }
   
   //# Protected 
