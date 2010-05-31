@@ -24,7 +24,7 @@ object MapperTemplate extends DefaultLiftTemplate {
 	  object nameArgument extends Argument("name") with Default {  
 	    def default = "defaultValue"
 	  }
-  	object fieldArgument extends Argument("field") with Repeatable with Optional
+  	object fieldArgument extends Argument("fields") with Repeatable with Optional
   	nameArgument :: fieldArgument :: Nil
 	}
 	

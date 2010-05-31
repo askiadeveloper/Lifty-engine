@@ -1,5 +1,6 @@
 <%@ var name:String %>
 <%@ var thePackage:String %>
+<%@ var fields:List[String] %>
 
 package ${thePackage}
 
@@ -13,7 +14,13 @@ class ${name} extends LongKeyedMapper[${name}] with IdPK {
 
 	def getSingleton = ${name}
 
-	
+	<% 
+		fields.foreach{ field => 
+	%>
+	object ${field} extends MappedField(this)
+	<%	
+		}
+	%>
 	
 }
 
