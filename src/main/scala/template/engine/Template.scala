@@ -36,7 +36,7 @@ trait Template {
       Failure(failureMsgs)
     } else {
       val boxedArguments = 
-        listOfBoxes.filter(_.isInstanceOf[Full[List[ArgumentResult]]]).flatMap(_.open_!)
+        listOfBoxes.filter(_.isInstanceOf[Full[_]]).flatMap(_.open_!)
       Full(boxedArguments)
     }
   }

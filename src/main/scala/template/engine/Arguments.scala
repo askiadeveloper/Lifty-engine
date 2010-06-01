@@ -5,6 +5,10 @@ import template.util.{BoxUtil}
 
 case class Argument(name: String){
   
+	protected def isOptional = false
+	protected def hasDefault = false
+	protected def default = ""
+
   //  Point of variation for each of the trait you might mix into argument. Every subclass 
   //  can add extra functions to fit their needs.
   protected var requirements: List[ List[ArgumentResult] => Box[List[ArgumentResult]]] =
@@ -12,8 +16,8 @@ case class Argument(name: String){
       argumentResults match {
           case argument :: rest => Full(List(argument))
           // TODO: feels a bit hackish to check the type
-          case Nil if this.isInstanceOf[Default] => Full(List(ArgumentResult(name,this.asInstanceOf[Default].default)))
-          case Nil if this.isInstanceOf[Optional] => Empty
+          case Nil if hasDefault => Full(List(ArgumentResult(name,default)))
+          case Nil if isOptional => Empty
           case Nil => Failure("[error] The argument '%s' is required".format(this.name))
        }
     }) :: Nil
@@ -23,11 +27,11 @@ case class Argument(name: String){
     val aLotOfBoxes = requirements.map( _.apply( findArgumentIn(list) ) )
     if( BoxUtil.containsAnyFailures(aLotOfBoxes)){
       val failureMsgs = 
-        aLotOfBoxes.filter( _.isInstanceOf[Failure]).map(_.asInstanceOf[Failure].msg).mkString("\n")
+        aLotOfBoxes.filter( _.isInstanceOf[Failure]).map (_.asInstanceOf[Failure].msg).mkString("\n")
       Failure(failureMsgs)
     } else {
       val boxedArguments = 
-        aLotOfBoxes.filter(_.isInstanceOf[Full[List[ArgumentResult]]]).flatMap(_.open_!)
+        aLotOfBoxes.filter(_.isInstanceOf[Full[_]]).flatMap(_.open_!)
       Full(boxedArguments)
     }
   }
@@ -49,23 +53,40 @@ case class Argument(name: String){
   }
 }
 
-trait Repeatable {
-  this: Argument =>
+trait Repeatable extends Argument {
   
   requirements = ((argumentResults: List[ArgumentResult]) => {
     argumentResults match {
-      case Nil => Empty
       case head :: rest => Full(rest) //ignoring the head because it will get added in function in Argument
-      case list: List[ArgumentResult] => Full(list)
+			case Nil => Empty
     }
   }) :: requirements
   
 }
 
-trait Optional {}
+trait Optional extends Argument {
+	
+	override def isOptional = true
+	
+}
 
-trait Default {
-  def default: String
+trait Default extends Argument{
+	
+	this: Value => 
+	
+	override def hasDefault = true
+	
+}
+
+case class DefaultValue(default: String)
+
+trait Value extends Default {
+	
+
+	protected var value :String = ""
+	override protected def default = value
+
+
 }
 
 case class ArgumentResult(name: String, value: String)

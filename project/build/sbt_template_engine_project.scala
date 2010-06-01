@@ -11,6 +11,9 @@ class ScalateParentProject(info: ProjectInfo) extends DefaultProject(info)
 	val scalatools_snapshot = "Scala Tools Snapshot" at "http://scala-tools.org/repo-snapshots/"
 	val scalatools_release = "Scala Tools Snapshot" at "http://scala-tools.org/repo-releases/"
 	
+	override def compileOptions = super.compileOptions ++
+	    Seq("-unchecked","-encoding", "utf8").map(x => CompileOption(x))
+	
 	// TASKS
 		
 	override def packageOptions =
@@ -30,7 +33,8 @@ class ScalateParentProject(info: ProjectInfo) extends DefaultProject(info)
 	def allArtifacts = ("lib" ##) ** "*.jar" +++ 
 										 ("lib_managed" / "scala_2.7.7" / "compile" ##) ** "*.jar" +++
 										 ("target" / "scala_2.7.7" / "classes" ##) ** "*.class" +++ 
-										 ("src" / "main" / "resources" ##) ** "*" +++
+										 // ("src" / "main" / "resources" ##) ** "*" +++
+										 ("src" / "main" / "resources") ** "*" +++
 										 ("META-INF") ** "*"
 	
 	

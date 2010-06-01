@@ -1,3 +1,3 @@
 package template.engine
 
-case class Configuration(rootPackage: String) 
+case class Configuration(rootSourceFiles: String, rootResources: String, mainPackage: String) 

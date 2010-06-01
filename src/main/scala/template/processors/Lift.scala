@@ -10,26 +10,26 @@ object SnippetTemplate extends DefaultLiftTemplate {
 	def name = "snippet"
 	def arguments = Argument("name") :: Nil
 	def files = {
-	  val templatePath = "src/main/resources/snippet/snippet.ssp"
-	  val snippetPath = "src/main/scala/%s/snippet/${name}.scala".format(LiftGen.configuration.rootPackage,"mysnippet.scala")
+		val config = LiftGen.configuration
+	  val templatePath = "%s/snippet/snippet.ssp".format(config.rootResources)
+	  val snippetPath = "%s/%s/snippet/${name}.scala".format(config.rootSourceFiles, config.mainPackage)
 	  TemplateFile(templatePath,snippetPath) :: Nil
 	}
 }	
 
 object MapperTemplate extends DefaultLiftTemplate {
 	def name = "mapper"
-	
+		
 	def arguments = {
-	  object nameArgument extends Argument("name") with Default {  
-	    def default = "defaultValue"
-	  }
-  	object fieldArgument extends Argument("fields") with Repeatable with Optional
+		object nameArgument extends Argument("name") with Default with Value{ value = "defaultValue" }
+		object fieldArgument extends Argument("fields") with Repeatable with Optional
   	nameArgument :: fieldArgument :: Nil
 	}
 	
   def files = {
-    val templatePath = "src/main/resources/mapper/mapper.ssp" 
-    val mapperPath = "src/main/scala/%s/model/${name}.scala".format(LiftGen.configuration.rootPackage)
+		val config = LiftGen.configuration
+    val templatePath = "%s/mapper/mapper.ssp".format(config.rootResources)
+    val mapperPath = "%s/%s/model/${name}.scala".format(config.rootSourceFiles, config.mainPackage)
     TemplateFile(templatePath,mapperPath) :: Nil
   }
 }

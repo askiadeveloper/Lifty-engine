@@ -77,7 +77,7 @@ trait TemplateProcessor {
 trait SBTTemplateProcessor extends Processor with TemplateProcessor {
   
   //TODO: Need to get the real value. Should get the real values from the Project 
-  override def configuration = Configuration("template")
+  override def configuration = Configuration("temp/main/scala","src/main/resources","template")
   
   def apply(project: Project, args: String) = { 
     processInput(args)
@@ -88,7 +88,7 @@ trait SBTTemplateProcessor extends Processor with TemplateProcessor {
 trait StandAloneTemplateProcessor extends TemplateProcessor {
   
   //TODO: Need to get the real value somehow
-  override def configuration = Configuration("template") 
+  override def configuration = Configuration("temp/main/scala","src/main/resources","template")
   
   def main(args: Array[String]): Unit = {
      processInput( args.mkString(" ") )
