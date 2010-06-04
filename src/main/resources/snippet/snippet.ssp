@@ -1,7 +1,7 @@
 <%@ var name:String %>
-<%@ var thePackage:String %>
+<%@ var pack:String %>
 
-package ${thePackage}
+package ${pack}
 
 import xml.{Text, NodeSeq}
 import net.liftweb.util.Helpers._

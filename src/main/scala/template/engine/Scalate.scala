@@ -17,7 +17,6 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 			val buffer = new StringWriter()
 			val context = new DefaultRenderContext(new PrintWriter(buffer))
 			addArgumentsToContext(context)
-			context.attributes("thePackage") = Helper.packageOfPath(destinationPath)
 			sclateTemplate.render(context)
 		 
 			try {

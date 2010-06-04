@@ -1,8 +1,8 @@
 <%@ var name:String %>
-<%@ var thePackage:String %>
+<%@ var pack:String %>
 <%@ var fields:List[String] %>
 
-package ${thePackage}
+package ${pack}
 
 import net.liftweb._
 import mapper._

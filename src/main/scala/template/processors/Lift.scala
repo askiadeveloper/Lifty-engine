@@ -8,34 +8,42 @@ trait DefaultLiftTemplate extends Template with Create with Delete{}
 object SnippetTemplate extends DefaultLiftTemplate {
 	
 	def name = "snippet"
-	def arguments = Argument("name") :: Nil
+	def arguments = Argument("name") :: Argument("pack") ::  Nil
 	def files = {
 		val config = LiftGen.configuration
 	  val templatePath = "%s/snippet/snippet.ssp".format(config.rootResources)
-	  val snippetPath = "%s/%s/snippet/${name}.scala".format(config.rootSourceFiles, config.mainPackage)
+	  val snippetPath = "${package}/${name}.scala"
 	  TemplateFile(templatePath,snippetPath) :: Nil
 	}
-}	
+}
+	
 
 object MapperTemplate extends DefaultLiftTemplate {
 	def name = "mapper"
 		
 	def arguments = {
+		val packageArgument = Argument("pack")
 		object nameArgument extends Argument("name") with Default with Value{ value = "defaultValue" }
 		object fieldArgument extends Argument("fields") with Repeatable with Optional
-  	nameArgument :: fieldArgument :: Nil
+  	packageArgument :: nameArgument :: fieldArgument :: Nil
 	}
 	
   def files = {
 		val config = LiftGen.configuration
     val templatePath = "%s/mapper/mapper.ssp".format(config.rootResources)
-    val mapperPath = "%s/%s/model/${name}.scala".format(config.rootSourceFiles, config.mainPackage)
+    val mapperPath = "${package}/${name}.scala"
     TemplateFile(templatePath,mapperPath) :: Nil
   }
 }
 
 
-object LiftGen extends SBTTemplateProcessor with StandAloneTemplateProcessor {
+object LiftGen extends StandAloneTemplateProcessor {
+	
+	def templates = SnippetTemplate :: MapperTemplate :: Nil 
+	
+}
+
+class LiftGen extends SBTTemplateProcessor {
 	
 	def templates = SnippetTemplate :: MapperTemplate :: Nil 
 	
