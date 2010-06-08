@@ -11,8 +11,8 @@ object SnippetTemplate extends DefaultLiftTemplate {
 	def arguments = Argument("name") :: Argument("pack") ::  Nil
 	def files = {
 		val config = LiftGen.configuration
-	  val templatePath = "snippet/snippet.ssp".format(config.rootResources)
-	  val snippetPath = "${package}/${name}.scala"
+	  val templatePath = "%s/snippet/snippet.ssp".format(config.rootResources)
+	  val snippetPath = "src/main/scala/$${pack}/${name}.scala"
 	  TemplateFile(templatePath,snippetPath) :: Nil
 	}
 }
@@ -30,20 +30,27 @@ object MapperTemplate extends DefaultLiftTemplate {
 	
   def files = {
 		val config = LiftGen.configuration
-    val templatePath = "mapper/mapper.ssp".format(config.rootResources)
-    val mapperPath = "${package}/${name}.scala"
+    val templatePath = "%s/mapper/mapper.ssp".format(config.rootResources)
+    val mapperPath = "src/main/scala/${pack}/${name}.scala"
     TemplateFile(templatePath,mapperPath) :: Nil
   }
 }
 
 
-object LiftGen extends StandAloneTemplateProcessor {
+// object LiftGen extends StandAloneTemplateProcessor {
+// 	
+// 	def templates = SnippetTemplate :: MapperTemplate :: Nil 
+// 	
+// }
+
+class LiftGen extends SBTTemplateProcessor {
 	
 	def templates = SnippetTemplate :: MapperTemplate :: Nil 
 	
 }
+object LiftGen extends LiftGen {}
 
-class LiftGen extends SBTTemplateProcessor {
+object StandAloneLiftGen extends StandAloneTemplateProcessor {
 	
 	def templates = SnippetTemplate :: MapperTemplate :: Nil 
 	

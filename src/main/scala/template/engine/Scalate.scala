@@ -2,7 +2,8 @@ package template.engine
 
 import org.fusesource.scalate.{TemplateEngine,DefaultRenderContext}
 import template.util.Helper
-import java.io.{StringWriter, PrintWriter, File, BufferedWriter, FileWriter}
+import java.io.{StringWriter, PrintWriter, File, BufferedWriter, FileWriter, InputStream, FileOutputStream}
+import java.net.{URL, URISyntaxException}
 import scala.util.matching.Regex
 
 case class Scalate(template: Template with Create, argumentResults: List[ArgumentResult]) {
@@ -12,7 +13,8 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		val engine = new TemplateEngine
 		val bufferedFiles = template.files.map{ templateFile =>
 			
-			val sclateTemplate = engine.load(templateFile.file)
+			val file: File = createTempTemplateFile(templateFile.file)
+			val sclateTemplate = engine.load(file.getAbsolutePath)
 			val destinationPath = Helper.replaceVariablesInPath(templateFile.destination,argumentResults)
 			val buffer = new StringWriter()
 			val context = new DefaultRenderContext(new PrintWriter(buffer))
@@ -33,7 +35,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		}
 		val stroke = "-----------------%s------------------------------".format(template.name.map(_=>'-').mkString(""))
 		val header = "%s\nRunning %s with the following arguments:\n%s".format(stroke,template.name,stroke)
-		val arguments = "\n%s\n".format(argumentResults.map(arg => arg.name+" = "+arg.value).mkString("\n"))
+		val arguments = "\n%s\n".format(argumentResults.map(arg => arg.argument.name+" = "+arg.value).mkString("\n"))
 		val files = "%s\nResulted in the creation of the following files:\n%s\n%s\n%s"
 			.format(stroke,stroke,template.files.map( path => Helper.replaceVariablesInPath(path.destination,argumentResults)).mkString(""),stroke)
 		
@@ -42,19 +44,42 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 	
 	//# private
 	
+ 	// If the app is runnning af a .jar the template file is read and 
+	// it writes the content to a temp. file. This is necessary as 
+	// Scalate can't find files inside jars.
+	private def createTempTemplateFile(path: String): File = {		
+		if (new File(path).exists) { // we're not running as a jar.
+			new File(path)
+		} else {
+			try {
+				val is = this.getClass().getResourceAsStream("/" + path)
+				val in = scala.io.Source.fromInputStream(is)
+				val file = new File("temptemplatefile.ssp")
+				file.createNewFile
+				val out = new BufferedWriter(new FileWriter(file));
+				in.getLines.foreach(out.write(_))
+				out.close
+				file
+			} catch {
+				case e: Exception => new File("temptemplatefile.ssp")
+			}
+		}
+	}
+	
 	// this runs through each of the ArgumentResults and adds them to the template context.
 	// repeatable arguments gets added as a list
 	private def addArgumentsToContext(context: DefaultRenderContext): Unit = {
 		// recursivly run through the list and add any repeatable argument to the
 		// context as a list. 
 		def addArgs(arg: ArgumentResult, args: List[ArgumentResult]): Unit = {
-			val toAdd = args.filter( _.name == arg.name)
+			val toAdd = args.filter( _.argument.name == arg.argument.name)
 			toAdd match {
-				case list if list.size == 1 => {
-					context.attributes(arg.name) = list.map(_.value).first
-				}
 				case list if list.size > 0 => {
-					context.attributes(arg.name) = list.map(_.value)
+					if (list.forall(_.argument.isInstanceOf[Repeatable])) { //Add repeatable as list
+						context.attributes(arg.argument.name) = list.map(_.value)
+					} else {
+						context.attributes(arg.argument.name) = list.map(_.value).first
+					}
 				}
 				case Nil => // don't add anything. this should happen though
 			}

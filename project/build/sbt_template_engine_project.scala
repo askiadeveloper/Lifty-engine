@@ -6,10 +6,10 @@ import java.util.jar.Attributes.Name._
 class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ProcessorProject(info) 
 {	
 	val liftcommon = "net.liftweb" % "lift-common" % "2.0-M5" % "compile->default"
-	val scalate = "org.fusesource.scalate" % "scalate-core" % "1.0-SNAPSHOT" from "http://github.com/downloads/mads379/Simple-Build-Tool-Template-Engine/scalate-core-1.0-SNAPSHOT.jar"
+	val scalate = "org.fusesource.scalate" % "scalate-core" % "1.0-local" from "http://github.com/downloads/mads379/Simple-Build-Tool-Template-Engine/scalate-core-1.0-SNAPSHOT.jar"
 	
-	val mavenLocal = "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"
-	val scalatools_snapshot = "Scala Tools Snapshot" at "http://scala-tools.org/repo-snapshots/"
+	// val mavenLocal = "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"
+	// val scalatools_snapshot = "Scala Tools Snapshot" at "http://scala-tools.org/repo-snapshots/"
 	val scalatools_release = "Scala Tools Snapshot" at "http://scala-tools.org/repo-releases/"
 	
 	override def compileOptions = super.compileOptions ++

@@ -16,7 +16,7 @@ case class Argument(name: String){
       argumentResults match {
           case argument :: rest => Full(List(argument))
           // TODO: feels a bit hackish to check the type
-          case Nil if hasDefault => Full(List(ArgumentResult(name,default)))
+          case Nil if hasDefault => Full(List(ArgumentResult(this,default)))
           case Nil if isOptional => Empty
           case Nil => Failure("[error] The argument '%s' is required".format(this.name))
        }
@@ -48,7 +48,7 @@ case class Argument(name: String){
         val nameAndValue = argument.split("=") 
         val name = nameAndValue(0) 
         val value = nameAndValue(1)
-        ArgumentResult(name, value)
+        ArgumentResult(this, value)
       }.toList
   }
 }
@@ -89,4 +89,4 @@ trait Value extends Default {
 
 }
 
-case class ArgumentResult(name: String, value: String)
+case class ArgumentResult(argument: Argument, value: String)
