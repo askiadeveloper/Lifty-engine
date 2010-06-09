@@ -8,11 +8,16 @@ trait DefaultLiftTemplate extends Template with Create with Delete{}
 object SnippetTemplate extends DefaultLiftTemplate {
 	
 	def name = "snippet"
-	def arguments = Argument("name") :: Argument("pack") ::  Nil
+	def arguments = {
+		object packageArgument extends Argument("pack") {
+			override def transformationForPathValue(before: String) = Helper.pathOfPackage(before)
+		}
+		Argument("name") :: packageArgument ::  Nil
+	}
 	def files = {
 		val config = LiftGen.configuration
-	  val templatePath = "%s/snippet/snippet.ssp".format(config.rootResources)
-	  val snippetPath = "src/main/scala/$${pack}/${name}.scala"
+	  val templatePath = "%s/snippet.ssp".format(config.rootResources)
+	  val snippetPath = "src/main/scala/${pack}/${name}.scala"
 	  TemplateFile(templatePath,snippetPath) :: Nil
 	}
 }
@@ -32,10 +37,30 @@ object MapperTemplate extends DefaultLiftTemplate {
 	
   def files = {
 		val config = LiftGen.configuration
-    val templatePath = "%s/mapper/mapper.ssp".format(config.rootResources)
+    val templatePath = "%s/mapper.ssp".format(config.rootResources)
     val mapperPath = "src/main/scala/${pack}/${name}.scala"
     TemplateFile(templatePath,mapperPath) :: Nil
   }
+}
+
+object CometTemplate extends DefaultLiftTemplate {
+	
+	def name = "comet"
+	
+	def arguments = {
+		object packageArgument extends Argument("pack") {
+			override def transformationForPathValue(before: String) = Helper.pathOfPackage(before)
+		}
+		Argument("name") :: packageArgument ::  Nil
+	}
+	
+	def files = {
+		val config = LiftGen.configuration
+	  val templatePath = "%s/comet.ssp".format(config.rootResources)
+	  val snippetPath = "src/main/scala/${pack}/${name}.scala"
+	  TemplateFile(templatePath,snippetPath) :: Nil
+	}
+	
 }
 
 
