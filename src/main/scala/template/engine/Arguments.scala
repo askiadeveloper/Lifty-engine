@@ -9,6 +9,10 @@ case class Argument(name: String){
 	protected def hasDefault = false
 	protected def default = ""
 
+	// If any argument needs to work on the string, this is where to do it
+	// The use-case for this is to convery package names to the correct folder structure
+	def transformationForPathValue(before: String): String = before
+
   //  Point of variation for each of the trait you might mix into argument. Every subclass 
   //  can add extra functions to fit their needs.
   protected var requirements: List[ List[ArgumentResult] => Box[List[ArgumentResult]]] =
@@ -89,4 +93,7 @@ trait Value extends Default {
 
 }
 
-case class ArgumentResult(argument: Argument, value: String)
+case class ArgumentResult(argument: Argument, value: String) {
+	def pathValue: String = argument.transformationForPathValue(value)
+		
+}

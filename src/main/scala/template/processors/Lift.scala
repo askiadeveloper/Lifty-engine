@@ -22,7 +22,9 @@ object MapperTemplate extends DefaultLiftTemplate {
 	def name = "mapper"
 		
 	def arguments = {
-		val packageArgument = Argument("pack")
+		object packageArgument extends Argument("pack") {
+			override def transformationForPathValue(before: String) = Helper.pathOfPackage(before)
+		}
 		object nameArgument extends Argument("name") with Default with Value{ value = "defaultValue" }
 		object fieldArgument extends Argument("fields") with Repeatable with Optional
   	packageArgument :: nameArgument :: fieldArgument :: Nil

@@ -16,6 +16,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 			val file: File = createTempTemplateFile(templateFile.file)
 			val sclateTemplate = engine.load(file.getAbsolutePath)
 			val destinationPath = Helper.replaceVariablesInPath(templateFile.destination,argumentResults)
+			println(destinationPath) //@DEBUG
 			val buffer = new StringWriter()
 			val context = new DefaultRenderContext(new PrintWriter(buffer))
 			addArgumentsToContext(context)
