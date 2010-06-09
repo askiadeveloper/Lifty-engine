@@ -9,7 +9,7 @@ case class Argument(name: String){
 	protected def hasDefault = false
 	protected def default = ""
 
-	// If any argument needs to work on the string, this is where to do it
+	// When an argument is used the the path you might want to do some transformations.
 	// The use-case for this is to convery package names to the correct folder structure
 	def transformationForPathValue(before: String): String = before
 
@@ -21,7 +21,7 @@ case class Argument(name: String){
           case argument :: rest => Full(List(argument))
           // TODO: feels a bit hackish to check the type
           case Nil if hasDefault => Full(List(ArgumentResult(this,default)))
-          case Nil if isOptional => Empty
+          case Nil if isOptional => Full(List(ArgumentResult(this,"")))
           case Nil => Failure("[error] The argument '%s' is required".format(this.name))
        }
     }) :: Nil
@@ -94,6 +94,5 @@ trait Value extends Default {
 }
 
 case class ArgumentResult(argument: Argument, value: String) {
-	def pathValue: String = argument.transformationForPathValue(value)
-		
+	def pathValue: String = argument.transformationForPathValue(value)		
 }

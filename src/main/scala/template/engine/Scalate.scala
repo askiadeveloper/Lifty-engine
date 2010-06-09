@@ -75,14 +75,24 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		def addArgs(arg: ArgumentResult, args: List[ArgumentResult]): Unit = {
 			val toAdd = args.filter( _.argument.name == arg.argument.name)
 			toAdd match {
-				case list if list.size > 0 => {
+				case list if list.size > 1 => {
 					if (list.forall(_.argument.isInstanceOf[Repeatable])) { //Add repeatable as list
 						context.attributes(arg.argument.name) = list.map(_.value)
 					} else {
 						context.attributes(arg.argument.name) = list.map(_.value).first
 					}
 				}
-				case Nil => // don't add anything. this should happen though
+				case list if list.size == 1 => { // Add any repeatable arugment with value of "" as an empty list
+					list.first match {
+						case empty if empty.argument.isInstanceOf[Repeatable] && empty.value == "" => 
+							context.attributes(empty.argument.name) = List[String]()
+						case repeatable if repeatable.argument.isInstanceOf[Repeatable] => 
+							context.attributes(repeatable.argument.name) = List(repeatable.value)
+						case argument => 
+							context.attributes(argument.argument.name) = argument.value
+					}
+				}
+				case Nil => // Empty list
 			}
 			val rest = (args -- toAdd)
 			rest match {
