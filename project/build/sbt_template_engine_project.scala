@@ -7,6 +7,15 @@ class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ProcessorProject(
 {	
 	val liftcommon = "net.liftweb" % "lift-common" % "2.0-M5" % "compile->default"
 	val scalate = "org.fusesource.scalate" % "scalate-core" % "1.0-local" from "http://github.com/downloads/mads379/Simple-Build-Tool-Template-Engine/scalate-core-1.0-SNAPSHOT.jar"
+	// val scalaLibrary = "org.scala-lang" % "scala-library" % "2.7.7" % "compile->default"
+	// val scalaCompiler = "org.scala-lang" % "scala-compiler" % "2.7.7" % "compile->default"
+	// 
+	// override def filterScalaJars = false // THIS MIGHT NOT BE THAT GREAT AN IDEA
+	
+	override def unmanagedClasspath = super.unmanagedClasspath +++ 
+		// ("project" / "project" / "scala-2.7.7" / "lib" ##) ** "*.jar"
+		(Path.fromFile(buildScalaInstance.compilerJar)) +++ 
+		(Path.fromFile(buildScalaInstance.libraryJar.getPath))
 	
 	// val mavenLocal = "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"
 	// val scalatools_snapshot = "Scala Tools Snapshot" at "http://scala-tools.org/repo-snapshots/"

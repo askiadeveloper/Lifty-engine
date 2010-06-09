@@ -2,7 +2,7 @@ package template.engine
 
 import sbt._
 import processor.{Processor, ProcessorResult}
-// import sbt.processor.BasicProcessor
+import sbt.processor.BasicProcessor
 import net.liftweb.common.{Box, Empty, Failure, Full}
 
 case class CommandResult(message: String)
@@ -75,15 +75,15 @@ trait TemplateProcessor {
   
 }
 
-trait SBTTemplateProcessor extends Processor with TemplateProcessor {
-// trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
+// trait SBTTemplateProcessor extends Processor with TemplateProcessor {
+trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
   
   //TODO: Need to get the real value. Should get the real values from the Project 
   override def configuration = Configuration("src/main/resources")
   
   def apply(project: Project, args: String) = { 
     processInput(args)
-		new ProcessorResult()
+		// new ProcessorResult()
   }
 	
 }
