@@ -40,6 +40,10 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 				out.close();
 			} catch {
 				case e: Exception => println(e) //@DEBUG
+			} finally {
+				// clean up in case the temp filse was generated
+				val tempTemplateFile = new File("temptemplatefile.ssp")
+				if (tempTemplateFile.exists) tempTemplateFile.delete 
 			}
 		}
 		val stroke = "-----------------%s------------------------------".format(template.name.map(_=>'-').mkString(""))

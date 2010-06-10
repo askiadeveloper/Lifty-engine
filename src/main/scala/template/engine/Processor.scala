@@ -93,7 +93,7 @@ trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
   def apply(project: Project, args: String) = { 
 		val scalatePath = { // TODO: Must be a prettier way to do this! 
 			val base =  project.info.bootPath.absolutePath
-			base + "/scala-2.7.7/sbt-processors/com.sidewayscoding/sbt_template_engine/0.1/scalate-core-1.0-local.jar"
+			base + "/scala-2.7.7/sbt-processors/net.liftweb/sbt_template_engine/0.1/scalate-core-1.0-local.jar"
 		} 
 		GlobalConfiguration.scalatePath = scalatePath
    	GlobalConfiguration.scalaCompilerPath = project.info.app.scalaProvider.compilerJar.getPath
