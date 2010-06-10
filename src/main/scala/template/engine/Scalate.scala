@@ -11,6 +11,14 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 	def run: CommandResult = { 
 	 
 		val engine = new TemplateEngine
+		
+		// Setting the classpath of the compiler used by scalate! 
+		if (GlobalConfiguration.scalaLibraryPath != "") {
+			engine.classpath = (GlobalConfiguration.scalaLibraryPath :: 
+													GlobalConfiguration.scalaCompilerPath ::
+													GlobalConfiguration.scalatePath :: Nil).mkString(":")
+		}
+		
 		val bufferedFiles = template.files.map{ templateFile =>
 			
 			val file: File = createTempTemplateFile(templateFile.file)

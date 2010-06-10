@@ -75,14 +75,29 @@ trait TemplateProcessor {
   
 }
 
+
+object GlobalConfiguration {
+	var scalaCompilerPath = ""
+	var scalaLibraryPath = ""
+	var scalatePath = ""
+}
+
 // trait SBTTemplateProcessor extends Processor with TemplateProcessor {
 trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
   
+	
   //TODO: Need to get the real value. Should get the real values from the Project 
   override def configuration = Configuration("src/main/resources")
   
   def apply(project: Project, args: String) = { 
-    processInput(args)
+		val scalatePath = { // TODO: Must be a prettier way to do this! 
+			val base =  project.info.projectDirectory.getAbsolutePath.replace("/.","")
+			base + "/lib_managed/scala_2.7.7/compile/scalate-core-1.0-local.jar"
+		} 
+		GlobalConfiguration.scalatePath = scalatePath
+   	GlobalConfiguration.scalaCompilerPath = project.info.app.scalaProvider.compilerJar.getPath
+		GlobalConfiguration.scalaLibraryPath = project.info.app.scalaProvider.libraryJar.getPath
+		processInput(args)
 		// new ProcessorResult()
   }
 	

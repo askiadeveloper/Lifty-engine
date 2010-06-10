@@ -72,13 +72,13 @@ object CometTemplate extends DefaultLiftTemplate {
 
 class LiftGen extends SBTTemplateProcessor {
 	
-	def templates = SnippetTemplate :: MapperTemplate :: Nil 
+	def templates = SnippetTemplate :: MapperTemplate :: CometTemplate :: Nil 
 	
 }
 object LiftGen extends LiftGen {}
 
 object StandAloneLiftGen extends StandAloneTemplateProcessor {
 	
-	def templates = SnippetTemplate :: MapperTemplate :: Nil 
+	def templates = SnippetTemplate :: MapperTemplate :: CometTemplate :: Nil 
 	
 }
