@@ -75,37 +75,34 @@ trait TemplateProcessor {
   
 }
 
-
+// Used to store information about the classpath that I need to set
+// if it's running as a processor
 object GlobalConfiguration {
 	var scalaCompilerPath = ""
 	var scalaLibraryPath = ""
 	var scalatePath = ""
 }
 
-// trait SBTTemplateProcessor extends Processor with TemplateProcessor {
+// This is the class you want to extend if you're creating an SBT processor
 trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
   
-	
-  //TODO: Need to get the real value. Should get the real values from the Project 
   override def configuration = Configuration("src/main/resources")
   
   def apply(project: Project, args: String) = { 
 		val scalatePath = { // TODO: Must be a prettier way to do this! 
-			val base =  project.info.projectDirectory.getAbsolutePath.replace("/.","")
-			base + "/lib_managed/scala_2.7.7/compile/scalate-core-1.0-local.jar"
+			val base =  project.info.bootPath.absolutePath
+			base + "/scala-2.7.7/sbt-processors/com.sidewayscoding/sbt_template_engine/0.1/scalate-core-1.0-local.jar"
 		} 
 		GlobalConfiguration.scalatePath = scalatePath
    	GlobalConfiguration.scalaCompilerPath = project.info.app.scalaProvider.compilerJar.getPath
 		GlobalConfiguration.scalaLibraryPath = project.info.app.scalaProvider.libraryJar.getPath
 		processInput(args)
-		// new ProcessorResult()
   }
-	
 }
 
+// This is the class you want to extend if you're creating an stand alone app 
 trait StandAloneTemplateProcessor extends TemplateProcessor {
   
-  //TODO: Need to get the real value somehow
   override def configuration = Configuration("src/main/resources")
   
   def main(args: Array[String]): Unit = {
