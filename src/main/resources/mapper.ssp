@@ -13,7 +13,7 @@ class ${name} extends LongKeyedMapper[${name}] with IdPK {
 	def getSingleton = ${name}
 
 <% fields.foreach{ field => %>
-	object ${field} extends MappedField(this)
+	object ${field} extends MappedString(this,256)
 <% } %>
 
 }
