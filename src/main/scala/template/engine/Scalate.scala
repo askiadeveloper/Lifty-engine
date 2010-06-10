@@ -60,23 +60,15 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		if (new File(path).exists) { // we're not running as a jar.
 			new File(path)
 		} else {
-			println("it didn't exist") //@DEBUG
 			try {
-				println("In the try clause") //@DEBUG
 				val pahtToResource = "/" + path
-				println("resource path: " + pahtToResource) //@DEBUG
 				val is = this.getClass().getResourceAsStream(path)
-				println("Got the input stream: " + is) //@DEBUG
 				val in = scala.io.Source.fromInputStream(is)
-				println("created the source from inputstream") //@DEBUG
 				val file = new File("temptemplatefile.ssp")
-				println("Created file object") //@DEBUG
 				file.createNewFile
-				println("saved the file") //@DEBUG
 				val out = new BufferedWriter(new FileWriter(file));
 				in.getLines.foreach(out.write(_))
 				out.close
-				println("closed it") //@DEBUG
 				file
 			} catch {
 				case e: Exception => {
