@@ -25,7 +25,7 @@ trait TemplateProcessor {
     val arguments = argsArr.toList - keyword
 	
     val result = commands.filter( command => command.keyword == keyword) match {
-			case commands if commands.size > 0 => commands.first.run(arguments)
+			case command :: rest => command.run(arguments)
 			case Nil => CommandResult("[error] Command is not supported")
 		}
 		println(result.message)
@@ -48,6 +48,7 @@ trait TemplateProcessor {
       findTemplate(templateName) match {
         case Full(template) => template.process("create",arguments-arguments(0));
         case Failure(msg,_,_) => CommandResult(msg)
+				case Empty => CommandResult("no such template") // TODO: no sure what to do here
       }
     }
   }
@@ -59,6 +60,7 @@ trait TemplateProcessor {
       findTemplate(templateName) match {
         case Full(template) => template.process("delete",arguments-arguments(0));
         case Failure(msg,_,_) => CommandResult(msg)
+				case Empty => CommandResult("no such template") // TODO: no sure what to do here
       }
     }
   }
