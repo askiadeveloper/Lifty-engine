@@ -86,7 +86,7 @@ object GlobalConfiguration {
 // This is the class you want to extend if you're creating an SBT processor
 trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
   
-  override def configuration = Configuration("src/main/resources")
+  override def configuration = Configuration("")
   
   def apply(project: Project, args: String) = { 
 		val scalatePath = { // TODO: Must be a prettier way to do this! 
