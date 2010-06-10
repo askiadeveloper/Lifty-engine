@@ -41,8 +41,12 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 			} catch {
 				case e: Exception => println(e) //@DEBUG
 			} finally {
-				// clean up in case the temp filse was generated
+				// clean up in case the temp filse was generated.
 				val tempTemplateFile = new File("temptemplatefile.ssp")
+				val scalateBytecodeFolder = new File("bytecode")
+				val scalateSourceFolder = new File("source")
+				if (scalateSourceFolder.exists) recursiveDelete(scalateSourceFolder)
+				if (scalateBytecodeFolder.exists) recursiveDelete(scalateBytecodeFolder)
 				if (tempTemplateFile.exists) tempTemplateFile.delete 
 			}
 		}
@@ -56,6 +60,13 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 	}
 	
 	//# private
+		
+	private def recursiveDelete(file: File): Unit = {
+		if (file.isDirectory) {
+			file.list.toList.foreach{ path => recursiveDelete(new File(file,path)) }
+		} 
+		file.delete
+	}
 	
  	// If the app is runnning af a .jar the template file is read and 
 	// it writes the content to a temp. file. This is necessary as 
