@@ -4,11 +4,9 @@
 
 package ${pack}
 
-import net.liftweb._
-import mapper._
-import http._
-import SHtml._ 
-import util._
+import _root_.net.liftweb.mapper._
+import _root_.net.liftweb.util._
+import _root_.net.liftweb.common._
 
 class ${name} extends LongKeyedMapper[${name}] with IdPK {
 
