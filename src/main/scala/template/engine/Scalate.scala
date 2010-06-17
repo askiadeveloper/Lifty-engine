@@ -8,59 +8,79 @@ import scala.util.matching.Regex
 
 case class Scalate(template: Template with Create, argumentResults: List[ArgumentResult]) {
 	
+	// Run scalate on all of the template files the Template specifies
 	def run: CommandResult = { 
 	 
+		// Creating the engine and setting the classpath of the compiler used by scalate! 
 		val engine = new TemplateEngine
-		
-		// Setting the classpath of the compiler used by scalate! 
 		if (GlobalConfiguration.scalaLibraryPath != "") {
 			engine.classpath = (GlobalConfiguration.scalaLibraryPath :: 
 													GlobalConfiguration.scalaCompilerPath ::
 													GlobalConfiguration.scalatePath :: Nil).mkString(":")
 		}
 		
-		val bufferedFiles = template.files.map{ templateFile =>
-			
-			val file: File = createTempTemplateFile(templateFile.file)
-			val sclateTemplate = engine.load(file.getAbsolutePath)
-			val destinationPath = Helper.replaceVariablesInPath(templateFile.destination,argumentResults)
-			println(destinationPath) //@DEBUG
-			val buffer = new StringWriter()
-			val context = new DefaultRenderContext(new PrintWriter(buffer))
-			addArgumentsToContext(context)
-			sclateTemplate.render(context)
-		 
-			try {
-				createFolderStructure(destinationPath)
-				val currentPath = new File("").getAbsolutePath // TODO: Not sure this is needed.
-				val file = new File(currentPath+"/"+destinationPath)
-				file.createNewFile
-				val out = new BufferedWriter(new FileWriter(file));
-				out.write(buffer.toString);
-				out.close();
-			} catch {
-				case e: Exception => println(e) //@DEBUG
-			} finally {
-				// clean up in case the temp filse was generated.
-				val tempTemplateFile = new File("temptemplatefile.ssp")
-				val scalateBytecodeFolder = new File("bytecode")
-				val scalateSourceFolder = new File("source")
-				if (scalateSourceFolder.exists) recursiveDelete(scalateSourceFolder)
-				if (scalateBytecodeFolder.exists) recursiveDelete(scalateBytecodeFolder)
-				if (tempTemplateFile.exists) tempTemplateFile.delete 
-			}
-		}
+		// process all the templates
+		template.files.foreach{ t => processSingleTemplate(t,engine) }
+		cleanScalateCache
+		
+		// pretty printing 
 		val stroke = "-----------------%s------------------------------".format(template.name.map(_=>'-').mkString(""))
 		val header = "%s\nRunning %s with the following arguments:\n%s".format(stroke,template.name,stroke)
 		val arguments = "\n%s\n".format(argumentResults.map(arg => arg.argument.name+" = "+arg.value).mkString("\n"))
 		val files = "%s\nResulted in the creation of the following files:\n%s\n%s\n%s"
-			.format(stroke,stroke,template.files.map( path => Helper.replaceVariablesInPath(path.destination,argumentResults)).mkString(""),stroke)
+			.format(stroke,stroke,template.files.map( path => Helper.replaceVariablesInPath(path.destination,argumentResults)).mkString("\n"),stroke)
 		
  		CommandResult("%s%s%s".format(header,arguments,files))
 	}
 	
 	//# private
+	
+	private def isRunningAsJar: Boolean = 
+		new File(this.getClass.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath.contains(".jar")
+	
+	
+	// The version of Scalate I'm using (1.0 scala 2.7.7) doesn't allow you 
+	// change the cache settings. The 2.0 brach does so this can be removed later on
+	private def cleanScalateCache: Unit = {
+		val scalateBytecodeFolder = new File("bytecode")
+		val scalateSourceFolder = new File("source")
+		if (scalateSourceFolder.exists) recursiveDelete(scalateSourceFolder)
+		if (scalateBytecodeFolder.exists) recursiveDelete(scalateBytecodeFolder)
+	}
+	
+	// This will process a single scalate template file and save the file in the appropriate 
+	// place
+	private def processSingleTemplate(templateFile: TemplateFile, engine: TemplateEngine): Unit = {
+		println("processing single file: " + templateFile.file) //@DEBUG
 		
+		val file: File = createTempTemplateFile(templateFile.file)
+		val sclateTemplate = engine.load(file.getAbsolutePath)
+		val destinationPath = Helper.replaceVariablesInPath(templateFile.destination,argumentResults)
+		val buffer = new StringWriter()
+		val context = new DefaultRenderContext(new PrintWriter(buffer))
+		addArgumentsToContext(context)
+		sclateTemplate.render(context)
+	 
+		try {
+			createFolderStructure(destinationPath)
+			val currentPath = new File("").getAbsolutePath // TODO: Not sure this is needed.
+			val file = new File(currentPath+"/"+destinationPath)
+			file.createNewFile
+			val out = new BufferedWriter(new FileWriter(file));
+			out.write(buffer.toString);
+			out.close();
+		} catch {
+			case e: Exception => println(e) //@DEBUG
+		} finally {
+			// clean up in case the temp filse was generated.
+			val tempTemplateFile = new File("temptemplatefile.ssp")
+			if (tempTemplateFile.exists) tempTemplateFile.delete 
+		}
+	}
+	
+	// To delete a folder with java it has to be empty, so this
+	// deletes every subfolder & files of a java.io.File and ends 
+	// with deleting the file itself. 		
 	private def recursiveDelete(file: File): Unit = {
 		if (file.isDirectory) {
 			file.list.toList.foreach{ path => recursiveDelete(new File(file,path)) }
@@ -72,12 +92,11 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 	// it writes the content to a temp. file. This is necessary as 
 	// Scalate can't find files inside jars.
 	private def createTempTemplateFile(path: String): File = {		
-		if (new File(path).exists) { // we're not running as a jar.
+		if (!isRunningAsJar) { // we're not running as a jar.
 			new File(path)
 		} else {
 			try {
-				val pahtToResource = "/" + path
-				val is = this.getClass().getResourceAsStream(path)
+				val is = this.getClass().getResourceAsStream(path) 
 				val in = scala.io.Source.fromInputStream(is)
 				val file = new File("temptemplatefile.ssp")
 				file.createNewFile
@@ -87,6 +106,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 				file
 			} catch {
 				case e: Exception => {
+					println("exception") //@DEBUG
 					println(e) //@DEBUG
 					new File("temptemplatefile.ssp")
 				}

@@ -15,7 +15,6 @@ trait TemplateProcessor {
   
   def templates: List[Template]
   def commands: List[Command] = List(CreateCommand, DeleteCommand, TemplatesCommand, HelpCommand)
-  def configuration: Configuration
   
   def processInput(args: String): Unit = {
 
@@ -77,24 +76,24 @@ trait TemplateProcessor {
   
 }
 
-// Used to store information about the classpath that I need to set
-// if it's running as a processor
+// Used to store information about the classpath and other stuff that is different
+// for the app if it's running as a processor vs. sbt console
 object GlobalConfiguration {
 	var scalaCompilerPath = ""
 	var scalaLibraryPath = ""
 	var scalatePath = ""
+	var rootResources = ""
 }
 
 // This is the class you want to extend if you're creating an SBT processor
 trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
-  
-  override def configuration = Configuration("")
   
   def apply(project: Project, args: String) = { 
 		val scalatePath = { // TODO: Must be a prettier way to do this! 
 			val base =  project.info.bootPath.absolutePath
 			base + "/scala-2.7.7/sbt-processors/net.liftweb/sbt_template_engine/0.1/scalate-core-1.0-local.jar"
 		} 
+		GlobalConfiguration.rootResources = ""
 		GlobalConfiguration.scalatePath = scalatePath
    	GlobalConfiguration.scalaCompilerPath = project.info.app.scalaProvider.compilerJar.getPath
 		GlobalConfiguration.scalaLibraryPath = project.info.app.scalaProvider.libraryJar.getPath
@@ -104,10 +103,9 @@ trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
 
 // This is the class you want to extend if you're creating an stand alone app 
 trait StandAloneTemplateProcessor extends TemplateProcessor {
-  
-  override def configuration = Configuration("src/main/resources")
-  
+    
   def main(args: Array[String]): Unit = {
-     processInput( args.mkString(" ") )
+    GlobalConfiguration.rootResources = "src/main/resources" 
+		processInput( args.mkString(" ") )
   }
 }
