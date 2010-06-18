@@ -22,7 +22,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		// process all the templates
 		template.files.foreach{ t => processSingleTemplate(t,engine) }
 		cleanScalateCache
-		
+		template.postRenderAction(argumentResults)
 		// pretty printing 
 		val stroke = "-----------------%s------------------------------".format(template.name.map(_=>'-').mkString(""))
 		val header = "%s\nRunning %s with the following arguments:\n%s".format(stroke,template.name,stroke)

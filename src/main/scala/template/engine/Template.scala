@@ -13,6 +13,9 @@ trait Template {
 	def files: List[TemplateFile]
   def fixedValues = List[ArgumentResult]()
 
+	def preRenderAction(arguments: List[ArgumentResult]): Unit = {}
+	def postRenderAction(arguments: List[ArgumentResult]): Unit = {}
+
 	def process(operation: String, argumentsList: List[String]): CommandResult = {
 		operation match {
 			case "create" if supportsOperation("create") => this.asInstanceOf[Create].create(argumentsList)
