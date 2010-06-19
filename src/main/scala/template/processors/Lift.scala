@@ -93,6 +93,14 @@ object LiftProjectTemplate extends DefaultLiftTemplate {
 			"${name}/src/main/webapp"
 		)
 		Helper.copy(
+			new File("%s/test/LiftConsole.scala".format(basePath)),
+			new File(Helper.replaceVariablesInPath("${name}/src/test/scala/${pack}", arguments))
+		)
+		Helper.copy(
+			new File("%s/test/RunWebApp.scala".format(basePath)),
+			new File(Helper.replaceVariablesInPath("${name}/src/test/scala/${pack}", arguments))
+		)
+		Helper.copy(
 			new File("%s/webapp".format(basePath)),
 			new File(Helper.replaceVariablesInPath("${name}/src/main/webapp", arguments))
 		)
@@ -115,12 +123,21 @@ object LiftProjectTemplate extends DefaultLiftTemplate {
 		
 		val helloworld = basePath + "/helloworld.ssp"
 		val helloworldDest = "${name}/src/main/scala/${pack}/snippet/HelloWorld.scala"
-
+		
+		// test files
+		val apptest = basePath + "/test/AppTest.ssp"
+		val apptestDest = "${name}/src/test/scala/${pack}/AppTest.scala"
+		
+		val helloworldtest = basePath + "/test/HelloWorldTest.ssp"
+		val helloworldtestDest = "${name}/src/test/scala/${pack}/snippet/HelloWorldTest.scala"
+		
 		List( 
 			TemplateFile(propertiesFilePath, propertiesFileDest),
 			TemplateFile(projectDefinitionPath, projectDefinitionDest),
 			TemplateFile(boot, bootDest),
-			TemplateFile(helloworld, helloworldDest)
+			TemplateFile(helloworld, helloworldDest),
+			TemplateFile(helloworldtest, helloworldtestDest),
+			TemplateFile(apptest, apptestDest)
 		)
 	}
 }
