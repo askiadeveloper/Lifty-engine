@@ -67,72 +67,61 @@ object LiftProjectTemplate extends DefaultLiftTemplate {
 	def name = "project"
 	
 	def arguments = {
-		object name extends Argument("name")
-		object org extends Argument("organization")
 		object mainPackage extends Argument("pack") with Default with Value { value = "code" }
-		object projectVersion extends Argument("version") with Default with Value{ value = "0.1"}
-		object scalaVersion extends Argument("scala_version") with Default with Value{ value = "2.7.7"}
-		object sbtVersion extends Argument("sbt_version") with Default with Value{ value = "0.7.4"}
-		object scalaBuildVersion extends Argument("scala_build_version") with Default with Value{ value = "0.7.4"}
-		
-		List(name, org, projectVersion, scalaVersion, sbtVersion, scalaBuildVersion, mainPackage)
+		List(mainPackage)
 	}
 	
 	override def postRenderAction(arguments: List[ArgumentResult]): Unit = {
 		Helper.createFolderStructure(arguments)(
-			"${name}/src/main/resources",
-			"${name}/src/main/scala",
-			"${name}/src/main/scala/bootstrap",
-			"${name}/src/main/scala/bootstrap/liftweb",
-			"${name}/src/main/scala/${pack}",
-			"${name}/src/main/scala/${pack}/comet",
-			"${name}/src/main/scala/${pack}/lib",
-			"${name}/src/main/scala/${pack}/model",
-			"${name}/src/main/scala/${pack}/snippet",
-			"${name}/src/main/scala/${pack}/view",
-			"${name}/src/main/webapp"
+			"src/main/resources",
+			"src/main/scala",
+			"src/main/scala/bootstrap",
+			"src/main/scala/bootstrap/liftweb",
+			"src/main/scala/${pack}",
+			"src/main/scala/${pack}/comet",
+			"src/main/scala/${pack}/lib",
+			"src/main/scala/${pack}/model",
+			"src/main/scala/${pack}/snippet",
+			"src/main/scala/${pack}/view",
+			"src/main/webapp"
 		)
 		Helper.copy(
 			new File("%s/test/LiftConsole.scala".format(basePath)),
-			new File(Helper.replaceVariablesInPath("${name}/src/test/scala/${pack}", arguments))
+			new File(Helper.replaceVariablesInPath("src/test/scala/${pack}", arguments))
 		)
 		Helper.copy(
 			new File("%s/test/RunWebApp.scala".format(basePath)),
-			new File(Helper.replaceVariablesInPath("${name}/src/test/scala/${pack}", arguments))
+			new File(Helper.replaceVariablesInPath("src/test/scala/${pack}", arguments))
 		)
 		Helper.copy(
 			new File("%s/webapp".format(basePath)),
-			new File(Helper.replaceVariablesInPath("${name}/src/main/webapp", arguments))
+			new File(Helper.replaceVariablesInPath("src/main/webapp", arguments))
 		)
 		Helper.copy(
 			new File("%s/resources".format(basePath)),
-			new File(Helper.replaceVariablesInPath("${name}/src/main/resources", arguments))
+			new File(Helper.replaceVariablesInPath("src/main/resources", arguments))
 		)
 	}
 		
 	def files = {
-		
-		val propertiesFilePath = basePath + "/build_properties.ssp"
-		val propertiesFileDest = "${name}/project/build.properties"
 
 		val projectDefinitionPath = basePath + "/ProjectDefinition.ssp"
-		val projectDefinitionDest = "${name}/project/build/ProjectDefinition.scala"
+		val projectDefinitionDest = "project/build/ProjectDefinition.scala"
 		
 		val boot = basePath + "/boot.ssp"
-		val bootDest = "${name}/src/main/scala/bootstrap/Boot.scala"
+		val bootDest = "src/main/scala/bootstrap/Boot.scala"
 		
 		val helloworld = basePath + "/helloworld.ssp"
-		val helloworldDest = "${name}/src/main/scala/${pack}/snippet/HelloWorld.scala"
+		val helloworldDest = "src/main/scala/${pack}/snippet/HelloWorld.scala"
 		
 		// test files
 		val apptest = basePath + "/test/AppTest.ssp"
-		val apptestDest = "${name}/src/test/scala/${pack}/AppTest.scala"
+		val apptestDest = "src/test/scala/${pack}/AppTest.scala"
 		
 		val helloworldtest = basePath + "/test/HelloWorldTest.ssp"
-		val helloworldtestDest = "${name}/src/test/scala/${pack}/snippet/HelloWorldTest.scala"
+		val helloworldtestDest = "src/test/scala/${pack}/snippet/HelloWorldTest.scala"
 		
 		List( 
-			TemplateFile(propertiesFilePath, propertiesFileDest),
 			TemplateFile(projectDefinitionPath, projectDefinitionDest),
 			TemplateFile(boot, bootDest),
 			TemplateFile(helloworld, helloworldDest),
