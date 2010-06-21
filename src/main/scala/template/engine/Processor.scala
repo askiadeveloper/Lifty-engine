@@ -4,6 +4,7 @@ import sbt._
 import processor.{Processor, ProcessorResult}
 import sbt.processor.BasicProcessor
 import net.liftweb.common.{Box, Empty, Failure, Full}
+import java.io.File
 
 case class CommandResult(message: String)
 trait Command {
@@ -83,6 +84,8 @@ object GlobalConfiguration {
 	var scalaLibraryPath = ""
 	var scalatePath = ""
 	var rootResources = ""
+	var runningAsJar = 
+		new File(this.getClass.getProtectionDomain.getCodeSource.getLocation.toURI.getPath).getAbsolutePath.contains(".jar")
 }
 
 // This is the class you want to extend if you're creating an SBT processor
@@ -91,7 +94,7 @@ trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
   def apply(project: Project, args: String) = { 
 		val scalatePath = { // TODO: Must be a prettier way to do this! 
 			val base =  project.info.bootPath.absolutePath
-			base + "/scala-2.7.7/sbt-processors/net.liftweb/sbt_template_engine/0.1/scalate-core-1.0-local.jar"
+			base + "/scala-2.7.7/sbt-processors/com.sidewayscoding/sbt_template_engine/0.1/scalate-core-1.0-local.jar"
 		} 
 		GlobalConfiguration.rootResources = ""
 		GlobalConfiguration.scalatePath = scalatePath

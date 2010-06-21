@@ -2,7 +2,7 @@ package template.engine
 
 import org.fusesource.scalate.{TemplateEngine,DefaultRenderContext}
 import template.util.Helper
-import java.io.{StringWriter, PrintWriter, File, BufferedWriter, FileWriter, InputStream, FileOutputStream}
+import java.io._
 import java.net.{URL, URISyntaxException}
 import scala.util.matching.Regex
 
@@ -21,8 +21,8 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		
 		// process all the templates
 		template.files.foreach{ t => processSingleTemplate(t,engine) }
-		cleanScalateCache
 		template.postRenderAction(argumentResults)
+		cleanScalateCache
 		// pretty printing 
 		val stroke = "-----------------%s------------------------------".format(template.name.map(_=>'-').mkString(""))
 		val header = "%s\nRunning %s with the following arguments:\n%s".format(stroke,template.name,stroke)
@@ -34,9 +34,6 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 	}
 	
 	//# private
-	
-	private def isRunningAsJar: Boolean = 
-		new File(this.getClass.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getAbsolutePath.contains(".jar")
 	
 	
 	// The version of Scalate I'm using (1.0 scala 2.7.7) doesn't allow you 
@@ -51,7 +48,6 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 	// This will process a single scalate template file and save the file in the appropriate 
 	// place
 	private def processSingleTemplate(templateFile: TemplateFile, engine: TemplateEngine): Unit = {
-		println("processing single file: " + templateFile.file) //@DEBUG
 		
 		val file: File = createTempTemplateFile(templateFile.file)
 		val sclateTemplate = engine.load(file.getAbsolutePath)
@@ -70,11 +66,14 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 			out.write(buffer.toString);
 			out.close();
 		} catch {
-			case e: Exception => println(e) //@DEBUG
+			case e: Exception => {
+				println("exception!")
+				println("dest: " + destinationPath)
+				println(e) //@DEBUG
+			}
 		} finally {
 			// clean up in case the temp filse was generated.
-			val tempTemplateFile = new File("temptemplatefile.ssp")
-			if (tempTemplateFile.exists) tempTemplateFile.delete 
+			file.delete 
 		}
 	}
 	
@@ -92,23 +91,24 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 	// it writes the content to a temp. file. This is necessary as 
 	// Scalate can't find files inside jars.
 	private def createTempTemplateFile(path: String): File = {		
-		if (!isRunningAsJar) { // we're not running as a jar.
+		if (!GlobalConfiguration.runningAsJar) { // we're not running as a jar.
 			new File(path)
 		} else {
+			val tempFileName = "_temp_"+path.split("/").last
 			try {
 				val is = this.getClass().getResourceAsStream(path) 
 				val in = scala.io.Source.fromInputStream(is)
-				val file = new File("temptemplatefile.ssp")
+				val file = new File(tempFileName)
 				file.createNewFile
 				val out = new BufferedWriter(new FileWriter(file));
-				in.getLines.foreach(out.write(_))
+				in.getLines.foreach{ line => out.write(line) }
 				out.close
 				file
 			} catch {
 				case e: Exception => {
 					println("exception") //@DEBUG
 					println(e) //@DEBUG
-					new File("temptemplatefile.ssp")
+					new File(tempFileName)
 				}
 			}
 		}
