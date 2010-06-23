@@ -5,6 +5,7 @@ import processor.{Processor, ProcessorResult}
 import sbt.processor.BasicProcessor
 import net.liftweb.common.{Box, Empty, Failure, Full}
 import java.io.File
+import template.util.Helper
 
 case class CommandResult(message: String)
 trait Command {
@@ -94,8 +95,14 @@ trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
   def apply(project: Project, args: String) = { 
 		val scalatePath = { // TODO: Must be a prettier way to do this! 
 			val base =  project.info.bootPath.absolutePath
-			base + "/scala-2.7.7/sbt-processors/com.sidewayscoding/sbt_template_engine/0.1/scalate-core-1.0-local.jar"
+			val f = new File(base)
+			Helper.findFileInDir(f,"scalate-core-1.0-local.jar") match { 
+				case Some(file) => file.getAbsolutePath
+				case None => throw new Exception("Can't find scalate in a subfolder of: " + base)
+			}
+			// base + "/scala-2.7.7/sbt-processors/com.sidewayscoding/sbt_template_engine/0.1/scalate-core-1.0-local.jar"
 		} 
+		println("new scalatePath: " + scalatePath) //@DEBUG
 		GlobalConfiguration.rootResources = ""
 		GlobalConfiguration.scalatePath = scalatePath
    	GlobalConfiguration.scalaCompilerPath = project.info.app.scalaProvider.compilerJar.getPath

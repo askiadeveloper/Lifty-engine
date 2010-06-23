@@ -4,6 +4,7 @@ import template.engine.{ArgumentResult, GlobalConfiguration}
 import java.io._
 import java.util.{Enumeration}
 import java.util.jar._
+import net.liftweb.common.{Box, Empty, Failure, Full}
 
 /** 
 	GOT THE FOLLOWING CLASS AND IMPLICIT DEF FROM:  
@@ -81,6 +82,27 @@ object Helper {
 					val destionation = entry.replace(from,to)
 					writeResourceTofile(entry, new File(destionation))
 				}
+		}
+	}
+
+	
+	/**
+	* This methods searches the files and subfolders (recursivly) for a file
+	* with the name specified
+	* 
+	* @param	dir 	The directory to search through
+	* @param	name	The name of the file to search for
+	* @return	    	Empty if it couldn't find the file, otherwise Full(file)
+	*/
+	def findFileInDir(dir :File, name: String): Option[File] = {
+		def recursiveListFiles(f: File): List[File] = {
+		  val these = f.listFiles.toList
+		  these ++ these.filter(_.isDirectory).flatMap(recursiveListFiles)
+		}
+		val list = recursiveListFiles(dir)
+		list.filter( _.getName == name ) match {
+			case Nil => None
+			case file :: rest => Some(file)
 		}
 	}
 
