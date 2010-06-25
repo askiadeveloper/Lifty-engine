@@ -5,13 +5,13 @@ import template.util.{BoxUtil}
 
 case class Argument(name: String){
   
-	protected def isOptional = false
-	protected def hasDefault = false
-	protected def default = ""
+  protected def isOptional = false
+  protected def hasDefault = false
+  protected def default = ""
 
-	// When an argument is used the the path you might want to do some transformations.
-	// The use-case for this is to convery package names to the correct folder structure
-	def transformationForPathValue(before: String): String = before
+  // When an argument is used the the path you might want to do some transformations.
+  // The use-case for this is to convery package names to the correct folder structure
+  def transformationForPathValue(before: String): String = before
 
   //  Point of variation for each of the trait you might mix into argument. Every subclass 
   //  can add extra functions to fit their needs.
@@ -62,37 +62,37 @@ trait Repeatable extends Argument {
   requirements = ((argumentResults: List[ArgumentResult]) => {
     argumentResults match {
       case head :: rest => Full(rest) //ignoring the head because it will get added in function in Argument
-			case Nil => Empty
+      case Nil => Empty
     }
   }) :: requirements
   
 }
 
 trait Optional extends Argument {
-	
-	override def isOptional = true
-	
+  
+  override def isOptional = true
+  
 }
 
 trait Default extends Argument{
-	
-	this: Value => 
-	
-	override def hasDefault = true
-	
+  
+  this: Value => 
+  
+  override def hasDefault = true
+  
 }
 
 case class DefaultValue(default: String)
 
 trait Value extends Default {
-	
+  
 
-	protected var value :String = ""
-	override protected def default = value
+  protected var value :String = ""
+  override protected def default = value
 
 
 }
 
 case class ArgumentResult(argument: Argument, value: String) {
-	def pathValue: String = argument.transformationForPathValue(value)		
+  def pathValue: String = argument.transformationForPathValue(value)    
 }

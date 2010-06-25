@@ -21,17 +21,30 @@ trait TemplateProcessor {
   def processInput(args: String): Unit = {
 
     val argsArr = args.split(" ")
-
     val keyword = argsArr(0)
     val arguments = argsArr.toList - keyword
-	
-    val result = commands.filter( command => command.keyword == keyword) match {
-			case command :: rest => command.run(arguments)
-			case Nil => CommandResult("[error] Command is not supported")
-		}
-		println(result.message)
+  
+    val result = resolveCommand(keyword) match {
+      case Full(command) => command.run(arguments).message
+      case Failure(msg,_,_) => msg
+      case Empty => "[error] Command is not supported"
+    }
+    println(result)
   }
   
+  /**
+  * Finds the command with the specific keyword. 
+  * 
+  * @param  keyword well isn't it obvious
+  * @return Full(theCommand) if a command with the keyword exists, otherwise Failure
+  */
+  def resolveCommand(keyword: String): Box[Command] = {
+    commands.filter( command => command.keyword == keyword) match {
+      case command :: rest => Full(command)
+      case Nil => Failure("[error] Command is not supported")
+    }
+  }
+
   //# Protected 
   protected def findTemplate(name: String): Box[Template] = templates.filter( _.name == name) match {
       case template :: rest => Full(template) 
@@ -49,7 +62,7 @@ trait TemplateProcessor {
       findTemplate(templateName) match {
         case Full(template) => template.process("create",arguments-arguments(0));
         case Failure(msg,_,_) => CommandResult(msg)
-				case Empty => CommandResult("no such template") // TODO: no sure what to do here
+        case Empty => CommandResult("no such template") // TODO: no sure what to do here
       }
     }
   }
@@ -61,7 +74,7 @@ trait TemplateProcessor {
       findTemplate(templateName) match {
         case Full(template) => template.process("delete",arguments-arguments(0));
         case Failure(msg,_,_) => CommandResult(msg)
-				case Empty => CommandResult("no such template") // TODO: no sure what to do here
+        case Empty => CommandResult("no such template") // TODO: no sure what to do here
       }
     }
   }
@@ -81,33 +94,33 @@ trait TemplateProcessor {
 // Used to store information about the classpath and other stuff that is different
 // for the app if it's running as a processor vs. sbt console
 object GlobalConfiguration {
-	var scalaCompilerPath = ""
-	var scalaLibraryPath = ""
-	var scalatePath = ""
-	var rootResources = ""
-	var runningAsJar = 
-		new File(this.getClass.getProtectionDomain.getCodeSource.getLocation.toURI.getPath).getAbsolutePath.contains(".jar")
+  var scalaCompilerPath = ""
+  var scalaLibraryPath = ""
+  var scalatePath = ""
+  var rootResources = ""
+  var runningAsJar = 
+    new File(this.getClass.getProtectionDomain.getCodeSource.getLocation.toURI.getPath).getAbsolutePath.contains(".jar")
 }
 
 // This is the class you want to extend if you're creating an SBT processor
 trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
   
   def apply(project: Project, args: String) = { 
-		val scalatePath = { // TODO: Must be a prettier way to do this! 
-			val base =  project.info.bootPath.absolutePath
-			val f = new File(base)
-			Helper.findFileInDir(f,"scalate-core-1.0-local.jar") match { 
-				case Some(file) => file.getAbsolutePath
-				case None => throw new Exception("Can't find scalate in a subfolder of: " + base)
-			}
-			// base + "/scala-2.7.7/sbt-processors/com.sidewayscoding/sbt_template_engine/0.1/scalate-core-1.0-local.jar"
-		} 
-		println("new scalatePath: " + scalatePath) //@DEBUG
-		GlobalConfiguration.rootResources = ""
-		GlobalConfiguration.scalatePath = scalatePath
-   	GlobalConfiguration.scalaCompilerPath = project.info.app.scalaProvider.compilerJar.getPath
-		GlobalConfiguration.scalaLibraryPath = project.info.app.scalaProvider.libraryJar.getPath
-		processInput(args)
+    val scalatePath = { // TODO: Must be a prettier way to do this! 
+      val base =  project.info.bootPath.absolutePath
+      val f = new File(base)
+      Helper.findFileInDir(f,"scalate-core-1.0-local.jar") match { 
+        case Some(file) => file.getAbsolutePath
+        case None => throw new Exception("Can't find scalate in a subfolder of: " + base)
+      }
+      // base + "/scala-2.7.7/sbt-processors/com.sidewayscoding/sbt_template_engine/0.1/scalate-core-1.0-local.jar"
+    } 
+    println("new scalatePath: " + scalatePath) //@DEBUG
+    GlobalConfiguration.rootResources = ""
+    GlobalConfiguration.scalatePath = scalatePath
+    GlobalConfiguration.scalaCompilerPath = project.info.app.scalaProvider.compilerJar.getPath
+    GlobalConfiguration.scalaLibraryPath = project.info.app.scalaProvider.libraryJar.getPath
+    processInput(args)
   }
 }
 
@@ -116,6 +129,6 @@ trait StandAloneTemplateProcessor extends TemplateProcessor {
     
   def main(args: Array[String]): Unit = {
     GlobalConfiguration.rootResources = "src/main/resources" 
-		processInput( args.mkString(" ") )
+    processInput( args.mkString(" ") )
   }
 }
