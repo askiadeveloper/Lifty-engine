@@ -23,6 +23,7 @@ class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ProcessorProject(
 	
 	val liftcommon = "net.liftweb" % "lift-common" % "2.0-M5" % "compile->default"
 	val scalate = "org.fusesource.scalate" % "scalate-core" % "1.0-myversion" from "http://github.com/downloads/mads379/Simple-Build-Tool-Template-Engine/scalate-core-1.0-myversion.jar"
+	val scalatest = "org.scalatest" % "scalatest" % "1.0" % "test"
 	
 	override def unmanagedClasspath = super.unmanagedClasspath +++ 
 		(Path.fromFile(buildScalaInstance.compilerJar)) +++ 

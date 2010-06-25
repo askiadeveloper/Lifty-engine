@@ -28,7 +28,7 @@ trait Template {
 	
 	//  Takes a list of argument formatted strings (i.e. name=value) and returns a boxed list of
 	//  ArgumentResults. The actual parsing of the values is done by each subclass of Argument
-	protected def parseArguments(argumentsList: List[String]): Box[List[ArgumentResult]] = {
+	def parseArguments(argumentsList: List[String]): Box[List[ArgumentResult]] = {
 
     // List[net.liftweb.common.Box[List[template.engine.ArgumentResult]]]
     val listOfBoxes = arguments.map( _.parseList(argumentsList))
