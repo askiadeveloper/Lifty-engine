@@ -35,6 +35,7 @@ object Helper {
 
 
 	def writeResourceTofile(resource: String, destFile: File) = {
+		println("writing %s to %s".format(resource, destFile))
 		try {
 			val is = this.getClass().getResourceAsStream(resource) 
 			val in = scala.io.Source.fromInputStream(is)
@@ -50,6 +51,7 @@ object Helper {
 
 
 	def copy(from: String, to:String): Unit = {
+		println("copying: %s to %s".format(from,to))
 		def copyfiles(from: File, to:File): Unit = {
 			if(from.isDirectory) {
 				if (!to.exists) to.mkdirs
@@ -64,7 +66,7 @@ object Helper {
 					in.getLines.foreach(out.write(_))
 					out.close
 				} catch {
-					case e: Exception => // mmm, just swallowed an exception!
+					case e: Exception => println(e)// mmm, just swallowed an exception!
 				}
 			}
 		}

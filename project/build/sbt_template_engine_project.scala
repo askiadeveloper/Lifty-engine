@@ -22,10 +22,9 @@ class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ProcessorProject(
 	val scalatools_release = "Scala Tools Snapshot" at "http://scala-tools.org/repo-releases/"
 	
 	val liftcommon = "net.liftweb" % "lift-common" % "2.0-M5" % "compile->default"
-	val scalate = "org.fusesource.scalate" % "scalate-core" % "1.0-local" from "http://github.com/downloads/mads379/Simple-Build-Tool-Template-Engine/scalate-core-1.0-SNAPSHOT.jar"
+	val scalate = "org.fusesource.scalate" % "scalate-core" % "1.0-myversion" from "http://github.com/downloads/mads379/Simple-Build-Tool-Template-Engine/scalate-core-1.0-myversion.jar"
 	
 	override def unmanagedClasspath = super.unmanagedClasspath +++ 
-		// ("project" / "project" / "scala-2.7.7" / "lib" ##) ** "*.jar"
 		(Path.fromFile(buildScalaInstance.compilerJar)) +++ 
 		(Path.fromFile(buildScalaInstance.libraryJar.getPath))
 
