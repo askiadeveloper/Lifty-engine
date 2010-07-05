@@ -6,8 +6,8 @@ import net.liftweb.common.{Box, Empty, Failure, Full}
 
 class TestArgumentParsing extends FlatSpec with ShouldMatchers {
     
-    /* fixtures
-    --------------------------------------------- */
+  /* fixtures
+  --------------------------------------------- */
   val inputForArg1 = "val1"
   val inputForArg2 = "val2"
   val defaultForArg2 = "default"
@@ -35,10 +35,17 @@ class TestArgumentParsing extends FlatSpec with ShouldMatchers {
     errorMsg should be === "[error] The argument 'arg1' is required"
   }
   
-  it should "accept a value" in  {
+  it should "accept a named value" in  {
     val input = List("arg1=%s".format(inputForArg1))
     val argumentResults = TestTemplate.parseArguments(input)
     argumentResults.open_!.first should be === ArgumentResult(TestTemplate.arguments.first,inputForArg1)
+  }
+  
+  it should "accept an indexed value" in  {
+    val input = List(inputForArg1, inputForArg2)
+    val argumentResults = TestTemplate.parseArguments(input)
+    argumentResults.open_!(0) should be === ArgumentResult(TestTemplate.arguments(0),inputForArg1)
+    argumentResults.open_!(1) should be === ArgumentResult(TestTemplate.arguments(1),inputForArg2)
   }
   
   "Superfluous arguments" should "be ignored" in {

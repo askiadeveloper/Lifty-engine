@@ -7,7 +7,7 @@ case class Argument(name: String){
   
   protected def isOptional = false
   protected def hasDefault = false
-  protected def default = ""
+  def default = ""
 
   // When an argument is used the the path you might want to do some transformations.
   // The use-case for this is to convery package names to the correct folder structure
@@ -28,15 +28,12 @@ case class Argument(name: String){
 
   //  Simply invokes the requirements on the arguments.
   def parseList(list: List[String]): Box[List[ArgumentResult]] = {
-    val aLotOfBoxes = requirements.map( _.apply( findArgumentIn(list) ) )
-    if( BoxUtil.containsAnyFailures(aLotOfBoxes)){
-      val failureMsgs = 
-        aLotOfBoxes.filter( _.isInstanceOf[Failure]).map (_.asInstanceOf[Failure].msg).mkString("\n")
-      Failure(failureMsgs)
-    } else {
-      val boxedArguments = 
-        aLotOfBoxes.filter(_.isInstanceOf[Full[_]]).flatMap(_.open_!)
-      Full(boxedArguments)
+    val aLotOfBoxes = requirements.map( _.apply( findArgumentIn(list)))
+    BoxUtil.containsAnyFailures(aLotOfBoxes) match {
+      case true => 
+        Failure(aLotOfBoxes.filter( _.isInstanceOf[Failure]).map (_.asInstanceOf[Failure].msg).mkString("\n"))
+      case false => 
+        Full(aLotOfBoxes.filter(_.isInstanceOf[Full[_]]).flatMap(_.open_!))
     }
   }
   
@@ -88,7 +85,7 @@ trait Value extends Default {
   
 
   protected var value :String = ""
-  override protected def default = value
+  override def default = value
 
 
 }
