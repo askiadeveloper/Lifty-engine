@@ -10,6 +10,7 @@ import template.util.Helper
 case class CommandResult(message: String)
 trait Command {
   def keyword: String
+  def description: String
   def run(arguments: List[String]): CommandResult
 }
 
@@ -62,7 +63,7 @@ trait TemplateProcessor {
   // TODO: Both Create and DeleteCommand are almost identical - refactor slightly
   object CreateCommand extends Command {
     def keyword = "create"
-    
+    def description = "Processes the specified template. Usage: create <templateName> <arguments>"
     def run(arguments: List[String]): CommandResult = {
       val templateName = arguments(0)
       findTemplate(templateName) match {
@@ -75,6 +76,7 @@ trait TemplateProcessor {
 
   object DeleteCommand extends Command {
     def keyword = "delete"
+    def description = "Deletes an existing template if possible. Usage: delete <templateName> <arguments> "
     def run(arguments: List[String]): CommandResult = {
       val templateName = arguments(0)
       findTemplate(templateName) match {
@@ -87,12 +89,14 @@ trait TemplateProcessor {
 
   object TemplatesCommand extends Command {
     def keyword = "templates"
-    def run(arguments: List[String]): CommandResult = CommandResult("[todo] This should list all templates")
+    def description = "Lists all of the templates"
+    def run(arguments: List[String]): CommandResult = CommandResult(templates.map( _.name ).mkString("\n"))
   }
 
   object HelpCommand extends Command {
     def keyword = "help"
-    def run(arguments: List[String]): CommandResult = CommandResult(templates.map( _.name ).mkString("\n"))
+    def description = "Lists all of the commands"
+    def run(arguments: List[String]): CommandResult = CommandResult(commands.map( _.keyword ).mkString("\n"))
   }
   
 }

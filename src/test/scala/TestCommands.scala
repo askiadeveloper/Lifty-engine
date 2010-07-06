@@ -23,12 +23,17 @@ class TestCommands extends FlatSpec with ShouldMatchers {
     def templates = TestTemplate :: TestTemplate2 :: Nil
 
   }
-  
-  "The help command" should "should list all of the templates" in {
+
+  "The help command" should "should list all of the comands" in {
     val command = TestTemplateProcessor.resolveCommand("help")
     val msg = command.open_!.run(Nil).message
+    msg should be === "create\ndelete\ntemplates\nhelp"
+  }
+  
+  "The templates command" should "should list all of the templates" in {
+    val command = TestTemplateProcessor.resolveCommand("templates")
+    val msg = command.open_!.run(Nil).message
     msg should be === TestTemplate.name + "\n" + TestTemplate2.name
-    
   }
   
 }
