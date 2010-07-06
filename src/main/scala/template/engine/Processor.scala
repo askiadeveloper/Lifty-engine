@@ -89,14 +89,34 @@ trait TemplateProcessor {
 
   object TemplatesCommand extends Command {
     def keyword = "templates"
+    
     def description = "Lists all of the templates"
-    def run(arguments: List[String]): CommandResult = CommandResult(templates.map( _.name ).mkString("\n"))
+    
+    def run(arguments: List[String]): CommandResult = {
+      val longestTemplateName = templates.map(_.name.length).reduceLeft(_ max _)
+      val msg = templates.map{ template => 
+        val spaces = (for (i <- 0 to longestTemplateName-template.name.length) yield " ").mkString("")
+        val arguments = template.arguments.map(_.name).mkString(",")
+        "   %s%s   %s".format(template.name, spaces, arguments)
+      }.mkString("\n")
+      CommandResult(msg)
+    }
   }
 
   object HelpCommand extends Command {
     def keyword = "help"
+    
     def description = "Lists all of the commands"
-    def run(arguments: List[String]): CommandResult = CommandResult(commands.map( _.keyword ).mkString("\n"))
+    
+    def run(arguments: List[String]): CommandResult = {
+      val longestCommandName = commands.map( _.keyword.length).reduceLeft(_ max _)
+      val msg = commands.map{ cmd => 
+        val spaces = (for (i <- 0 to longestCommandName-cmd.keyword.length ) yield " ").mkString("")
+        "   %s%s   %s".format(cmd.keyword, spaces, cmd.description)
+      }.mkString("\n") 
+      CommandResult(msg)
+    }
+      
   }
   
 }

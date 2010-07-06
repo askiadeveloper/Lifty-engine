@@ -1,35 +1,18 @@
+package template.engine.test.specs
+
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import java.io.File
 import template.engine._
+import template.engine.test
 import net.liftweb.common.{Box, Empty, Failure, Full}
 
 class TestCommandParsing extends FlatSpec with ShouldMatchers {
-
-  /* fixtures
-  --------------------------------------------- */
   
   val unknownCommand = "fakeCommand"
   
-  object testCommand1 extends Command {
-    def keyword = "command1"
-    def run(arguments: List[String]) = CommandResult("ran TestCommand1")
-  } 
-  
-  object testCommand2 extends Command {
-    def keyword = "command2"
-    def run(arguments: List[String]) = CommandResult("ran TestCommand2")
-  }
-  
-  object TestTemplateProcessor extends TemplateProcessor {
-    
-    def templates = Nil
-    override def commands = testCommand1 :: testCommand2 :: Nil
-    
-  }
-  
-  /* let the testing begin
-  --------------------------------------------- */
+  val testCommand1 = TestTemplateProcessor.commands(0)
+  val testCommand2 = TestTemplateProcessor.commands(1)
   
   "Known command" should "be accepted" in {
     val box = TestTemplateProcessor.resolveCommand(testCommand1.keyword)

@@ -1,3 +1,5 @@
+package template.engine.test.specs
+
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import java.io.File
