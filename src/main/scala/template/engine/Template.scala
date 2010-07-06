@@ -8,14 +8,58 @@ case class TemplateFile(file: String, destination: String)
 
 trait Template {
     
+  /**
+  * The name of the template. This is used to figure out which template the 
+  * user is trying to invoke when writig processorName create <templateName>.
+  * 
+  * @param  name  The name of the template
+  * @return       The name of the template
+  */
   def name: String
+  
+  /**
+  * This is the list of arguments that the template needs. 
+  * 
+  * @param  arguments The list of arguments
+  * @return           The list of arguments
+  */
   def arguments: List[Argument]
+  
+  /**
+  * The is the list of files that you want your template to process once invoked
+  * 
+  * @param  files A list of TemplateFile
+  * @return       The list of TemplateFile
+  */
   def files: List[TemplateFile]
+  
   def fixedValues = List[ArgumentResult]()
 
+  /**
+  * This method is invoked before trying to process all the files returned by the
+  * files method. Override this method if you have anything you want to do before
+  * the files are being processed.
+  * 
+  * @param  arguments The list of arguments handed to the template by the user
+  */
   def preRenderAction(arguments: List[ArgumentResult]): Unit = {}
+  
+  /**
+  * This method is invoked after the template files have been processed. Override
+  * this method if you want to do something after the files have been provessed.
+  * 
+  * @param  arguments well isn't it obvious
+  */
   def postRenderAction(arguments: List[ArgumentResult]): Unit = {}
 
+  /**
+  * Call this method if you want the template to process it's files. 
+  * 
+  * @param  operation     The operation to run on the processer ie. create or delete
+  * @param  argumentsList The arguments you want to use under the processing of the 
+                          template.
+  * @return               A CommandResult noting if it went well or not.
+  */
   def process(operation: String, argumentsList: List[String]): CommandResult = {
     operation match {
       case "create" if supportsOperation("create") => this.asInstanceOf[Create].create(argumentsList)
@@ -23,9 +67,7 @@ trait Template {
       case _ => CommandResult("bollocks")
     }
   }
-  
-  //#Protected 
-  
+    
   /**
   * Takes a list of argument formatted strings (i.e. name=value or just value) and returns a boxed list of
   * ArgumentResults. The actual parsing of the values is done by each subclass of Argument
@@ -80,9 +122,7 @@ trait Template {
         Full(listOfBoxes.filter(_.isInstanceOf[Full[_]]).flatMap(_.open_!))
     }
   }
-  
-  //#Protected
-  
+    
   protected def deleteFiles(argumentResults :List[ArgumentResult]): CommandResult = {
     val files = this.files.map( path => Helper.replaceVariablesInPath(path.destination, argumentResults))
     val result = files.map { path => 
@@ -91,8 +131,6 @@ trait Template {
     }
     CommandResult(result.mkString("\n"))
   }
-
-  //#Private 
   
   /**
   * Replaces "" with _ and adds _ for each missing argument.
@@ -104,7 +142,12 @@ trait Template {
     args.map( str => if(str.matches("")) "_" else str ) ::: (for (i <- 0 to arguments.size - args.size-1) yield { "_" }).toList 
   }
   
-  //  Checks if a template supports the operation
+  /**
+  * Checks if the template supports the operation.
+  * 
+  * @param  operation The operation to run on the template ie. create/delete
+  * @return           True if it does, otherwise false.
+  */
   private def supportsOperation(operation: String): Boolean = operation match {
     case "create" => this.isInstanceOf[Create]
     case "delete" => this.isInstanceOf[Delete] 

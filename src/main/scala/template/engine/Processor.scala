@@ -35,7 +35,7 @@ trait TemplateProcessor {
   /**
   * Finds the command with the specific keyword. 
   * 
-  * @param  keyword well isn't it obvious
+  * @param  keyword The keyword ie. name of the command
   * @return Full(theCommand) if a command with the keyword exists, otherwise Failure
   */
   def resolveCommand(keyword: String): Box[Command] = {
@@ -45,7 +45,13 @@ trait TemplateProcessor {
     }
   }
 
-  //# Protected 
+  /**
+  * This methods find a template with the given name. It searches the list return by 
+  * the templates method on a processor.
+  * 
+  * @param  name  The name of the template to search for
+  * @return       A Full[Template] containing a template if it exists, otherwise Failure
+  */
   protected def findTemplate(name: String): Box[Template] = templates.filter( _.name == name) match {
       case template :: rest => Full(template) 
       case Nil => Failure("[error] No template with the name %s".format(name))
@@ -86,7 +92,7 @@ trait TemplateProcessor {
 
   object HelpCommand extends Command {
     def keyword = "help"
-    def run(arguments: List[String]): CommandResult = CommandResult("[todo] This should list all commands")
+    def run(arguments: List[String]): CommandResult = CommandResult(templates.map( _.name ).mkString("\n"))
   }
   
 }

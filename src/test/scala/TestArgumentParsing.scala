@@ -42,14 +42,21 @@ class TestArgumentParsing extends FlatSpec with ShouldMatchers {
   }
   
   it should "accept an indexed value" in  {
-    val input = List(inputForArg1)
+    val input = List(inputForArg1, inputForArg2)
+    val argumentResults = TestTemplate.parseArguments(input)
+    argumentResults.open_!(0) should be === ArgumentResult(TestTemplate.arguments(0),inputForArg1)
+    argumentResults.open_!(1) should be === ArgumentResult(TestTemplate.arguments(1),inputForArg2)
+  }
+  
+  it should "Translate _ to the default value of an argument when using indexed arguments" in  {
+    val input = List(inputForArg1,"_")
     val argumentResults = TestTemplate.parseArguments(input)
     argumentResults.open_!(0) should be === ArgumentResult(TestTemplate.arguments(0),inputForArg1)
     argumentResults.open_!(1) should be === ArgumentResult(TestTemplate.arguments(1),defaultForArg2)
   }
   
-  it should "Translate _ to the default value of an argument when using indexed arguments" in  {
-    val input = List(inputForArg1,"_")
+  it should "Add _ for any missing argument if you're using indexed arguments" in  {
+    val input = List(inputForArg1)
     val argumentResults = TestTemplate.parseArguments(input)
     argumentResults.open_!(0) should be === ArgumentResult(TestTemplate.arguments(0),inputForArg1)
     argumentResults.open_!(1) should be === ArgumentResult(TestTemplate.arguments(1),defaultForArg2)
