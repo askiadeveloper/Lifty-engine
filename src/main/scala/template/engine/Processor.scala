@@ -137,15 +137,14 @@ trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
   
   def apply(project: Project, args: String) = { 
     val scalatePath = { // TODO: Must be a prettier way to do this! 
+      val scalateJarName = "scalate-core-1.0-SNAPSHOT.jar"
       val base =  project.info.bootPath.absolutePath
       val f = new File(base)
-      Helper.findFileInDir(f,"scalate-core-1.0-local.jar") match { 
+      Helper.findFileInDir(f,scalateJarName) match { 
         case Some(file) => file.getAbsolutePath
-        case None => throw new Exception("Can't find scalate in a subfolder of: " + base)
+        case None => throw new Exception("Can't find scalate: %s in a subfolder of: %s ".format(scalateJarName,base))
       }
-      // base + "/scala-2.7.7/sbt-processors/com.sidewayscoding/sbt_template_engine/0.1/scalate-core-1.0-local.jar"
     } 
-    println("new scalatePath: " + scalatePath) //@DEBUG
     GlobalConfiguration.rootResources = ""
     GlobalConfiguration.scalatePath = scalatePath
     GlobalConfiguration.scalaCompilerPath = project.info.app.scalaProvider.compilerJar.getPath

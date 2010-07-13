@@ -22,7 +22,6 @@ class TestCommands extends FlatSpec with ShouldMatchers {
         "   %s%s   %s".format(cmd.keyword, spaces, cmd.description)
       }).mkString("\n")
     }
-    
     msg should be === output
   }
   

@@ -106,8 +106,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 				file
 			} catch {
 				case e: Exception => {
-					println("exception") //@DEBUG
-					println(e) //@DEBUG
+          e.printStackTrace
 					new File(tempFileName)
 				}
 			}

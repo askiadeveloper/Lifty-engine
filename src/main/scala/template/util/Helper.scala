@@ -51,39 +51,44 @@ object Helper {
 
 
 	def copy(from: String, to:String): Unit = {
-		println("copying: %s to %s".format(from,to))
-		def copyfiles(from: File, to:File): Unit = {
-			if(from.isDirectory) {
-				if (!to.exists) to.mkdirs
-				from.list.toList.foreach{ file => 
-					copyfiles(new File(from, file), new File(to, file))
-				}
-			} else {
-				try {
-					val is = new FileInputStream(from)
-					val in = scala.io.Source.fromInputStream(is)
-					val out = new BufferedWriter(new FileWriter(to));
-					in.getLines.foreach(out.write(_))
-					out.close
-				} catch {
-					case e: Exception => println(e)// mmm, just swallowed an exception!
+				
+		val tempFile = createTempFile(from)
+		try {
+			val is = new FileInputStream(tempFile)
+			val in = scala.io.Source.fromInputStream(is)
+			val toFile = new File(to)
+			toFile.createNewFile
+			val out = new BufferedWriter(new FileWriter(toFile));
+			in.getLines.foreach(out.write(_))
+			out.close
+		} catch {
+			case e: Exception => e.printStackTrace
+		} finally {
+		  tempFile.delete
+		}
+	}
+	
+	def createTempFile(path: String): File = {
+	  if (!GlobalConfiguration.runningAsJar) { // we're not running as a jar.
+			new File(path)
+		} else {
+			val tempFileName = "_temp_"+path.split("/").last
+			try {
+				val is = this.getClass().getResourceAsStream(path) 
+				val in = scala.io.Source.fromInputStream(is)
+				val file = new File(tempFileName)
+				file.createNewFile
+				val out = new BufferedWriter(new FileWriter(file));
+				in.getLines.foreach{ line => out.write(line) }
+				out.close
+				file
+			} catch {
+				case e: Exception => {
+				  println("debugging: " + path)
+          e.printStackTrace
+					new File(tempFileName)
 				}
 			}
-		}
-		
-		if(!GlobalConfiguration.runningAsJar) {
-			copyfiles(new File(from), new File(to))
-		} else {
-			val pathToJar = this.getClass.getProtectionDomain.getCodeSource.getLocation.toURI.getPath
-			val jar = new JarFile(pathToJar)
-			// get the appropriate files form the jar
-			jar.entries
-				.map{ entry => "/"+entry.getName}
-				.filter{ entry => entry.contains(from) }
-				.foreach{ entry => 
-					val destionation = entry.replace(from,to)
-					writeResourceTofile(entry, new File(destionation))
-				}
 		}
 	}
 
