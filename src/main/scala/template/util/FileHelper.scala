@@ -10,6 +10,20 @@ import template.engine._
 object FileHelper {
   
   /**
+  * To delete a folder with java it has to be empty, so this
+  * deletes every subfolder & files of a java.io.File and ends 
+  * with deleting the file itself. 		
+  * 
+  * @param  file  File to delete.
+  */
+	def recursiveDelete(file: File): Unit = {
+		if (file.isDirectory) {
+			file.list.toList.foreach{ path => recursiveDelete(new File(file,path)) }
+		} 
+		file.delete
+	}
+  
+  /**
   * Takes a path and creates every folder in the path
   * 
   * @param  path  The path to creates folders from

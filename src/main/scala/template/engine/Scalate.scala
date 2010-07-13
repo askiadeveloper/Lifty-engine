@@ -8,21 +8,26 @@ import scala.util.matching.Regex
 
 case class Scalate(template: Template with Create, argumentResults: List[ArgumentResult]) {
 	
-	// Run scalate on all of the template files the Template specifies
-	def run: CommandResult = { 
-	 
-		// Creating the engine and setting the classpath of the compiler used by scalate! 
-		val engine = new TemplateEngine
-		if (GlobalConfiguration.scalaLibraryPath != "") {
-			engine.classpath = (GlobalConfiguration.scalaLibraryPath :: 
+	val engine = {
+	  val e = new TemplateEngine
+	  if (GlobalConfiguration.scalaLibraryPath != "") {
+			e.classpath = (GlobalConfiguration.scalaLibraryPath :: 
 													GlobalConfiguration.scalaCompilerPath ::
 													GlobalConfiguration.scalatePath :: Nil).mkString(":")
 		}
-		
-		// process all the templates
-		template.files.foreach{ t => processSingleTemplate(t,engine) }
+		e
+	}
+	
+
+  /**
+  * Run scalate on all of the template files the Template specifies
+  */
+	def run: CommandResult = { 
+	  
+		template.files.foreach{ t => processSingleTemplate(t) }
 		template.postRenderAction(argumentResults)
 		cleanScalateCache
+		
 		// pretty printing 
 		val stroke = "-----------------%s------------------------------".format(template.name.map(_=>'-').mkString(""))
 		val header = "%s\nRunning %s with the following arguments:\n%s".format(stroke,template.name,stroke)
@@ -38,13 +43,13 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 	private def cleanScalateCache: Unit = {
 		val scalateBytecodeFolder = new File("bytecode")
 		val scalateSourceFolder = new File("source")
-		if (scalateSourceFolder.exists) recursiveDelete(scalateSourceFolder)
-		if (scalateBytecodeFolder.exists) recursiveDelete(scalateBytecodeFolder)
+		if (scalateSourceFolder.exists) FileHelper.recursiveDelete(scalateSourceFolder)
+		if (scalateBytecodeFolder.exists) FileHelper.recursiveDelete(scalateBytecodeFolder)
 	}
 	
 	// This will process a single scalate template file and save the file in the appropriate 
 	// place
-	private def processSingleTemplate(templateFile: TemplateFile, engine: TemplateEngine): Unit = {
+	private def processSingleTemplate(templateFile: TemplateFile): Unit = {
 		
 		val file = FileHelper.loadFile(templateFile.file)
 		val sclateTemplate = engine.load(file.getAbsolutePath)
@@ -73,17 +78,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 			file.delete 
 		}
 	}
-	
-	// To delete a folder with java it has to be empty, so this
-	// deletes every subfolder & files of a java.io.File and ends 
-	// with deleting the file itself. 		
-	private def recursiveDelete(file: File): Unit = {
-		if (file.isDirectory) {
-			file.list.toList.foreach{ path => recursiveDelete(new File(file,path)) }
-		} 
-		file.delete
-	}
-		
+			
 	// this runs through each of the ArgumentResults and adds them to the template context.
 	// repeatable arguments gets added as a list
 	private def addArgumentsToContext(context: DefaultRenderContext): Unit = {
