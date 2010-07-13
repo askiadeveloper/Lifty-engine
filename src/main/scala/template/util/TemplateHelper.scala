@@ -12,7 +12,23 @@ import net.liftweb.common.{Box, Empty, Failure, Full}
 */
 object TemplateHelper {
 
+  /**
+  * Takes a package name and calculates the path. I.e. com/sidewayscoding
+  * would return com.sidewayscoding
+  * 
+  * @param  thePackage  the package to convert
+  * @return             a path formatted string
+  */
 	def pathOfPackage(thePackage :String) = thePackage.replace(".","/")
+	
+	
+  /**
+  * Takes a path and calculates the package of it. i.e. com.sidewayscoding
+  * would return com/sidewayscoding
+  * 
+  * @param  path  well isn't it obvious
+  * @return       dunno
+  */
 	def packageOfPath(path :String) = path.replace("src/main/scala/","").replace("/",".")
  
   /**
@@ -30,6 +46,13 @@ object TemplateHelper {
 		}
 	}
 
+  /**
+  * Copies a file without doing any processing to the given location. You can
+  * only process files not folders.
+  * 
+  * @param  from  The file to copy
+  * @param  to    The destination of the file
+  */
 	def copy(from: String, to:String): Unit = {
 				
 		val tempFile = FileHelper.loadFile(from)
