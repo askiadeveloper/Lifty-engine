@@ -1,7 +1,7 @@
 package template.engine
 
 import org.fusesource.scalate.{TemplateEngine,DefaultRenderContext}
-import template.util.Helper
+import template.util.{Helper, FileHelper}
 import java.io._
 import java.net.{URL, URISyntaxException}
 import scala.util.matching.Regex
@@ -32,10 +32,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		
  		CommandResult("%s%s%s".format(header,arguments,files))
 	}
-	
-	//# private
-	
-	
+		
 	// The version of Scalate I'm using (1.0 scala 2.7.7) doesn't allow you 
 	// change the cache settings. The 2.0 brach does so this can be removed later on
 	private def cleanScalateCache: Unit = {
@@ -49,7 +46,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 	// place
 	private def processSingleTemplate(templateFile: TemplateFile, engine: TemplateEngine): Unit = {
 		
-		val file: File = createTempTemplateFile(templateFile.file)
+		val file = FileHelper.loadFile(templateFile.file)
 		val sclateTemplate = engine.load(file.getAbsolutePath)
 		val destinationPath = Helper.replaceVariablesInPath(templateFile.destination,argumentResults)
 		val buffer = new StringWriter()
@@ -58,7 +55,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		sclateTemplate.render(context)
 	 
 		try {
-			createFolderStructure(destinationPath)
+			FileHelper.createFolderStructure(destinationPath)
 			val currentPath = new File("").getAbsolutePath // TODO: Not sure this is needed.
 			val file = new File(currentPath+"/"+destinationPath)
 			file.createNewFile
@@ -86,33 +83,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		} 
 		file.delete
 	}
-	
- 	// If the app is runnning af a .jar the template file is read and 
-	// it writes the content to a temp. file. This is necessary as 
-	// Scalate can't find files inside jars.
-	private def createTempTemplateFile(path: String): File = {		
-		if (!GlobalConfiguration.runningAsJar) { // we're not running as a jar.
-			new File(path)
-		} else {
-			val tempFileName = "_temp_"+path.split("/").last
-			try {
-				val is = this.getClass().getResourceAsStream(path) 
-				val in = scala.io.Source.fromInputStream(is)
-				val file = new File(tempFileName)
-				file.createNewFile
-				val out = new BufferedWriter(new FileWriter(file));
-				in.getLines.foreach{ line => out.write(line) }
-				out.close
-				file
-			} catch {
-				case e: Exception => {
-          e.printStackTrace
-					new File(tempFileName)
-				}
-			}
-		}
-	}
-	
+		
 	// this runs through each of the ArgumentResults and adds them to the template context.
 	// repeatable arguments gets added as a list
 	private def addArgumentsToContext(context: DefaultRenderContext): Unit = {
@@ -154,14 +125,4 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		}
 	}
  
-	// This methods takes a path pointing to a file and creates any folder that doen't
-	// exist on that path 
-	private def createFolderStructure(path: String) {
-		val currentPath = new File("").getAbsolutePath
-		(path.split("/").toList-path.split("/").last).foldLeft(currentPath){ (combinedString, newString) => 
-			val folder = combinedString +"/"+ newString
-			new File(folder).mkdir
-			folder
-		}
-	}
 }

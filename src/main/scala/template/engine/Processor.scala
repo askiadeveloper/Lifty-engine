@@ -118,7 +118,6 @@ trait TemplateProcessor {
     }
       
   }
-  
 }
 
 // Used to store information about the classpath and other stuff that is different

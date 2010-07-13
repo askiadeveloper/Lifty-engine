@@ -68,6 +68,15 @@ object Helper {
 		}
 	}
 	
+  /**
+  * If the app is runnning af a .jar the template file is read and 
+  * it writes the content to a temp. file. This is necessary as 
+  * Scalate can't find files inside jars.
+  * 
+  * @param  path  The path to the file. Use absolute paths as it's
+                  looking for a resource inside the jar
+  * @return       the File.
+  */
 	def createTempFile(path: String): File = {
 	  if (!GlobalConfiguration.runningAsJar) { // we're not running as a jar.
 			new File(path)
@@ -113,9 +122,15 @@ object Helper {
 		}
 	}
 
-	// looks through the path string for any variables (i.e ${someVal}) and replaces
-	// it with the acctual value passed to the operation
 	
+  /**
+  * looks through the path string for any variables (i.e ${someVal}) and replaces
+  * it with the acctual value passed to the operation
+  * 
+  * @param  path      the path to replace variables in
+  * @param  arguments the arguments to search through for variables to replace
+  * @return           A string with the variables replaced
+  */
 	def replaceVariablesInPath(path: String, arguments: List[ArgumentResult]): String = {
 		def findAndTransformValueForArgument(name: String): String = {
 			try {
