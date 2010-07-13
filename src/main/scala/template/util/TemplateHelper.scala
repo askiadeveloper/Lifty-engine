@@ -19,9 +19,9 @@ object TemplateHelper {
   * @param  thePackage  the package to convert
   * @return             a path formatted string
   */
-	def pathOfPackage(thePackage :String) = thePackage.replace(".","/")
-	
-	
+  def pathOfPackage(thePackage :String) = thePackage.replace(".","/")
+  
+  
   /**
   * Takes a path and calculates the package of it. i.e. com.sidewayscoding
   * would return com/sidewayscoding
@@ -29,7 +29,7 @@ object TemplateHelper {
   * @param  path  well isn't it obvious
   * @return       dunno
   */
-	def packageOfPath(path :String) = path.replace("src/main/scala/","").replace("/",".")
+  def packageOfPath(path :String) = path.replace("src/main/scala/","").replace("/",".")
  
   /**
   * Takes any number of strings (paths) and creates a directory for each
@@ -40,11 +40,11 @@ object TemplateHelper {
   * @param  arguments the templates argument
   * @param  paths     Paths to all the folders you want to create
   */
-	def createFolderStructure(arguments: List[ArgumentResult])(paths: String*): Unit = {
-		paths.foreach{ path => 
-			new File(replaceVariablesInPath(path, arguments)).mkdirs 
-		}
-	}
+  def createFolderStructure(arguments: List[ArgumentResult])(paths: String*): Unit = {
+    paths.foreach{ path => 
+      new File(replaceVariablesInPath(path, arguments)).mkdirs 
+    }
+  }
 
   /**
   * Copies a file without doing any processing to the given location. You can
@@ -53,24 +53,24 @@ object TemplateHelper {
   * @param  from  The file to copy
   * @param  to    The destination of the file
   */
-	def copy(from: String, to:String): Unit = {
-				
-		val tempFile = FileHelper.loadFile(from)
-		try {
-			val is = new FileInputStream(tempFile)
-			val in = scala.io.Source.fromInputStream(is)
-			val toFile = new File(to)
-			toFile.createNewFile
-			val out = new BufferedWriter(new FileWriter(toFile));
-			in.getLines.foreach(out.write(_))
-			out.close
-		} catch {
-			case e: Exception => e.printStackTrace
-		} finally {
-		  tempFile.delete
-		}
-	}
-	
+  def copy(from: String, to:String): Unit = {
+        
+    val tempFile = FileHelper.loadFile(from)
+    try {
+      val is = new FileInputStream(tempFile)
+      val in = scala.io.Source.fromInputStream(is)
+      val toFile = new File(to)
+      toFile.createNewFile
+      val out = new BufferedWriter(new FileWriter(toFile));
+      in.getLines.foreach(out.write(_))
+      out.close
+    } catch {
+      case e: Exception => e.printStackTrace
+    } finally {
+      tempFile.delete
+    }
+  }
+  
   /**
   * looks through the path string for any variables (i.e ${someVal}) and replaces
   * it with the acctual value passed to the operation
@@ -79,26 +79,26 @@ object TemplateHelper {
   * @param  arguments the arguments to search through for variables to replace
   * @return           A string with the variables replaced
   */
-	def replaceVariablesInPath(path: String, arguments: List[ArgumentResult]): String = {
-		def findAndTransformValueForArgument(name: String): String = {
-			try {
-				arguments.filter( _.argument.name == name ).first.pathValue
-			} catch {
-				case e: Exception => println(e);""
-			}
-		}
-		
-		var newPath = path
-		"""\$\{\w*\}""".r.findAllIn(path).toList match {
-			case list if !list.isEmpty => {
-				list.map(_.toString).foreach{ variable => 
-					val argName = variable.replace("${","").replace("}","") //TODO: make prettier?
-					newPath = newPath.replace(variable,findAndTransformValueForArgument(argName))
-				}
-				newPath
-			}
-			case _ => path
-		}
-	}
-	
+  def replaceVariablesInPath(path: String, arguments: List[ArgumentResult]): String = {
+    def findAndTransformValueForArgument(name: String): String = {
+      try {
+        arguments.filter( _.argument.name == name ).first.pathValue
+      } catch {
+        case e: Exception => println(e);""
+      }
+    }
+    
+    var newPath = path
+    """\$\{\w*\}""".r.findAllIn(path).toList match {
+      case list if !list.isEmpty => {
+        list.map(_.toString).foreach{ variable => 
+          val argName = variable.replace("${","").replace("}","") //TODO: make prettier?
+          newPath = newPath.replace(variable,findAndTransformValueForArgument(argName))
+        }
+        newPath
+      }
+      case _ => path
+    }
+  }
+  
 }
