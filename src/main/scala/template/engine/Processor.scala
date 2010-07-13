@@ -5,7 +5,7 @@ import processor.{Processor, ProcessorResult}
 import sbt.processor.BasicProcessor
 import net.liftweb.common.{Box, Empty, Failure, Full}
 import java.io.File
-import template.util.Helper
+import template.util.{FileHelper,TemplateHelper}
 
 case class CommandResult(message: String)
 trait Command {
@@ -139,7 +139,7 @@ trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
       val scalateJarName = "scalate-core-1.0-SNAPSHOT.jar"
       val base =  project.info.bootPath.absolutePath
       val f = new File(base)
-      Helper.findFileInDir(f,scalateJarName) match { 
+      FileHelper.findFileInDir(f,scalateJarName) match { 
         case Some(file) => file.getAbsolutePath
         case None => throw new Exception("Can't find scalate: %s in a subfolder of: %s ".format(scalateJarName,base))
       }

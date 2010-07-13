@@ -1,7 +1,7 @@
 package template.engine
 
 import org.fusesource.scalate.{TemplateEngine,DefaultRenderContext}
-import template.util.{Helper, FileHelper}
+import template.util.{TemplateHelper, FileHelper}
 import java.io._
 import java.net.{URL, URISyntaxException}
 import scala.util.matching.Regex
@@ -33,7 +33,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		val header = "%s\nRunning %s with the following arguments:\n%s".format(stroke,template.name,stroke)
 		val arguments = "\n%s\n".format(argumentResults.map(arg => arg.argument.name+" = "+arg.value).mkString("\n"))
 		val files = "%s\nResulted in the creation of the following files:\n%s\n%s\n%s"
-			.format(stroke,stroke,template.files.map( path => Helper.replaceVariablesInPath(path.destination,argumentResults)).mkString("\n"),stroke)
+			.format(stroke,stroke,template.files.map( path => TemplateHelper.replaceVariablesInPath(path.destination,argumentResults)).mkString("\n"),stroke)
 		
  		CommandResult("%s%s%s".format(header,arguments,files))
 	}
@@ -53,7 +53,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
 		
 		val file = FileHelper.loadFile(templateFile.file)
 		val sclateTemplate = engine.load(file.getAbsolutePath)
-		val destinationPath = Helper.replaceVariablesInPath(templateFile.destination,argumentResults)
+		val destinationPath = TemplateHelper.replaceVariablesInPath(templateFile.destination,argumentResults)
 		val buffer = new StringWriter()
 		val context = new DefaultRenderContext(new PrintWriter(buffer))
 		addArgumentsToContext(context)

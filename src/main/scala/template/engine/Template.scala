@@ -1,7 +1,7 @@
 package template.engine
 
 import net.liftweb.common.{Box, Empty, Failure, Full}
-import template.util.{BoxUtil, Helper}
+import template.util.{BoxUtil, TemplateHelper}
 import java.io.{File}
 
 case class TemplateFile(file: String, destination: String)
@@ -124,7 +124,7 @@ trait Template {
   }
     
   protected def deleteFiles(argumentResults :List[ArgumentResult]): CommandResult = {
-    val files = this.files.map( path => Helper.replaceVariablesInPath(path.destination, argumentResults))
+    val files = this.files.map( path => TemplateHelper.replaceVariablesInPath(path.destination, argumentResults))
     val result = files.map { path => 
       val file = new File(path)
       "Deleted: %s : %s".format(path,file.delete.toString)
