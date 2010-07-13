@@ -34,7 +34,7 @@ class TestArgumentParsing extends FlatSpec with ShouldMatchers {
     val errorMsg = argumentResults.asInstanceOf[Failure].msg
     
     argumentResults.isInstanceOf[Failure] should be === true
-    errorMsg should be === "[error] The argument 'arg1' is required"
+    errorMsg should be === "The argument 'arg1' is required"
   }
   
   it should "accept a named value" in  {

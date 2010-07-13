@@ -20,12 +20,5 @@ class TestCommandParsing extends FlatSpec with ShouldMatchers {
     box.open_! should be === testCommand1
   }
   
-  "Unknown command" should "not be accepted" in {
-    val box = TestTemplateProcessor.resolveCommand(unknownCommand)
-    val errorMsg = box.asInstanceOf[Failure].msg
-    
-    box.isInstanceOf[Failure] should be === true
-    errorMsg should be === "[error] Command is not supported"
-  }
   
 }

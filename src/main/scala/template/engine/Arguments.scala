@@ -22,7 +22,7 @@ case class Argument(name: String){
           // TODO: feels a bit hackish to check the type
           case Nil if hasDefault => Full(List(ArgumentResult(this,default)))
           case Nil if isOptional => Full(List(ArgumentResult(this,"")))
-          case Nil => Failure("[error] The argument '%s' is required".format(this.name))
+          case Nil => Failure("The argument '%s' is required".format(this.name))
        }
     }) :: Nil
 

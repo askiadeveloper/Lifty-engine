@@ -15,8 +15,8 @@ trait Create extends Operation {
   def create(argumentList: List[String]): CommandResult = {
     this.parseArguments(argumentList) match {
       case Full(list) => Scalate(this,list).run
-      case Failure(msg,_,_) => CommandResult("[error] " + msg)
-      case Empty => CommandResult("[error] It's empty")
+      case Failure(msg,_,_) => CommandResult(msg)
+      case Empty => CommandResult("It's empty")
     }
   }   
   
@@ -28,8 +28,8 @@ trait Delete extends Operation {
   def delete(argumentList: List[String]): CommandResult = {
     this.parseArguments(argumentList) match {
       case Full(list) => this.deleteFiles(list)
-      case Failure(msg,_,_) => CommandResult("[error] " + msg)
-      case Empty => CommandResult("[error] It's empty")
+      case Failure(msg,_,_) => CommandResult(msg)
+      case Empty => CommandResult("It's empty")
     }
   }
 }
