@@ -96,7 +96,13 @@ trait TemplateProcessor {
         case head :: rest => {
           val templateName = head
           findTemplate(templateName) match {
-            case Full(template) => Full(template.process("create",rest))
+            case Full(template) =>  template.process("create",rest) match {
+              case f @ Full(_) => f
+              case f @ Failure(_,_,_) => 
+                log.error("Couldn't create the template")
+                f
+              case Empty => Empty
+            }
             case _ => 
               log.error("Can't find a template by name %s".format(templateName))
               Failure(TemplatesCommand.run(Nil).open_!.message)
@@ -166,13 +172,12 @@ object GlobalConfiguration {
 // This is the class you want to extend if you're creating an SBT processor
 trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
   
-  // var sbtLogger: Logger = null;
-  //   
-  //   def log = sbtLogger
-  def log = TemplateEngineLogger  
+  var sbtLogger: Logger = null;
+
+  def log = sbtLogger
   
   def apply(project: Project, args: String) = { 
-    // sbtLogger = SBTLogger(project.log)
+    sbtLogger = SBTLogger(project.log)
     val scalatePath = { // TODO: Must be a prettier way to do this! 
       val scalateJarName = "scalate-core-1.0-SNAPSHOT.jar"
       val base =  project.info.bootPath.absolutePath
@@ -192,7 +197,7 @@ trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
         msg.split("\n").foreach(log.info(_))
         log.success("Successful.")
       case Failure(msg,_,_) => 
-        msg.split("\n").foreach(log.error(_))
+        msg.split("\n").foreach(log.info(_))
         log.error("Error running the command")
       case Empty => log.error("Error running the command")
     }
@@ -203,6 +208,7 @@ trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
 trait StandAloneTemplateProcessor extends TemplateProcessor {
     
   def log = TemplateEngineLogger  
+  
   def main(args: Array[String]): Unit = {
     GlobalConfiguration.rootResources = "src/main/resources" 
 

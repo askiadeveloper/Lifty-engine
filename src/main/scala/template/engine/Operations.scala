@@ -12,11 +12,11 @@ trait Create extends Operation {
   
   this: Template with Create => 
 
-  def create(argumentList: List[String]): CommandResult = {
+  def create(argumentList: List[String]): Box[CommandResult] = {
     this.parseArguments(argumentList) match {
       case Full(list) => Scalate(this,list).run
-      case Failure(msg,_,_) => CommandResult(msg)
-      case Empty => CommandResult("It's empty")
+      case Failure(msg,_,_) => Failure(msg)
+      case Empty => Failure("It's empty")
     }
   }   
   
@@ -25,11 +25,11 @@ trait Delete extends Operation {
   
   this: Template with Delete => 
   
-  def delete(argumentList: List[String]): CommandResult = {
+  def delete(argumentList: List[String]): Box[CommandResult] = {
     this.parseArguments(argumentList) match {
       case Full(list) => this.deleteFiles(list)
-      case Failure(msg,_,_) => CommandResult(msg)
-      case Empty => CommandResult("It's empty")
+      case fail @ Failure(_,_,_) => fail
+      case Empty => Failure("It's empty")
     }
   }
 }

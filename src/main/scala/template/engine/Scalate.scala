@@ -5,6 +5,7 @@ import template.util.{TemplateHelper, FileHelper}
 import java.io._
 import java.net.{URL, URISyntaxException}
 import scala.util.matching.Regex
+import net.liftweb.common._
 
 case class Scalate(template: Template with Create, argumentResults: List[ArgumentResult]) {
   
@@ -22,7 +23,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   /**
   * Run scalate on all of the template files the Template specifies
   */
-  def run: CommandResult = { 
+  def run: Box[CommandResult] = { 
     
     template.files.foreach{ t => processSingleTemplate(t) }
     template.postRenderAction(argumentResults)
@@ -35,7 +36,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     val files = "%s\nResulted in the creation of the following files:\n%s\n%s\n%s"
       .format(stroke,stroke,template.files.map( path => TemplateHelper.replaceVariablesInPath(path.destination,argumentResults)).mkString("\n"),stroke)
     
-    CommandResult("%s%s%s".format(header,arguments,files))
+    Full(CommandResult("%s%s%s".format(header,arguments,files)))
   }
     
   // The version of Scalate I'm using (1.0 scala 2.7.7) doesn't allow you 

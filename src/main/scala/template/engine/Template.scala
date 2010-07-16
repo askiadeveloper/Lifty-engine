@@ -60,11 +60,11 @@ trait Template {
                           template.
   * @return               A CommandResult noting if it went well or not.
   */
-  def process(operation: String, argumentsList: List[String]): CommandResult = {
+  def process(operation: String, argumentsList: List[String]): Box[CommandResult] = {
     operation match {
       case "create" if supportsOperation("create") => this.asInstanceOf[Create].create(argumentsList)
       case "delete" if supportsOperation("delete") => this.asInstanceOf[Delete].delete(argumentsList)
-      case _ => CommandResult("bollocks")
+      case _ => Failure("Bollocks!")
     }
   }
     
@@ -123,13 +123,13 @@ trait Template {
     }
   }
     
-  protected def deleteFiles(argumentResults :List[ArgumentResult]): CommandResult = {
+  protected def deleteFiles(argumentResults :List[ArgumentResult]): Box[CommandResult] = {
     val files = this.files.map( path => TemplateHelper.replaceVariablesInPath(path.destination, argumentResults))
     val result = files.map { path => 
       val file = new File(path)
       "Deleted: %s : %s".format(path,file.delete.toString)
     }
-    CommandResult(result.mkString("\n"))
+    Full(CommandResult(result.mkString("\n")))
   }
   
   /**
