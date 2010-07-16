@@ -20,8 +20,9 @@ class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ProcessorProject(
 	    Seq("-unchecked","-encoding", "utf8").map(x => CompileOption(x))
 	
 	// PUBLISHING
-	override def managedStyle = ManagedStyle.Ivy
-	val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
+	override def managedStyle = ManagedStyle.Maven
+	//val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
+	val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
 	Credentials(Path.userHome / "dev" / ".nexus_credentials", log) 
 	
 }
