@@ -98,14 +98,19 @@ trait Template {
   * @return               A box containing a list of ArgumentResults.
   */
   def parseIndexedArguments(argumentsList: List[String]): Box[List[ArgumentResult]] = {
+    
+    val isRepeatable: String => Boolean = _.contains(",") 
     var argumentResults: List[Box[ArgumentResult]] = Nil
-    for (i <- 0 to argumentsList.size-1) {
+        
+    for (i <- 0 to arguments.size-1) {
       val arg = arguments(i) 
       val value = argumentsList(i)
-      argumentResults ::= (arg match {
-        case arg: Default if value == "_" => Full(ArgumentResult(arg,arg.default))
-        case arg: Argument if value == "_" => Failure("%s doesn't have a default value".format(arg.name))
-        case arg: Argument => Full(ArgumentResult(arg,value))
+      argumentResults :::= (arg match {
+        case arg: Default if value == "_" => Full(ArgumentResult(arg,arg.default)) :: Nil
+        case arg: Optional if value == "_" => Full(ArgumentResult(arg,"")) :: Nil
+        case arg: Argument if value == "_" => Failure("%s doesn't have a default value".format(arg.name)) :: Nil
+        case arg: Repeatable if isRepeatable(value) => value.split(",").map( v => Full(ArgumentResult(arg,v))).toList
+        case arg: Argument => Full(ArgumentResult(arg,value)) :: Nil
       })
     }
     BoxUtil.containsAnyFailures(argumentResults) match {
@@ -147,8 +152,7 @@ trait Template {
   * @return       A list of argument strings
   */
   private def addUnderscores(args: List[String]): List[String] = {
-    val filteredArgs = arguments.filter( !_.isInstanceOf[Optional])
-    args.map( str => if(str.matches("")) "_" else str ) ::: (for (i <- 0 to filteredArgs.size - args.size-1) yield { "_" }).toList 
+    args.map( str => if(str.matches("")) "_" else str ) ::: (for (i <- 0 to arguments.size - args.size-1) yield { "_" }).toList 
   }
   
   /**
