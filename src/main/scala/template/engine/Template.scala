@@ -26,6 +26,14 @@ trait Template {
   def arguments: List[Argument]
   
   /**
+  * Override this to provide a message for the user once the template has sucessfully
+  * been processed.
+  * 
+  * @return  The notice to prnt
+  */
+  def notice(args: List[ArgumentResult]): String = ""
+  
+  /**
   * The is the list of files that you want your template to process once invoked
   * 
   * @param  files A list of TemplateFile
@@ -91,7 +99,7 @@ trait Template {
   */
   def parseIndexedArguments(argumentsList: List[String]): Box[List[ArgumentResult]] = {
     var argumentResults: List[Box[ArgumentResult]] = Nil
-    for (i <- 0 to this.arguments.size-1) {
+    for (i <- 0 to argumentsList.size-1) {
       val arg = arguments(i) 
       val value = argumentsList(i)
       argumentResults ::= (arg match {
@@ -133,13 +141,14 @@ trait Template {
   }
   
   /**
-  * Replaces "" with _ and adds _ for each missing argument.
+  * Replaces "" with _ and adds _ for each missing (non-optional) argument.
   * 
   * @param  args  List of arguments to convert
   * @return       A list of argument strings
   */
   private def addUnderscores(args: List[String]): List[String] = {
-    args.map( str => if(str.matches("")) "_" else str ) ::: (for (i <- 0 to arguments.size - args.size-1) yield { "_" }).toList 
+    val filteredArgs = arguments.filter( !_.isInstanceOf[Optional])
+    args.map( str => if(str.matches("")) "_" else str ) ::: (for (i <- 0 to filteredArgs.size - args.size-1) yield { "_" }).toList 
   }
   
   /**

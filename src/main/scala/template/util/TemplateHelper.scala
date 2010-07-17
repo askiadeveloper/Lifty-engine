@@ -84,7 +84,7 @@ object TemplateHelper {
       try {
         arguments.filter( _.argument.name == name ).first.pathValue
       } catch {
-        case e: Exception => println(e);""
+        case e: Exception => e.printStackTrace; "failure"
       }
     }
     

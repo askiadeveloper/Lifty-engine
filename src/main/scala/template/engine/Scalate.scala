@@ -19,7 +19,6 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     e
   }
   
-
   /**
   * Run scalate on all of the template files the Template specifies
   */
@@ -35,8 +34,9 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     val arguments = "\n%s\n".format(argumentResults.map(arg => arg.argument.name+" = "+arg.value).mkString("\n"))
     val files = "%s\nResulted in the creation of the following files:\n%s\n%s\n%s"
       .format(stroke,stroke,template.files.map( path => TemplateHelper.replaceVariablesInPath(path.destination,argumentResults)).mkString("\n"),stroke)
+    val notice = "\nNotice:\n%s\n%s".format(template.notice(argumentResults),stroke)
     
-    Full(CommandResult("%s%s%s".format(header,arguments,files)))
+    Full(CommandResult("%s%s%s%s".format(header,arguments,files,notice)))
   }
     
   // The version of Scalate I'm using (1.0 scala 2.7.7) doesn't allow you 

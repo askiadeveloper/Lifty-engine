@@ -9,7 +9,7 @@ import net.liftweb.common.{Box, Empty, Failure, Full}
 */ 
 object TestTemplateProcessor extends StandAloneTemplateProcessor {
   
-  def templates = TestTemplate :: TestTemplate2 :: Nil
+  def templates = TestTemplate :: TestTemplate2 :: TestTemplate3 :: Nil
   override def commands = (testCommand1 :: testCommand2 :: Nil) ::: super.commands
   
   object TestTemplate2 extends Template with Create {
@@ -21,6 +21,16 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
   object TestTemplate extends Template with Create {
     def name = "TestTemplate"
     def arguments = Argument("name") :: Nil
+    def files = Nil
+  }
+  
+  object TestTemplate3 extends Template with Create {
+    def name = "TestTemplate3"
+    def arguments = {
+      object name extends Argument("name")
+      object arg extends Argument("repeatable") with Repeatable with Optional
+      name :: arg :: Nil
+    }
     def files = Nil
   }
   
