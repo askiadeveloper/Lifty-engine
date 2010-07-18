@@ -34,7 +34,11 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     val arguments = "\n%s\n".format(argumentResults.map(arg => arg.argument.name+" = "+arg.value).mkString("\n"))
     val files = "%s\nResulted in the creation of the following files:\n%s\n%s\n%s"
       .format(stroke,stroke,template.files.map( path => TemplateHelper.replaceVariablesInPath(path.destination,argumentResults)).mkString("\n"),stroke)
-    val notice = "\nNotice:\n%s\n%s".format(template.notice(argumentResults),stroke)
+    
+    val notice = template.notice(argumentResults) match {
+      case Full(notice) => "\nNotice:\n%s\n%s".format(notice,stroke)
+      case _ => ""
+    }
     
     Full(CommandResult("%s%s%s%s".format(header,arguments,files,notice)))
   }

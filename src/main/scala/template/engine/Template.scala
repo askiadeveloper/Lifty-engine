@@ -31,7 +31,7 @@ trait Template {
   * 
   * @return  The notice to prnt
   */
-  def notice(args: List[ArgumentResult]): String = ""
+  def notice(args: List[ArgumentResult]): Box[String] = Empty
   
   /**
   * The is the list of files that you want your template to process once invoked
