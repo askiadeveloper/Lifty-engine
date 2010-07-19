@@ -7,6 +7,7 @@ import java.net.{URL, URISyntaxException}
 import scala.util.matching.Regex
 import net.liftweb.common._
 import template.engine.commands.{CommandResult}
+import template.util.IOHelper
 
 case class Scalate(template: Template with Create, argumentResults: List[ArgumentResult]) {
   
@@ -25,7 +26,10 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   */
   def run: Box[CommandResult] = { 
     
-    template.files.foreach{ t => processSingleTemplate(t) }
+    val processedFiles = template.files.map( t => processSingleTemplate(t) ).filter{ _ match {
+      case(_,true) => true
+      case(_,false) => false
+    }}.map{ case(templateFile,true) => templateFile}
     template.postRenderAction(argumentResults)
     cleanScalateCache
     
@@ -33,7 +37,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     val header = "Running %s with the following arguments:\n".format(template.name)
     val arguments = "\n%s\n".format(argumentResults.map(arg => arg.argument.name+" = "+arg.value).mkString("\n"))
     val files = "\nResulted in the creation of the following files:\n%s"
-      .format(template.files.map{ path => 
+      .format(processedFiles.map{ path => 
         "  " + TemplateHelper.replaceVariablesInPath(path.destination,argumentResults)
       }.mkString("\n"))
     
@@ -54,9 +58,29 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     if (scalateBytecodeFolder.exists) FileHelper.recursiveDelete(scalateBytecodeFolder)
   }
   
-  // This will process a single scalate template file and save the file in the appropriate 
-  // place
-  private def processSingleTemplate(templateFile: TemplateFile): Unit = {
+  private def safeToCreateFile(file: File): Boolean = {
+    
+    def askUser: Boolean = {
+      val question = "The file %s exists, do you want to override it? (y/n): ".format(file.getPath)
+      IOHelper.requestInput(question) match {
+        case "y" => true
+        case "n" => false
+        case _ => askUser
+      }
+    }
+    
+    if (file.exists) askUser else true
+  }
+  
+  /**
+  * This will process a single scalate template file and save the file in the appropriate 
+  * place
+  * 
+  * @param  templateFile  The template file to process
+  * @return               A tuple with the template file and boolean indicating 
+  *                       if it suceeded
+  */
+  private def processSingleTemplate(templateFile: TemplateFile): (TemplateFile,Boolean) = {
     
     val file = FileHelper.loadFile(templateFile.file)
     val sclateTemplate = engine.load(file.getAbsolutePath)
@@ -65,20 +89,26 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     val context = new DefaultRenderContext(new PrintWriter(buffer))
     addArgumentsToContext(context)
     sclateTemplate.render(context)
-   
+        
     try {
       FileHelper.createFolderStructure(destinationPath)
       val currentPath = new File("").getAbsolutePath // TODO: Not sure this is needed.
       val file = new File(currentPath+"/"+destinationPath)
-      file.createNewFile
-      val out = new BufferedWriter(new FileWriter(file));
-      out.write(buffer.toString);
-      out.close();
+      if (safeToCreateFile(file)) {
+          file.createNewFile
+          val out = new BufferedWriter(new FileWriter(file));
+          out.write(buffer.toString);
+          out.close();
+          (templateFile, true)
+      } else {
+        (templateFile, false)
+      }
     } catch {
       case e: Exception => {
         println("exception!")
         println("dest: " + destinationPath)
-        println(e) //@DEBUG
+        e.printStackTrace
+        (templateFile, false)
       }
     } finally {
       // clean up in case the temp filse was generated.
