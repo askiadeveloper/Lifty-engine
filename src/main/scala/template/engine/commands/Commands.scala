@@ -62,13 +62,14 @@ case class TemplatesCommand(processor: TemplateProcessor) extends Command {
   def description = "Lists all of the templates"
   
   def run(arguments: List[String]): Box[CommandResult] = {
-    val longestTemplateName = processor.templates.map(_.name.length).reduceLeft(_ max _)
-    val msg = processor.templates.map{ template => 
-      val spaces = (for (i <- 0 to longestTemplateName-template.name.length) yield " ").mkString("")
-      val arguments = template.arguments.map(_.name).mkString(",")
-      "%s%s   %s".format(template.name, spaces, arguments)
-    }.mkString("\n")
-    Full(CommandResult("The processor declares the following templates\n\n" + msg))
+    // val longestTemplateName = processor.templates.map(_.name.length).reduceLeft(_ max _)
+    // val msg = processor.templates.map{ template => 
+    //   val spaces = (for (i <- 0 to longestTemplateName-template.name.length) yield " ").mkString("")
+    //   val arguments = template.arguments.map(_.name).mkString(",")
+    //   "Name:\t%s%s   %s".format(template.name, spaces, arguments)
+    // }.mkString("\n")
+    val templates = processor.templates.map(_.toString)
+    Full(CommandResult("The processor declares the following templates\n\n" + templates))
   }
 }
 

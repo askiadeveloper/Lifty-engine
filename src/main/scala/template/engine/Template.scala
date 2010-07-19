@@ -147,6 +147,13 @@ trait Template {
         Full(listOfBoxes.filter(_.isInstanceOf[Full[_]]).flatMap(_.open_!))
     }
   }
+  
+  override def toString: String = {
+    val name = "Name:        \t%s".format(this.name)
+    val arguments = "Arguments:   \t%s".format(this.arguments.mkString(","))
+    val description = "Description: \t%s".format(this.description)
+    (name :: arguments :: description :: Nil).mkString("--\n","\n","\n--")
+  }
     
   protected def deleteFiles(argumentResults :List[ArgumentResult]): Box[CommandResult] = {
     val files = this.files.map( path => TemplateHelper.replaceVariablesInPath(path.destination, argumentResults))

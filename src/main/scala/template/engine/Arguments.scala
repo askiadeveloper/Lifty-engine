@@ -6,7 +6,9 @@ import template.util.{BoxUtil}
 case class Argument(name: String){
   
   protected def isOptional = false
+  
   protected def hasDefault = false
+  
   def default = ""
 
   // When an argument is used the the path you might want to do some transformations.
@@ -35,6 +37,16 @@ case class Argument(name: String){
       case false => 
         Full(aLotOfBoxes.filter(_.isInstanceOf[Full[_]]).flatMap(_.open_!))
     }
+  }
+  
+  override def toString: String = {
+    val extras = if (isOptional || hasDefault) {
+      ({if (isOptional) Some("optional") else None} :: 
+      {if (hasDefault) Some("default") else None} :: 
+      {if (this.isInstanceOf[Repeatable]) Some("repeatable") else None} :: Nil)
+      .filter(!_.isEmpty).map(_.get).mkString("(",",",")")
+    } else ""
+    "%s%s".format(name,extras)
   }
   
   //#Protected
