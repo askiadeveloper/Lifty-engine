@@ -1,9 +1,12 @@
 package template.engine.test
 
 import template.engine._
+import template.util._
 import template.engine.commands._
 import net.liftweb.common.{Box, Empty, Failure, Full}
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
 * This is simply a test processer created to help me write my tests.
@@ -11,7 +14,7 @@ import net.liftweb.common.{Box, Empty, Failure, Full}
 object TestTemplateProcessor extends StandAloneTemplateProcessor {
   
   def templates = TestTemplate :: TestTemplate2 :: TestTemplate3 :: Nil
-  override def commands = (TestCommand1(this) :: TestCommand2(this) :: Nil) ::: super.commands
+  override def commands = (TestCommand1(this) :: TestCommand2(this) :: TestCommand3(this) :: Nil) ::: super.commands
   
   object TestTemplate2 extends Template with Create {
     def name = "TestTemplate2"
@@ -48,5 +51,14 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
     def keyword = "command2"
     def description ="command2 description"
     def run(arguments: List[String]) = Full(CommandResult("ran TestCommand2"))
+  }
+  
+  case class TestCommand3(processor: TemplateProcessor) extends Command {
+    def keyword = "command3"
+    def description ="command3 description"
+    def run(arguments: List[String]) = {
+      val line = IOHelper.requestInput("Type something: ")
+      Full(CommandResult("you typed: %s".format(line)))
+    }
   }
 }
