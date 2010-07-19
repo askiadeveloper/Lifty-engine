@@ -156,10 +156,10 @@ trait Template {
   }
   
   override def toString: String = {
-    val name =        "Name:        \t%s".format(this.name)
-    val arguments =   "Arguments:   \t%s".format(this.arguments.mkString(","))
-    val description = "Description: \t%s".format(this.description)
-    (name :: arguments :: description :: Nil).mkString("--\n","\n","\n--")
+    val name =        "  Name:          %s".format(this.name)
+    val arguments =   "  Arguments:     %s".format(this.arguments.mkString(","))
+    val description = "  Description:   %s".format(this.description)
+    (name :: arguments :: description :: Nil).mkString("\n")
   }
     
   protected def deleteFiles(argumentResults :List[ArgumentResult]): Box[CommandResult] = {

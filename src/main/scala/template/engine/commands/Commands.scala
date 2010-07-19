@@ -10,9 +10,9 @@ trait Command {
   def run(arguments: List[String]): Box[CommandResult]
   
   override def toString: String = {
-    val keyword =     "Keyword:     \t%s".format(this.keyword)
-    val description = "Description: \t%s".format(this.description)
-    (keyword :: description :: Nil).mkString("--\n","\n","\n--")
+    val keyword =     "  Keyword:    \t%s".format(this.keyword)
+    val description = "  Description:\t%s".format(this.description)
+    (keyword :: description :: Nil).mkString("\n")
   }
   
 }
@@ -69,8 +69,8 @@ case class TemplatesCommand(processor: TemplateProcessor) extends Command {
   def description = "Lists all of the templates"
   
   def run(arguments: List[String]): Box[CommandResult] = {
-    val templates = processor.templates.map(_.toString).mkString("")
-    Full(CommandResult("The processor declares the following templates\n\n" + templates))
+    val templates = processor.templates.map(_.toString).mkString("\n\n")
+    Full(CommandResult("The processor declares the following templates\n" + templates))
   }
 }
 
@@ -80,8 +80,8 @@ case class HelpCommand(processor: TemplateProcessor) extends Command {
   def description = "Lists all of the commands"
   
   def run(arguments: List[String]): Box[CommandResult] = {
-    val commands = processor.commands.map(_.toString).mkString("")
-    Full(CommandResult("The processor declares the following commands\n\n" + commands))
+    val commands = processor.commands.map(_.toString).mkString("\n\n")
+    Full(CommandResult("The processor declares the following commands\n" + commands))
   }
     
 }

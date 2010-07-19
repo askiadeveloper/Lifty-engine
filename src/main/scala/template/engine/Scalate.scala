@@ -30,14 +30,15 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     cleanScalateCache
     
     // pretty printing 
-    val stroke = "-----------------%s------------------------------".format(template.name.map(_=>'-').mkString(""))
-    val header = "%s\nRunning %s with the following arguments:\n%s".format(stroke,template.name,stroke)
+    val header = "Running %s with the following arguments:\n".format(template.name)
     val arguments = "\n%s\n".format(argumentResults.map(arg => arg.argument.name+" = "+arg.value).mkString("\n"))
-    val files = "%s\nResulted in the creation of the following files:\n%s\n%s\n%s"
-      .format(stroke,stroke,template.files.map( path => TemplateHelper.replaceVariablesInPath(path.destination,argumentResults)).mkString("\n"),stroke)
+    val files = "\nResulted in the creation of the following files:\n%s"
+      .format(template.files.map{ path => 
+        "  " + TemplateHelper.replaceVariablesInPath(path.destination,argumentResults)
+      }.mkString("\n"))
     
     val notice = template.notice(argumentResults) match {
-      case Full(notice) => "\nNotice:\n%s\n%s".format(notice,stroke)
+      case Full(notice) => "\n\nNotice:\n%s\n".format(notice)
       case _ => ""
     }
     
