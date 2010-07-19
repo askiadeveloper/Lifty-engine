@@ -19,7 +19,7 @@ class TestArgumentParsing extends FlatSpec with ShouldMatchers {
     def description = "description"
     def arguments = {
       object normalArgument extends Argument("arg1")
-      object defaultArgument extends Argument("arg2") with Default with Value{ value = defaultForArg2}
+      object defaultArgument extends Argument("arg2") with Default with Value{ value = Full(defaultForArg2)}
       normalArgument :: defaultArgument :: Nil
     }
     def files = Nil

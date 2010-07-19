@@ -13,20 +13,20 @@ import java.io.InputStreamReader;
 */ 
 object TestTemplateProcessor extends StandAloneTemplateProcessor {
   
-  def templates = TestTemplate :: TestTemplate2 :: TestTemplate3 :: Nil
+  def templates = TestTemplate :: TestTemplate2 :: TestTemplate3 :: TestTemplate4 :: Nil
   override def commands = (TestCommand1(this) :: TestCommand2(this) :: TestCommand3(this) :: Nil) ::: super.commands
+    
+  object TestTemplate extends Template with Create {
+    def name = "TestTemplate"
+    def description = "description"
+    def arguments = Argument("name") :: Nil
+    def files = Nil
+  }
   
   object TestTemplate2 extends Template with Create {
     def name = "TestTemplate2"
     def description = "description2"
     def arguments = Nil
-    def files = Nil
-  }
-  
-  object TestTemplate extends Template with Create {
-    def name = "TestTemplate"
-    def description = "description"
-    def arguments = Argument("name") :: Nil
     def files = Nil
   }
   
@@ -37,6 +37,19 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
       object name extends Argument("name")
       object arg extends Argument("repeatable") with Repeatable with Optional
       name :: arg :: Nil
+    }
+    def files = Nil
+  }
+  
+  object TestTemplate4 extends Template with Create {
+    def name = "TestTemplate4"
+    def description = "description4"
+    def arguments = {
+      object arg1 extends Argument("arg1") with Default with Value{ value = Empty }
+      object arg2 extends Argument("arg2") with Default with Value{ value = Full("test") }
+      object arg3 extends Argument("arg3")
+      object arg4 extends Argument("arg4") with Optional
+      arg1 :: arg2 :: arg3 :: arg4 :: Nil
     }
     def files = Nil
   }

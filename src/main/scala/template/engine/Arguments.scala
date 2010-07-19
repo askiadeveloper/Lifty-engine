@@ -1,7 +1,7 @@
 package template.engine
 
 import net.liftweb.common.{Box, Empty, Failure, Full}
-import template.util.{BoxUtil}
+import template.util.{BoxUtil, IOHelper}
 
 case class Argument(name: String){
   
@@ -9,7 +9,7 @@ case class Argument(name: String){
   
   protected def hasDefault = false
   
-  def default = ""
+  def default: Box[String] = Empty
 
   // When an argument is used the the path you might want to do some transformations.
   // The use-case for this is to convery package names to the correct folder structure
@@ -21,10 +21,18 @@ case class Argument(name: String){
    ((argumentResults: List[ArgumentResult]) => {
       argumentResults match {
           case argument :: rest => Full(List(argument))
-          // TODO: feels a bit hackish to check the type
-          case Nil if hasDefault => Full(List(ArgumentResult(this,default)))
+          case Nil if hasDefault => default match {
+            case Full(str) => Full(List(ArgumentResult(this,str)))
+            case Empty => 
+              val requestMsg = "No default value for '%s'. Please enter a value: ".format(this.name)
+              Full(List(ArgumentResult(this,IOHelper.requestInput(requestMsg))))
+            case Failure(msg,_,_) => Failure(msg)
+          }
+          
           case Nil if isOptional => Full(List(ArgumentResult(this,"")))
-          case Nil => Failure("The argument '%s' is required".format(this.name))
+          case Nil => 
+            val requestMsg = "A value for '%s' is required: ".format(this.name)
+            Full(List(ArgumentResult(this,IOHelper.requestInput(requestMsg))))
        }
     }) :: Nil
 
@@ -91,13 +99,11 @@ trait Default extends Argument{
   
 }
 
-case class DefaultValue(default: String)
-
 trait Value extends Default {
   
 
-  protected var value :String = ""
-  override def default = value
+  protected var value :Box[String] = Empty
+  override def default: Box[String] = value
 
 
 }

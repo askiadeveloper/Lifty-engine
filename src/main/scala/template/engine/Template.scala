@@ -4,6 +4,7 @@ import net.liftweb.common.{Box, Empty, Failure, Full}
 import template.util.{BoxUtil, TemplateHelper}
 import java.io.{File}
 import template.engine.commands.{CommandResult}
+import template.util.IOHelper
 
 case class TemplateFile(file: String, destination: String)
 
@@ -118,7 +119,13 @@ trait Template {
       val arg = arguments(i) 
       val value = argumentsList(i)
       argumentResults :::= (arg match {
-        case arg: Default if value == "_" => Full(ArgumentResult(arg,arg.default)) :: Nil
+        case arg: Default if value == "_" => arg.default match {
+          case Full(str) => Full(ArgumentResult(arg,str)) :: Nil
+          case Empty => 
+            val requestMsg = "No default value found for %s. Please enter a value: ".format(this.name)
+            Full(ArgumentResult(arg,IOHelper.requestInput(requestMsg))) :: Nil
+          case Failure(msg,_,_) => Failure(msg) :: Nil
+        }
         case arg: Optional if value == "_" => Full(ArgumentResult(arg,"")) :: Nil
         case arg: Argument if value == "_" => Failure("%s doesn't have a default value".format(arg.name)) :: Nil
         case arg: Repeatable if isRepeatable(value) => value.split(",").map( v => Full(ArgumentResult(arg,v))).toList
