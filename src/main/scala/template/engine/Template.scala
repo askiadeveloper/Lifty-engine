@@ -33,6 +33,15 @@ trait Template {
   */
   def notice(args: List[ArgumentResult]): Box[String] = Empty
   
+  
+  /**
+  * Provides a description of the template. This will get used to help the users
+  * know what they're creating.
+  * 
+  * @return A description of the template
+  */
+  def description: String
+  
   /**
   * The is the list of files that you want your template to process once invoked
   * 
