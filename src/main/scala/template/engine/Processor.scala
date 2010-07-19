@@ -6,16 +6,9 @@ import sbt.processor.BasicProcessor
 import net.liftweb.common.{Box, Empty, Failure, Full}
 import java.io.File
 import template.util.{FileHelper,TemplateHelper}
-
-case class CommandResult(message: String)
-trait Command {
-  def keyword: String
-  def description: String
-  def run(arguments: List[String]): Box[CommandResult]
-}
+import template.engine.commands._
 
 trait TemplateProcessor {
-  
   
   /**
   * Declaring a type logger. The logger has to have the same
@@ -31,10 +24,39 @@ trait TemplateProcessor {
 
   }
   
+  /**
+  * The logger to use to print errors, infos warnings etc.
+  * 
+  * @return     The logger
+  */
   def log: Logger
-  def templates: List[Template]
-  def commands: List[Command] = List(CreateCommand, /*DeleteCommand,*/ TemplatesCommand, HelpCommand)
   
+  /**
+  * The list of templates that the processor can create
+  * 
+  * @return The templates the processor should be able
+  *         to create.
+  */
+  def templates: List[Template]
+  
+  /**
+  * The commands that the processor knows. You can override this
+  * if you want to add your own commands but remember to call 
+  * ::: super.commands at the end of the method so you don't 
+  * loose the create, help etc. commands.
+  * 
+  * @param  commands  The commands that the processor knows
+  * @return           The commands that the processor knows
+  */
+  def commands: List[Command] = List(CreateCommand(this), /*DeleteCommand,*/ TemplatesCommand(this), HelpCommand(this))
+  
+  /**
+  * This is the entry point. It will process the input and invoke
+  * the right command with the right arguments.
+  * 
+  * @param  args  The string to parse
+  * @return       A box with the result of processing the input
+  */
   def processInput(args: String): Box[String] = {
 
     val argsArr = args.split(" ")
@@ -48,7 +70,7 @@ trait TemplateProcessor {
         case Empty => Failure("empty")
       }
       case Failure(msg,_,_) => Failure(msg)
-      case Empty => Failure(HelpCommand.run(Nil).open_!.message)
+      case Empty => Failure(resolveCommand("help").open_!.run(Nil).open_!.message)
     }
   }
   
@@ -74,87 +96,9 @@ trait TemplateProcessor {
   * @param  name  The name of the template to search for
   * @return       A Full[Template] containing a template if it exists, otherwise Failure
   */
-  protected def findTemplate(name: String): Box[Template] = templates.filter( _.name == name) match {
+  def findTemplate(name: String): Box[Template] = templates.filter( _.name == name) match {
       case template :: rest => Full(template) 
       case Nil => Empty
-  }
-  
-  //#commands
-  
-  // TODO: Both Create and DeleteCommand are almost identical - refactor slightly
-  object CreateCommand extends Command {
-    
-    def keyword = "create"
-    
-    def description = "Processes the specified template. Usage: create <templateName> <arguments>"
-    
-    def run(arguments: List[String]): Box[CommandResult] = {
-      arguments match {
-        case Nil => 
-          log.error("You have to specify which template to create")
-          Failure(TemplatesCommand.run(Nil).open_!.message)
-        case head :: rest => {
-          val templateName = head
-          findTemplate(templateName) match {
-            case Full(template) =>  template.process("create",rest) match {
-              case f @ Full(_) => f
-              case f @ Failure(_,_,_) => 
-                log.error("Couldn't create the template")
-                f
-              case Empty => Empty
-            }
-            case _ => 
-              log.error("Can't find a template by name %s".format(templateName))
-              Failure(TemplatesCommand.run(Nil).open_!.message)
-          }
-        }
-      }  
-    }
-  }
-
-  // object DeleteCommand extends Command {
-  //   def keyword = "delete"
-  //   def description = "Deletes an existing template if possible. Usage: delete <templateName> <arguments> "
-  //   def run(arguments: List[String]): Box[CommandResult] = {
-  //     val templateName = arguments(0)
-  //     findTemplate(templateName) match {
-  //       case Full(template) => template.process("delete",arguments-arguments(0));
-  //       case Failure(msg,_,_) => Full(CommandResult(msg))
-  //       case Empty => Full(CommandResult("no such template")) // TODO: no sure what to do here
-  //     }
-  //   }
-  // }
-
-  object TemplatesCommand extends Command {
-    def keyword = "templates"
-    
-    def description = "Lists all of the templates"
-    
-    def run(arguments: List[String]): Box[CommandResult] = {
-      val longestTemplateName = templates.map(_.name.length).reduceLeft(_ max _)
-      val msg = templates.map{ template => 
-        val spaces = (for (i <- 0 to longestTemplateName-template.name.length) yield " ").mkString("")
-        val arguments = template.arguments.map(_.name).mkString(",")
-        "%s%s   %s".format(template.name, spaces, arguments)
-      }.mkString("\n")
-      Full(CommandResult("The processor declares the following templates\n\n" + msg))
-    }
-  }
-
-  object HelpCommand extends Command {
-    def keyword = "help"
-    
-    def description = "Lists all of the commands"
-    
-    def run(arguments: List[String]): Box[CommandResult] = {
-      val longestCommandName = commands.map( _.keyword.length).reduceLeft(_ max _)
-      val msg = commands.map{ cmd => 
-        val spaces = (for (i <- 0 to longestCommandName-cmd.keyword.length ) yield " ").mkString("")
-        "%s%s   %s".format(cmd.keyword, spaces, cmd.description)
-      }.mkString("\n") 
-      Full(CommandResult("The processor declares the following commands\n\n" + msg))
-    }
-      
   }
 }
 

@@ -6,6 +6,7 @@ import java.io._
 import java.net.{URL, URISyntaxException}
 import scala.util.matching.Regex
 import net.liftweb.common._
+import template.engine.commands.{CommandResult}
 
 case class Scalate(template: Template with Create, argumentResults: List[ArgumentResult]) {
   

@@ -3,6 +3,7 @@ package template.engine
 import net.liftweb.common.{Box, Empty, Failure, Full}
 import org.fusesource.scalate._
 import template.util.TemplateHelper
+import template.engine.commands.{CommandResult}
 
 import java.io.{StringWriter, PrintWriter, File, BufferedWriter, FileWriter}
 

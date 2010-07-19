@@ -3,6 +3,7 @@ package template.engine
 import net.liftweb.common.{Box, Empty, Failure, Full}
 import template.util.{BoxUtil, TemplateHelper}
 import java.io.{File}
+import template.engine.commands.{CommandResult}
 
 case class TemplateFile(file: String, destination: String)
 
@@ -33,7 +34,6 @@ trait Template {
   */
   def notice(args: List[ArgumentResult]): Box[String] = Empty
   
-  
   /**
   * Provides a description of the template. This will get used to help the users
   * know what they're creating.
@@ -50,6 +50,9 @@ trait Template {
   */
   def files: List[TemplateFile]
   
+  /**
+  * I really can't remember why I have this method. Sorry.
+  */
   def fixedValues = List[ArgumentResult]()
 
   /**

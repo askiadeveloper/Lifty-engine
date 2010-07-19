@@ -1,6 +1,7 @@
 package template.engine.test
 
 import template.engine._
+import template.engine.commands._
 import net.liftweb.common.{Box, Empty, Failure, Full}
 
 
@@ -10,22 +11,25 @@ import net.liftweb.common.{Box, Empty, Failure, Full}
 object TestTemplateProcessor extends StandAloneTemplateProcessor {
   
   def templates = TestTemplate :: TestTemplate2 :: TestTemplate3 :: Nil
-  override def commands = (testCommand1 :: testCommand2 :: Nil) ::: super.commands
+  override def commands = (TestCommand1(this) :: TestCommand2(this) :: Nil) ::: super.commands
   
   object TestTemplate2 extends Template with Create {
     def name = "TestTemplate2"
+    def description = "description2"
     def arguments = Nil
     def files = Nil
   }
   
   object TestTemplate extends Template with Create {
     def name = "TestTemplate"
+    def description = "description"
     def arguments = Argument("name") :: Nil
     def files = Nil
   }
   
   object TestTemplate3 extends Template with Create {
     def name = "TestTemplate3"
+    def description = "description3"
     def arguments = {
       object name extends Argument("name")
       object arg extends Argument("repeatable") with Repeatable with Optional
@@ -34,13 +38,13 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
     def files = Nil
   }
   
-  object testCommand1 extends Command {
+  case class TestCommand1(processor: TemplateProcessor) extends Command {
     def keyword = "command1"
     def description ="command1 description"
     def run(arguments: List[String]) = Full(CommandResult("ran TestCommand1"))
   } 
   
-  object testCommand2 extends Command {
+  case class TestCommand2(processor: TemplateProcessor) extends Command {
     def keyword = "command2"
     def description ="command2 description"
     def run(arguments: List[String]) = Full(CommandResult("ran TestCommand2"))

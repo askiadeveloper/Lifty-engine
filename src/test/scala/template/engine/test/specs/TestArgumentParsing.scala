@@ -16,6 +16,7 @@ class TestArgumentParsing extends FlatSpec with ShouldMatchers {
   
   object TestTemplate extends Template with Create {
     def name = "TestTemplate"
+    def description = "description"
     def arguments = {
       object normalArgument extends Argument("arg1")
       object defaultArgument extends Argument("arg2") with Default with Value{ value = defaultForArg2}
