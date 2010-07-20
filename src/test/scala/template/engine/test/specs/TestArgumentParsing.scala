@@ -28,17 +28,8 @@ class TestArgumentParsing extends FlatSpec with ShouldMatchers {
 
   /* let the testing begin
   --------------------------------------------- */
-    
-  "Argument" should "be required" in {
-    val input = Nil
-    val argumentResults = TestTemplate.parseArguments(input)
-    val errorMsg = argumentResults.asInstanceOf[Failure].msg
-    
-    argumentResults.isInstanceOf[Failure] should be === true
-    errorMsg should be === "The argument 'arg1' is required"
-  }
-  
-  it should "accept a named value" in  {
+      
+  "Argument" should "accept a named value" in  {
     val input = List("arg1=%s".format(inputForArg1))
     val argumentResults = TestTemplate.parseArguments(input)
     argumentResults.open_!.first should be === ArgumentResult(TestTemplate.arguments.first,inputForArg1)

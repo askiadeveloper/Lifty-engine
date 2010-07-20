@@ -43,18 +43,17 @@ object FileHelper {
     file.delete
   }
   
+  
   /**
-  * Takes a path and creates every folder in the path
+  * Takes a RELATIVE path to a file and creates every folder in the path
+  * before the file.
   * 
   * @param  path  The path to creates folders from
   */
   def createFolderStructure(path: String) {
     val currentPath = new File("").getAbsolutePath
-    (path.split("/").toList-path.split("/").last).foldLeft(currentPath){ (combinedString, newString) => 
-      val folder = combinedString +"/"+ newString
-      new File(folder).mkdir
-      folder
-    }
+    val dirpath = currentPath + (path.split("/").toList-path.split("/").last).mkString("/")
+    new File(dirpath).mkdirs
   }
   
   /**
@@ -74,7 +73,7 @@ object FileHelper {
         val is = this.getClass().getResourceAsStream(path) 
         val in = scala.io.Source.fromInputStream(is)
         val file = new File(tempFileName)
-        createFolderStructure(file.getAbsolutePath)
+        createFolderStructure(file.getPath)
         file.createNewFile
         val out = new BufferedWriter(new FileWriter(file));
         in.getLines.foreach{ line => out.write(line) }
@@ -82,7 +81,6 @@ object FileHelper {
         file
       } catch {
         case e: Exception => {
-          println("debugging: " + path)
           e.printStackTrace
           new File(tempFileName)
         }
