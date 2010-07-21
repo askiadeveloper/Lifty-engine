@@ -28,9 +28,10 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
     def name = "snippet"
     def description = "test snippet"
     def arguments = Argument("name") :: Argument("pack") :: Nil
-    def files = List(TemplateFile(
-      "src/test/resources/snippet.ssp","src/test/output/snippet.scala"
-    ))
+    def files = List(
+      TemplateFile("src/test/resources/snippet.ssp","src/test/output/snippet.scala"),
+      TemplateFile("src/test/resources/index.html","src/test/output/index.html")
+      )
   }
   
   object DependentSnippet extends Template with Create {
@@ -39,6 +40,7 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
     def arguments = List(Argument("other"))
     override def dependencies = List(Snippet)
     def files = List(
+      TemplateFile("src/test/resources/index.html","src/test/output/index.html"),
       TemplateFile("src/test/resources/snippet2.ssp","src/test/output/snippet.scala"),
       TemplateFile("src/test/resources/dependent.ssp","src/test/output/dependent.scala"))
   }

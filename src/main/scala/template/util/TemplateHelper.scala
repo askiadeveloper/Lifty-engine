@@ -62,6 +62,7 @@ object TemplateHelper {
       try {
         val is = new FileInputStream(tempFile)
         val in = scala.io.Source.fromInputStream(is)
+        FileHelper.createFolderStructure(to)
         toFile.createNewFile
         val out = new BufferedWriter(new FileWriter(toFile));
         in.getLines.foreach(out.write(_))
@@ -71,7 +72,9 @@ object TemplateHelper {
         case e: Exception => e.printStackTrace
         false
       } finally {
-        tempFile.delete
+        if (GlobalConfiguration.runningAsJar) {
+          tempFile.delete 
+        }
       }
     } else false
   }

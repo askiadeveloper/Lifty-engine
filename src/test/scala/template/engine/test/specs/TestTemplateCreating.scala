@@ -11,15 +11,19 @@ class TestTemplateCreating extends FlatSpec with ShouldMatchers {
   
   "Snippet template" should "be created" in {
     TestTemplateProcessor.processInput("create snippet Name my.package")
-    val f = new File("src/test/output/snippet.scala")
-    f.exists should be === true
-    f.delete
+    val f1 = new File("src/test/output/snippet.scala")
+    val f2 = new File("src/test/output/index.html")
+    f1.exists should be === true
+    f2.exists should be === true
+    f1.delete
+    f2.delete
   }
  
   "Dependent template" should "depend on the files of itself and dependents (duplicates excluded)" in {
     val snippet = TestTemplateProcessor.templates.filter(_.name == "snippet").head
     val template = TestTemplateProcessor.templates.filter(_.name == "dependent").head
     val files = template.getAllFiles
+    println(files)
     files should be === template.files // the snippet template in "dependent" takes precedence  
   }
   
@@ -27,10 +31,13 @@ class TestTemplateCreating extends FlatSpec with ShouldMatchers {
     TestTemplateProcessor.processInput("create dependent other name pack")
     val f1 = new File("src/test/output/snippet.scala")
     val f2 = new File("src/test/output/dependent.scala")
+    val f3 = new File("src/test/output/index.html")
     f1.exists should be === true
     f2.exists should be === true
+    f3.exists should be === true
     f1.delete
     f2.delete
+    f3.delete
   }
   
   // it should "ask for input if not provided. Even for dependent arguments" in {
