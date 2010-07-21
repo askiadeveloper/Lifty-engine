@@ -112,7 +112,9 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
       }
     } finally {
       // clean up in case the temp filse was generated.
-      file.delete 
+      if (GlobalConfiguration.runningAsJar) {
+        file.delete 
+      }
     }
   }
       

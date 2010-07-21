@@ -2,6 +2,7 @@ package template.engine.test
 
 import template.engine._
 import template.util._
+import template.engine.TemplateFile
 import template.engine.commands._
 import net.liftweb.common.{Box, Empty, Failure, Full}
 import java.io.BufferedReader;
@@ -13,7 +14,7 @@ import java.io.InputStreamReader;
 */ 
 object TestTemplateProcessor extends StandAloneTemplateProcessor {
   
-  def templates = TestTemplate :: TestTemplate2 :: TestTemplate3 :: TestTemplate4 :: Nil
+  def templates = TestTemplate :: Snippet :: TestTemplate3 :: Nil
   override def commands = (TestCommand1(this) :: TestCommand2(this) :: TestCommand3(this) :: Nil) ::: super.commands
     
   object TestTemplate extends Template with Create {
@@ -23,25 +24,17 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
     def files = Nil
   }
   
-  object TestTemplate2 extends Template with Create {
-    def name = "TestTemplate2"
-    def description = "description2"
-    def arguments = Nil
-    def files = Nil
+  object Snippet extends Template with Create {
+    def name = "snippet"
+    def description = "test snippet"
+    def arguments = Argument("name") :: Argument("pack") :: Nil
+    def files = List(TemplateFile(
+      "src/test/resources/snippet.ssp","src/test/output/snippet.scala"
+    ))
   }
   
+  // not used in the tests, just in the sbt console to verify it works
   object TestTemplate3 extends Template with Create {
-    def name = "TestTemplate3"
-    def description = "description3"
-    def arguments = {
-      object name extends Argument("name")
-      object arg extends Argument("repeatable") with Repeatable with Optional
-      name :: arg :: Nil
-    }
-    def files = Nil
-  }
-  
-  object TestTemplate4 extends Template with Create {
     def name = "TestTemplate4"
     def description = "description4"
     def arguments = {
