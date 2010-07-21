@@ -38,9 +38,9 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
     def description = "dependent snippet"
     def arguments = List(Argument("other"))
     override def dependencies = List(Snippet)
-    def files = List(TemplateFile(
-      "src/test/resources/dependent.ssp","src/test/output/dependent.scala"
-    ))
+    def files = List(
+      TemplateFile("src/test/resources/snippet2.ssp","src/test/output/snippet.scala"),
+      TemplateFile("src/test/resources/dependent.ssp","src/test/output/dependent.scala"))
   }
   
   // not used in the tests, just in the sbt console to verify it works

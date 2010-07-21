@@ -16,11 +16,11 @@ class TestTemplateCreating extends FlatSpec with ShouldMatchers {
     f.delete
   }
  
-  "Dependent template" should "depend on the files of itself and dependents" in {
+  "Dependent template" should "depend on the files of itself and dependents (duplicates excluded)" in {
     val snippet = TestTemplateProcessor.templates.filter(_.name == "snippet").head
     val template = TestTemplateProcessor.templates.filter(_.name == "dependent").head
     val files = template.getAllFiles
-    files should be === template.files ::: snippet.files
+    files should be === template.files // the snippet template in "dependent" takes precedence  
   }
   
   it should "create it's dependencies" in {

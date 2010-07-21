@@ -106,24 +106,19 @@ trait Template {
   *
   * @return The files of this template and of each dependency (if any)
   */
-  def getAllFiles: List[TemplateFile] = {
-    
-    // removes any duplicate template files from the list
-    def filterDuplicates(list: List[TemplateFile]): List[TemplateFile] = {
-      // checks if a list of template files contains a template file
-      // with the same destination as templ
-      def contains(templatesFiles: List[TemplateFile], 
-                            templ: TemplateFile): Boolean = {
-        !templatesFiles.forall( _.destination != templ.destination )
-      }
-      var cleanList = List[TemplateFile]()
-      list.foreach{ item => 
-        if (!contains(cleanList,item)) cleanList ::= item
-      }
-      cleanList.reverse
+  def getAllFiles: List[TemplateFile] = {  
+    // checks if a list of template files contains a template file
+    // with the same destination as templ
+    def contains(templatesFiles: List[TemplateFile], 
+                          templ: TemplateFile): Boolean = {
+      !templatesFiles.forall( _.destination != templ.destination )
     }
-    
-    files ::: (dependencies.flatMap(_.files))
+
+    var cleanList = List[TemplateFile]()
+    (files ::: (dependencies.flatMap(_.files))).foreach{ item => 
+      if (!contains(cleanList,item)) cleanList ::= item
+    }
+    cleanList.reverse
   }
   
   def getAllArguments: List[BasicArgument] = {
