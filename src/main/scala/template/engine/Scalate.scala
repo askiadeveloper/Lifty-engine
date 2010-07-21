@@ -8,6 +8,7 @@ import scala.util.matching.Regex
 import net.liftweb.common._
 import template.engine.commands.{CommandResult}
 import template.util.IOHelper
+import template.util.TemplateHelper._
 
 case class Scalate(template: Template with Create, argumentResults: List[ArgumentResult]) {
     
@@ -27,21 +28,33 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   def run: Box[CommandResult] = { 
     
     // if the template has any dependencies, we need t process those files aswell
-    val templateFiles = if (template.hasDependencies) template.getAllFiles else template.files
-            
-    val processedFiles = templateFiles.map( t => processSingleTemplate(t) ).filter{ _ match {
+    val templateFiles = template.getAllFiles
+    
+    // Okay i should filter the lists for any files that doesn't end with .ssp and
+    // store these files for later. Process each template and then copy the rest
+    val toCopy = templateFiles.filter(!_.file.contains(".ssp"))
+    val toRender = templateFiles.filter(_.file.contains(".ssp"))
+                
+    val processedFiles = toRender.map( t => processSingleTemplate(t) ).filter{ _ match {
       case(_,true) => true
       case(_,false) => false
     }}.map{ case(templateFile,true) => templateFile}
+    
+    val copiedFiles = toCopy.map( t => (t,copy(t.file,t.destination)) ).filter{ _ match {
+      case (_,true) => true
+      case (_,false) => false
+    }}.map{ case(template,true) => template}
+    
     template.postRenderAction(argumentResults)
     template.dependencies.foreach(_.postRenderAction(argumentResults))
+  
     cleanScalateCache
-    
+      
     // pretty printing 
     val header = "Running %s with the following arguments:\n".format(template.name)
     val arguments = "\n%s\n".format(argumentResults.map(arg => arg.argument.name+" = "+arg.value).mkString("\n"))
     val files = "\nResulted in the creation of the following files:\n%s"
-      .format(processedFiles.map{ path => 
+      .format((processedFiles ::: copiedFiles).map{ path => 
         "  " + TemplateHelper.replaceVariablesInPath(path.destination,argumentResults)
       }.mkString("\n"))
     

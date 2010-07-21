@@ -54,7 +54,7 @@ object TemplateHelper {
   * @param  from  The file to copy
   * @param  to    The destination of the file
   */
-  def copy(from: String, to:String): Unit = {
+  def copy(from: String, to:String): Boolean = {
     val toFile = new File(to)
 
     if (IOHelper.safeToCreateFile(toFile)){
@@ -66,12 +66,14 @@ object TemplateHelper {
         val out = new BufferedWriter(new FileWriter(toFile));
         in.getLines.foreach(out.write(_))
         out.close
+        true
       } catch {
         case e: Exception => e.printStackTrace
+        false
       } finally {
         tempFile.delete
       }
-    }
+    } else false
   }
   
   /**
