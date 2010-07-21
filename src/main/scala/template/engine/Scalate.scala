@@ -10,7 +10,7 @@ import template.engine.commands.{CommandResult}
 import template.util.IOHelper
 
 case class Scalate(template: Template with Create, argumentResults: List[ArgumentResult]) {
-  
+    
   val engine = {
     val e = new TemplateEngine
     if (GlobalConfiguration.scalaLibraryPath != "") {
@@ -26,8 +26,9 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   */
   def run: Box[CommandResult] = { 
     
+    // if the template has any dependencies, we need t process those files aswell
     val templateFiles = if (template.hasDependencies) template.getAllFiles else template.files
-        
+            
     val processedFiles = templateFiles.map( t => processSingleTemplate(t) ).filter{ _ match {
       case(_,true) => true
       case(_,false) => false

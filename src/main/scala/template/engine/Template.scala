@@ -114,16 +114,29 @@ trait Template {
       // with the same destination as templ
       def contains(templatesFiles: List[TemplateFile], 
                             templ: TemplateFile): Boolean = {
-        templatesFiles.forall( _.destination != templ.destination )
+        !templatesFiles.forall( _.destination != templ.destination )
       }
       var cleanList = List[TemplateFile]()
       list.foreach{ item => 
         if (!contains(cleanList,item)) cleanList ::= item
       }
-      cleanList
+      cleanList.reverse
     }
     
     files ::: (dependencies.flatMap(_.files))
+  }
+  
+  def getAllArguments: List[Argument] = {
+    
+    def contains(listArgs: List[Argument], arg: Argument) = {
+      !listArgs.forall( _.name != arg.name)
+    }
+    
+    var cleanList = List[Argument]()
+    (arguments ::: (dependencies.flatMap(_.arguments))).foreach{ arg => 
+      if (!contains(cleanList, arg)) cleanList ::= arg
+    }
+    cleanList.reverse
     
   }
   
@@ -159,6 +172,7 @@ trait Template {
     
     val isRepeatable: String => Boolean = _.contains(",") 
     var argumentResults: List[Box[ArgumentResult]] = Nil
+    val arguments = this.getAllArguments
         
     for (i <- 0 to arguments.size-1) {
       val arg = arguments(i) 
@@ -167,12 +181,14 @@ trait Template {
         case arg: Default if value == "_" => arg.default match {
           case Full(str) => Full(ArgumentResult(arg,str)) :: Nil
           case Empty => 
-            val requestMsg = "No default value found for %s. Please enter a value: ".format(this.name)
+            val requestMsg = "No default value found for %s. Please enter a value: ".format(arg.name)
             Full(ArgumentResult(arg,IOHelper.requestInput(requestMsg))) :: Nil
           case Failure(msg,_,_) => Failure(msg) :: Nil
         }
         case arg: Optional if value == "_" => Full(ArgumentResult(arg,"")) :: Nil
-        case arg: Argument if value == "_" => Failure("%s doesn't have a default value".format(arg.name)) :: Nil
+        case arg: Argument if value == "_" => 
+          val requestMsg = "Please enter a value for '%s': ".format(arg.name)
+          Full(ArgumentResult(arg,IOHelper.requestInput(requestMsg))) :: Nil
         case arg: Repeatable if isRepeatable(value) => value.split(",").map( v => Full(ArgumentResult(arg,v))).toList
         case arg: Argument => Full(ArgumentResult(arg,value)) :: Nil
       })
@@ -191,7 +207,7 @@ trait Template {
   * @return               A box containing a list of ArgumentResults.
   */
   def parseNamedArguments(argumentsList: List[String]): Box[List[ArgumentResult]] = {
-    val listOfBoxes = arguments.map( _.parseList(argumentsList))
+    val listOfBoxes = this.getAllArguments.map( _.parseList(argumentsList))
     BoxUtil.containsAnyFailures(listOfBoxes) match {
       case true => 
         Failure(listOfBoxes.filter( _.isInstanceOf[Failure]).map(_.asInstanceOf[Failure].msg).mkString("\n"))
@@ -223,7 +239,7 @@ trait Template {
   * @return       A list of argument strings
   */
   private def addUnderscores(args: List[String]): List[String] = {
-    args.map( str => if(str.matches("")) "_" else str ) ::: (for (i <- 0 to arguments.size - args.size-1) yield { "_" }).toList 
+    args.map( str => if(str.matches("")) "_" else str ) ::: (for (i <- 0 to getAllArguments.size - args.size-1) yield { "_" }).toList 
   }
   
   /**

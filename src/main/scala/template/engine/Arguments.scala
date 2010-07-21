@@ -46,7 +46,7 @@ case class Argument(name: String){
         Full(aLotOfBoxes.filter(_.isInstanceOf[Full[_]]).flatMap(_.open_!))
     }
   }
-  
+    
   override def toString: String = {
     val extras = if (isOptional || hasDefault) {
       ({if (isOptional) Some("optional") else None} :: 
@@ -110,4 +110,10 @@ trait Value extends Default {
 
 case class ArgumentResult(argument: Argument, value: String) {
   def pathValue: String = argument.transformationForPathValue(value)    
+  
+  override def equals(obj: Any) = obj match {
+    case arg: Argument if arg == argument => true
+    case argrslt: ArgumentResult => argrslt.argument == argument && argrslt.value == value 
+    case _ => false
+  }
 }

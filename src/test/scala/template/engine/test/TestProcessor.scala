@@ -36,9 +36,10 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
   object DependentSnippet extends Template with Create {
     def name = "dependent"
     def description = "dependent snippet"
-    def arguments = Argument("name") :: Argument("pack") :: Nil
+    def arguments = List(Argument("other"))
+    override def dependencies = List(Snippet)
     def files = List(TemplateFile(
-      "src/test/resources/snippet.ssp","src/test/output/snippet.scala"
+      "src/test/resources/dependent.ssp","src/test/output/dependent.scala"
     ))
   }
   

@@ -56,13 +56,13 @@ class TestArgumentParsing extends FlatSpec with ShouldMatchers {
     argumentResults.open_!(1) should be === ArgumentResult(TestTemplate.arguments(1),defaultForArg2)
   }
   
-  it should "Not allow the use of _ if the argument doesn't have a default value" in {
-    val input = List("_","_")
-    val argumentResults = TestTemplate.parseArguments(input)
-    val errorMsg = argumentResults.asInstanceOf[Failure].msg
-    argumentResults.isInstanceOf[Failure] should be === true
-    errorMsg should be === "arg1 doesn't have a default value"
-  }
+  // it should "Not allow the use of _ if the argument doesn't have a default value" in {
+  //   val input = List("_","_")
+  //   val argumentResults = TestTemplate.parseArguments(input)
+  //   val errorMsg = argumentResults.asInstanceOf[Failure].msg
+  //   argumentResults.isInstanceOf[Failure] should be === true
+  //   errorMsg should be === "arg1 doesn't have a default value"
+  // }
   
   "Superfluous arguments" should "be ignored" in {
     val input = List("arg1=%s".format(inputForArg1),"test2=hejsa2","test3=hejsa3")
