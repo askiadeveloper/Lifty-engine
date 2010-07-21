@@ -53,7 +53,6 @@ object FileHelper {
   def createFolderStructure(path: String) {
     val currentPath = new File("").getAbsolutePath
     val dirpath = currentPath +"/"+ (path.split("/").toList-path.split("/").last).mkString("/")
-    println("called mkdirs on " + dirpath)
     new File(dirpath).mkdirs
   }
   
