@@ -34,6 +34,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
       case(_,false) => false
     }}.map{ case(templateFile,true) => templateFile}
     template.postRenderAction(argumentResults)
+    tempalte.dependencies.foreach(_.postRenderAction(argumentResults))
     cleanScalateCache
     
     // pretty printing 
