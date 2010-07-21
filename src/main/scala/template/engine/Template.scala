@@ -126,13 +126,13 @@ trait Template {
     files ::: (dependencies.flatMap(_.files))
   }
   
-  def getAllArguments: List[Argument] = {
+  def getAllArguments: List[BasicArgument] = {
     
-    def contains(listArgs: List[Argument], arg: Argument) = {
+    def contains(listArgs: List[BasicArgument], arg: BasicArgument) = {
       !listArgs.forall( _.name != arg.name)
     }
     
-    var cleanList = List[Argument]()
+    var cleanList = List[BasicArgument]()
     (arguments ::: (dependencies.flatMap(_.arguments))).foreach{ arg => 
       if (!contains(cleanList, arg)) cleanList ::= arg
     }
@@ -186,11 +186,11 @@ trait Template {
           case Failure(msg,_,_) => Failure(msg) :: Nil
         }
         case arg: Optional if value == "_" => Full(ArgumentResult(arg,"")) :: Nil
-        case arg: Argument if value == "_" => 
+        case arg: BasicArgument if value == "_" => 
           val requestMsg = "Please enter a value for '%s': ".format(arg.name)
           Full(ArgumentResult(arg,IOHelper.requestInput(requestMsg))) :: Nil
         case arg: Repeatable if isRepeatable(value) => value.split(",").map( v => Full(ArgumentResult(arg,v))).toList
-        case arg: Argument => Full(ArgumentResult(arg,value)) :: Nil
+        case arg: BasicArgument => Full(ArgumentResult(arg,value)) :: Nil
       })
     }
     BoxUtil.containsAnyFailures(argumentResults) match {
