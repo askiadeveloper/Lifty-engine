@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 */ 
 object TestTemplateProcessor extends StandAloneTemplateProcessor {
   
-  def templates = TestTemplate :: Snippet :: TestTemplate3 :: Nil
+  def templates = TestTemplate :: Snippet :: TestTemplate3 :: DependentSnippet :: Nil
   override def commands = (TestCommand1(this) :: TestCommand2(this) :: TestCommand3(this) :: Nil) ::: super.commands
     
   object TestTemplate extends Template with Create {
@@ -27,6 +27,15 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
   object Snippet extends Template with Create {
     def name = "snippet"
     def description = "test snippet"
+    def arguments = Argument("name") :: Argument("pack") :: Nil
+    def files = List(TemplateFile(
+      "src/test/resources/snippet.ssp","src/test/output/snippet.scala"
+    ))
+  }
+  
+  object DependentSnippet extends Template with Create {
+    def name = "dependent"
+    def description = "dependent snippet"
     def arguments = Argument("name") :: Argument("pack") :: Nil
     def files = List(TemplateFile(
       "src/test/resources/snippet.ssp","src/test/output/snippet.scala"

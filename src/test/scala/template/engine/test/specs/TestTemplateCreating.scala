@@ -16,5 +16,12 @@ class TestTemplateCreating extends FlatSpec with ShouldMatchers {
     f.delete
   }
   
+  "Dependent template" should "depend on snippet" in {
+    TestTemplateProcessor.processInput("create dependent Name my.package")
+    val f = new File("src/test/output/snippet.scala")
+    f.exists should be === true
+    f.delete
+  }
+  
   
 }

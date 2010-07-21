@@ -26,7 +26,9 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   */
   def run: Box[CommandResult] = { 
     
-    val processedFiles = template.files.map( t => processSingleTemplate(t) ).filter{ _ match {
+    val templateFiles = if (template.hasDependencies) template.getAllFiles else template.files
+        
+    val processedFiles = templateFiles.map( t => processSingleTemplate(t) ).filter{ _ match {
       case(_,true) => true
       case(_,false) => false
     }}.map{ case(templateFile,true) => templateFile}

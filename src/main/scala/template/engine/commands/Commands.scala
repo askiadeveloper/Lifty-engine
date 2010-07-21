@@ -19,7 +19,6 @@ trait Command {
 
 case class CommandResult(message: String)
 
-
 case class CreateCommand(processor: TemplateProcessor) extends Command {
   
   def keyword = "create"

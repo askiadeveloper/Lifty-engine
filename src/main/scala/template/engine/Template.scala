@@ -52,6 +52,16 @@ trait Template {
   def files: List[TemplateFile]
   
   /**
+  * Override this method if you want your template to depend on other templates.
+  * The order of the templates is important. If there are any conflicts with the
+  * files declared in the templates the conflicting files in the first named template 
+  * will get used
+  * 
+  * @return   The list of templates the template depends on
+  */
+  def dependencies = List[Template]() 
+  
+  /**
   * I really can't remember why I have this method. Sorry.
   */
   def fixedValues = List[ArgumentResult]()
@@ -88,6 +98,41 @@ trait Template {
       case _ => Failure("Bollocks!")
     }
   }
+    
+  /**
+  * Gets all of the files declared in this tempalte and each of it's dependencies
+  * IMPORTANT: If there are any duplicated templates (i.e. files that have the same
+  *            output path) the first in the list will be used. 
+  *
+  * @return The files of this template and of each dependency (if any)
+  */
+  def getAllFiles: List[TemplateFile] = {
+    
+    // removes any duplicate template files from the list
+    def filterDuplicates(list: List[TemplateFile]): List[TemplateFile] = {
+      // checks if a list of template files contains a template file
+      // with the same destination as templ
+      def contains(templatesFiles: List[TemplateFile], 
+                            templ: TemplateFile): Boolean = {
+        templatesFiles.forall( _.destination != templ.destination )
+      }
+      var cleanList = List[TemplateFile]()
+      list.foreach{ item => 
+        if (!contains(cleanList,item)) cleanList ::= item
+      }
+      cleanList
+    }
+    
+    files ::: (dependencies.flatMap(_.files))
+    
+  }
+  
+  /**
+  * Checks if the template declares any dependencies.
+  * 
+  * @return true if the templates has any dependencies
+  */
+  def hasDependencies: Boolean = dependencies.size > 0
     
   /**
   * Takes a list of argument formatted strings (i.e. name=value or just value) and returns a boxed list of
