@@ -55,9 +55,9 @@ object TemplateHelper {
   * @param  to    The destination of the file
   */
   def copy(from: String, to:String): Unit = {
-    
     val toFile = new File(to)
-    if (!toFile.exists){
+
+    if (IOHelper.safeToCreateFile(toFile)){
       val tempFile = FileHelper.loadFile(from)
       try {
         val is = new FileInputStream(tempFile)

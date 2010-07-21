@@ -62,20 +62,6 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     if (scalateBytecodeFolder.exists) FileHelper.recursiveDelete(scalateBytecodeFolder)
   }
   
-  private def safeToCreateFile(file: File): Boolean = {
-    
-    def askUser: Boolean = {
-      val question = "The file %s exists, do you want to override it? (y/n): ".format(file.getPath)
-      IOHelper.requestInput(question) match {
-        case "y" => true
-        case "n" => false
-        case _ => askUser
-      }
-    }
-    
-    if (file.exists) askUser else true
-  }
-  
   /**
   * This will process a single scalate template file and save the file in the appropriate 
   * place
@@ -98,7 +84,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
       FileHelper.createFolderStructure(destinationPath)
       val currentPath = new File("").getAbsolutePath // TODO: Not sure this is needed.
       val file = new File(currentPath+"/"+destinationPath)
-      if (safeToCreateFile(file)) {
+      if (IOHelper.safeToCreateFile(file)) {
           file.createNewFile
           val out = new BufferedWriter(new FileWriter(file));
           out.write(buffer.toString);
