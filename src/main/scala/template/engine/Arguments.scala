@@ -1,9 +1,10 @@
 package template.engine
 
 import net.liftweb.common.{Box, Empty, Failure, Full}
-import template.util.{BoxUtil, IOHelper}
+import template.util.{BoxUtil, IOHelper, TemplateHelper}
 
-case class Argument(name: String){
+trait BasicArgument {
+  val name: String
   
   protected def isOptional = false
   
@@ -74,7 +75,29 @@ case class Argument(name: String){
   }
 }
 
-trait Repeatable extends Argument {
+// Different convinience argument classes
+
+
+/**
+* This is a plain argument, it has no default value and it is required.
+* Use this is none of the other classes that extend BasicArguments fits 
+* your needs.
+* 
+*/
+case class Argument(name: String) extends BasicArgument
+   
+/**
+* This instance will convert it's own value when uses in paths to.
+* If the value com.sidewayscoding is given as a value it will get
+* converted to com/sidewayscoding in paths.
+*/
+case class PackageArgument(name: String) extends BasicArgument {
+  override def transformationForPathValue(before: String) = TemplateHelper.pathOfPackage(before)
+}
+
+// Traits to alter the restrictions on the Argument
+
+trait Repeatable extends BasicArgument {
   
   requirements = ((argumentResults: List[ArgumentResult]) => {
     argumentResults match {
@@ -85,13 +108,13 @@ trait Repeatable extends Argument {
   
 }
 
-trait Optional extends Argument {
+trait Optional extends BasicArgument {
   
   override def isOptional = true
   
 }
 
-trait Default extends Argument{
+trait Default extends BasicArgument{
   
   this: Value => 
   
@@ -108,11 +131,11 @@ trait Value extends Default {
 
 }
 
-case class ArgumentResult(argument: Argument, value: String) {
+case class ArgumentResult(argument: BasicArgument, value: String) {
   def pathValue: String = argument.transformationForPathValue(value)    
   
   override def equals(obj: Any) = obj match {
-    case arg: Argument if arg == argument => true
+    case arg: BasicArgument if arg == argument => true
     case argrslt: ArgumentResult => argrslt.argument == argument && argrslt.value == value 
     case _ => false
   }

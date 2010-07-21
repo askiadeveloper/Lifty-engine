@@ -25,7 +25,7 @@ trait Template {
   * @param  arguments The list of arguments
   * @return           The list of arguments
   */
-  def arguments: List[Argument]
+  def arguments: List[BasicArgument]
   
   /**
   * Override this to provide a message for the user once the template has sucessfully
