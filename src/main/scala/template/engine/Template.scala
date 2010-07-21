@@ -121,6 +121,12 @@ trait Template {
     cleanList.reverse
   }
   
+  /**
+  * Gets all the arguments declared in the template and each of it's dependencies
+  * 
+  * @param  getAllArguments well isn't it obvious
+  * @return                 dunno
+  */
   def getAllArguments: List[BasicArgument] = {
     
     def contains(listArgs: List[BasicArgument], arg: BasicArgument) = {

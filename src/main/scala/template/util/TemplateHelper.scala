@@ -48,26 +48,29 @@ object TemplateHelper {
 
   /**
   * Copies a file without doing any processing to the given location. You can
-  * only process files not folders.
+  * only process files not folders. It only copies the files it there isn't 
+  * allready a file at the destination.
   * 
   * @param  from  The file to copy
   * @param  to    The destination of the file
   */
   def copy(from: String, to:String): Unit = {
-        
-    val tempFile = FileHelper.loadFile(from)
-    try {
-      val is = new FileInputStream(tempFile)
-      val in = scala.io.Source.fromInputStream(is)
-      val toFile = new File(to)
-      toFile.createNewFile
-      val out = new BufferedWriter(new FileWriter(toFile));
-      in.getLines.foreach(out.write(_))
-      out.close
-    } catch {
-      case e: Exception => e.printStackTrace
-    } finally {
-      tempFile.delete
+    
+    val toFile = new File(to)
+    if (!toFile.exists){
+      val tempFile = FileHelper.loadFile(from)
+      try {
+        val is = new FileInputStream(tempFile)
+        val in = scala.io.Source.fromInputStream(is)
+        toFile.createNewFile
+        val out = new BufferedWriter(new FileWriter(toFile));
+        in.getLines.foreach(out.write(_))
+        out.close
+      } catch {
+        case e: Exception => e.printStackTrace
+      } finally {
+        tempFile.delete
+      }
     }
   }
   
