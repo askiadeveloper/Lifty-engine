@@ -40,7 +40,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
       case(_,false) => false
     }}.map{ case(templateFile,true) => templateFile}
     
-    val copiedFiles = toCopy.map( t => (t,copy(t.file,t.destination)) ).filter{ _ match {
+    val copiedFiles = toCopy.map( t => (t,copy(t.file,TemplateHelper.replaceVariablesInPath(t.destination,argumentResults))) ).filter{ _ match {
       case (_,true) => true
       case (_,false) => false
     }}.map{ case(template,true) => template}

@@ -55,10 +55,12 @@ object TemplateHelper {
   * @param  to    The destination of the file
   */
   def copy(from: String, to:String): Boolean = {
-    val toFile = new File(to)
+    
+    val currentPath = new File("").getAbsolutePath // TODO: Not sure this is needed.
+    val toFile = new File(currentPath+"/"+to)
+    val tempFile = FileHelper.loadFile(from)
 
     if (IOHelper.safeToCreateFile(toFile)){
-      val tempFile = FileHelper.loadFile(from)
       try {
         val is = new FileInputStream(tempFile)
         val in = scala.io.Source.fromInputStream(is)
