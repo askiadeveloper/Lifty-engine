@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 */ 
 object TestTemplateProcessor extends StandAloneTemplateProcessor {
   
-  def templates = TestTemplate :: Snippet :: TestTemplate3 :: DependentSnippet :: Nil
+  def templates = TestTemplate :: Snippet :: TestTemplate3 :: DependentSnippet :: IndexTemplate :: EmptyTemplate :: Nil
   override def commands = (TestCommand1(this) :: TestCommand2(this) :: TestCommand3(this) :: Nil) ::: super.commands
     
   object TestTemplate extends Template with Create {
@@ -24,14 +24,29 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
     def files = Nil
   }
   
+  object IndexTemplate extends Template with Create {
+    def name = "index"
+    def description = "index snippet"
+    def arguments = Nil
+    def files = List(TemplateFile("src/test/resources/index.html","src/test/output/index.html"))
+  }
+  
   object Snippet extends Template with Create {
     def name = "snippet"
     def description = "test snippet"
     def arguments = Argument("name") :: Argument("pack") :: Nil
     def files = List(
-      TemplateFile("src/test/resources/snippet.ssp","src/test/output/snippet.scala"),
-      TemplateFile("src/test/resources/index.html","src/test/output/index.html")
+      TemplateFile("src/test/resources/snippet.ssp","src/test/output/snippet.scala")
       )
+  }
+  
+  object EmptyTemplate extends Template with Create {
+    def name = "empty"
+    def description = "empty snippet (empty.index)"
+    def arguments = Argument("empty") :: Nil
+    def files = List(
+      TemplateFile("src/test/resources/empty.html","src/test/output/empty.html")
+    )
   }
   
   object DependentSnippet extends Template with Create {

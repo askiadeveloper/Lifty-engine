@@ -12,18 +12,14 @@ class TestTemplateCreating extends FlatSpec with ShouldMatchers {
   "Snippet template" should "be created" in {
     TestTemplateProcessor.processInput("create snippet Name my.package")
     val f1 = new File("src/test/output/snippet.scala")
-    val f2 = new File("src/test/output/index.html")
     f1.exists should be === true
-    f2.exists should be === true
     f1.delete
-    f2.delete
   }
  
   "Dependent template" should "depend on the files of itself and dependents (duplicates excluded)" in {
     val snippet = TestTemplateProcessor.templates.filter(_.name == "snippet").head
     val template = TestTemplateProcessor.templates.filter(_.name == "dependent").head
     val files = template.getAllFiles
-    println(files)
     files should be === template.files // the snippet template in "dependent" takes precedence  
   }
   
@@ -56,6 +52,28 @@ class TestTemplateCreating extends FlatSpec with ShouldMatchers {
     template.getAllArguments should be === template.arguments ::: snippet.arguments
   }
  
-  
+ "create snippet with index mypackage" should "create both templates" in  {
+   val v = TestTemplateProcessor.processInput("create snippet with index mypackage")
+   val f1 = new File("src/test/output/snippet.scala")
+   val f3 = new File("src/test/output/index.html")
+   f1.exists should be === true
+   f3.exists should be === true
+   f1.delete
+   f3.delete
+ }
+
+ "create snippet with index with empty mypackage" should "create both templates" in  {
+   val v = TestTemplateProcessor.processInput("create snippet with index with empty mypackage")
+   val f1 = new File("src/test/output/snippet.scala")
+   val f2 = new File("src/test/output/empty.html")
+   val f3 = new File("src/test/output/index.html")
+   f1.exists should be === true
+   f2.exists should be === true
+   f3.exists should be === true
+   f1.delete
+   f2.delete
+   f3.delete
+ }
+
   
 }

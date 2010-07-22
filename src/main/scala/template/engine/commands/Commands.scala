@@ -2,6 +2,7 @@ package template.engine.commands
 
 import net.liftweb.common._
 import template.engine._
+import template.util.BoxUtil._
 
 trait Command {
   val processor: TemplateProcessor
@@ -31,18 +32,52 @@ case class CreateCommand(processor: TemplateProcessor) extends Command {
         processor.log.error("You have to specify which template to create")
         Failure(processor.resolveCommand("templates").open_!.run(Nil).open_!.message)
       case head :: rest => {
-        val templateName = head
-        processor.findTemplate(templateName) match {
-          case Full(template: Template) =>  template.process("create",rest) match {
-            case f @ Full(_) => f
-            case f @ Failure(_,_,_) => 
-              processor.log.error("Couldn't create the template")
-              f
-            case Empty => Empty
+        rest match {
+          case rest if rest.contains("with") => {
+            // if the word before or after the current word is "with" then it's a 
+            // template we need to create
+            val statement: List[String] = head :: Nil ::: rest
+            var templateNames = List[String]()
+            for { 
+              i <- 0 to statement.size-2 if statement(i) == "with"
+            } {
+              templateNames :::= (statement(i-1) :: statement(i+1) :: Nil)
+            }
+            templateNames = templateNames.removeDuplicates
+            val templates = templateNames.map{str: String => processor.findTemplate(str)}
+            if (templates.forall(!_.isEmpty)) { 
+              // all the templates exist, we're good to go.
+              val arguments = ((rest - templateNames) - "with").map(_.toString)
+              val processOutput = templates.map{ template => 
+                template.open_!.process("create",arguments)
+              }.toList
+              if (containsAnyFailures(processOutput)) {
+                collapseFailures(processOutput) 
+              } else {
+                Full(CommandResult(processOutput.map(_.open_!.message).mkString("\n")))
+              }
+            } else {
+              // one or more of the templates didn't exist
+              val empties = templates.filter(_.isEmpty)
+              processor.log.error("Can't find a template(s) by name %s".format(empties.mkString(", ")))
+              Failure(processor.resolveCommand("templates").open_!.run(Nil).open_!.message)
+            }
           }
-          case _ => 
-            processor.log.error("Can't find a template by name %s".format(templateName))
-            Failure(processor.resolveCommand("templates").open_!.run(Nil).open_!.message)
+          case rest => {
+            val templateName = head
+            processor.findTemplate(templateName) match {
+              case Full(template: Template) =>  template.process("create",rest) match {
+                case f @ Full(_) => f
+                case f @ Failure(_,_,_) => 
+                  processor.log.error("Couldn't create the template")
+                  f
+                case Empty => Empty
+              }
+              case _ => 
+                processor.log.error("Can't find a template by name %s".format(templateName))
+                Failure(processor.resolveCommand("templates").open_!.run(Nil).open_!.message)
+            }
+          }
         }
       }
     }  
