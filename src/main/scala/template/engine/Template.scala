@@ -6,8 +6,19 @@ import java.io.{File}
 import template.engine.commands.{CommandResult}
 import template.util.IOHelper
 
+/**
+* A template file is used to keep a relation between a path to a file
+* and where you want to place that file onces it has been rendered/copied
+* 
+*/
 case class TemplateFile(file: String, destination: String)
 
+/**
+* A template is something you want your processor to be able to creates. 
+* Create an object or class that mixis in this trait and hand it to the 
+* processor and the framework takes care of the rest.
+* 
+*/
 trait Template {
     
   /**
@@ -250,4 +261,17 @@ trait Template {
     case "delete" => this.isInstanceOf[Delete] 
     case _ => false
   }
+}
+
+/**
+* This will create a Template with no arguments or files but a lot of dependencies.
+* This is a convenient way to group templates together
+* 
+*/
+case class GroupTemplates(templates: List[Template]) extends Template with Create {
+  def name = ""
+  def description = ""
+  def files = Nil
+  def arguments = Nil
+  override def dependencies = templates
 }

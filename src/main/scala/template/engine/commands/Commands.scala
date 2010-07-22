@@ -47,14 +47,13 @@ case class CreateCommand(processor: TemplateProcessor) extends Command {
             val templates = templateNames.map{str: String => processor.findTemplate(str)}
             if (templates.forall(!_.isEmpty)) { 
               // all the templates exist, we're good to go.
-              val arguments = ((rest - templateNames) - "with").map(_.toString)
-              val processOutput = templates.map{ template => 
-                template.open_!.process("create",arguments)
-              }.toList
-              if (containsAnyFailures(processOutput)) {
-                collapseFailures(processOutput) 
-              } else {
-                Full(CommandResult(processOutput.map(_.open_!.message).mkString("\n")))
+              val arguments = ((rest -- templateNames) - "with").map(_.toString)
+              GroupTemplates(templates.map(_.open_!)).process("create",arguments) match {
+                case f @ Full(_) => f
+                case f @ Failure(_,_,_) => 
+                  processor.log.error("Couldn't create the template")
+                  f
+                case Empty => Empty
               }
             } else {
               // one or more of the templates didn't exist

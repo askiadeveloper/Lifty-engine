@@ -53,7 +53,7 @@ class TestTemplateCreating extends FlatSpec with ShouldMatchers {
   }
  
  "create snippet with index mypackage" should "create both templates" in  {
-   val v = TestTemplateProcessor.processInput("create snippet with index mypackage")
+   val v = TestTemplateProcessor.processInput("create snippet with index mypackage arg")
    val f1 = new File("src/test/output/snippet.scala")
    val f3 = new File("src/test/output/index.html")
    f1.exists should be === true
@@ -63,7 +63,8 @@ class TestTemplateCreating extends FlatSpec with ShouldMatchers {
  }
 
  "create snippet with index with empty mypackage" should "create both templates" in  {
-   val v = TestTemplateProcessor.processInput("create snippet with index with empty mypackage")
+   val v = TestTemplateProcessor.processInput("create snippet with index with empty somevalforempy mypackage name ")
+   println(v)
    val f1 = new File("src/test/output/snippet.scala")
    val f2 = new File("src/test/output/empty.html")
    val f3 = new File("src/test/output/index.html")
