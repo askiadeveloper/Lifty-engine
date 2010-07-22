@@ -30,7 +30,7 @@ class TestArgumentParsing extends FlatSpec with ShouldMatchers {
   --------------------------------------------- */
       
   "Argument" should "accept a named value" in  {
-    val input = List("arg1=%s".format(inputForArg1))
+    val input = List("%s".format(inputForArg1))
     val argumentResults = TestTemplate.parseArguments(input)
     argumentResults.open_!.first should be === ArgumentResult(TestTemplate.arguments.first,inputForArg1)
   }
@@ -65,16 +65,16 @@ class TestArgumentParsing extends FlatSpec with ShouldMatchers {
   // }
   
   "Superfluous arguments" should "be ignored" in {
-    val input = List("arg1=%s".format(inputForArg1),"test2=hejsa2","test3=hejsa3")
+    val input = List(inputForArg1,inputForArg2,"Superfluous")
     val argumentResults = TestTemplate.parseArguments(input)
     argumentResults.open_! should be === List(
       ArgumentResult(TestTemplate.arguments(0),inputForArg1),
-      ArgumentResult(TestTemplate.arguments(1),defaultForArg2)
+      ArgumentResult(TestTemplate.arguments(1),inputForArg2)
     )
   }
   
   "Default argument" should "still accept a vaule" in {
-    val input = List("arg1=%s"format(inputForArg1),"arg2=%s".format(inputForArg2))
+    val input = List("%s"format(inputForArg1),"%s".format(inputForArg2))
     val argumentResults = TestTemplate.parseArguments(input)
     argumentResults should be === Full(List(
       ArgumentResult(TestTemplate.arguments(0),inputForArg1),
@@ -83,7 +83,7 @@ class TestArgumentParsing extends FlatSpec with ShouldMatchers {
   }
   
   it should "fallback to the default value" in {
-    val input = List("arg1=%s".format(inputForArg1))
+    val input = List("%s".format(inputForArg1))
     val argumentResults = TestTemplate.parseArguments(input)
     argumentResults should be === Full(List(
       ArgumentResult(TestTemplate.arguments(0),inputForArg1),

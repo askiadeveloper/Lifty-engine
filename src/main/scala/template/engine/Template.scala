@@ -156,11 +156,7 @@ trait Template {
   * @return A box containing a list of ArgumentResults.
   */
   def parseArguments(argumentsList: List[String]): Box[List[ArgumentResult]] = {
-    val regxp = """\w+=\w+""".r
-    argumentsList.forall(!regxp.findFirstIn(_).isEmpty) match {
-      case true => parseNamedArguments(argumentsList)
-      case false => parseIndexedArguments(addUnderscores(argumentsList))
-    }
+    parseIndexedArguments(addUnderscores(argumentsList))
   }
   
   /**
