@@ -122,13 +122,27 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     val resultIs = new FileInputStream(result)
     val resultS = Source.fromInputStream(resultIs)
     
-    val wantedResult = new File("src/test/resources/correct_results/_temp_model.txt")
+    val wantedResult = new File("src/test/resources/correct_results/_temp_model_running_user.txt")
     val wantedResultIs = new FileInputStream(wantedResult)
     val wantedResultS = Source.fromInputStream(wantedResultIs)
     
     resultS.getLines.toList should be === wantedResultS.getLines.toList
     
     file.delete
+  }
+  
+  "When running Model there" should "be no sign of the injection points" in {
+    val file = FileHelper.loadFile(Model.files.first.file)
+
+    val result = scalateModel.injectLines(file)
+    val resultIs = new FileInputStream(result)
+    val resultS = Source.fromInputStream(resultIs)
+    
+    val wantedResult = new File("src/test/resources/correct_results/_temp_model_running_model.txt")
+    val wantedResultIs = new FileInputStream(wantedResult)
+    val wantedResultS = Source.fromInputStream(wantedResultIs)
+    
+    resultS.getLines.toList should be === wantedResultS.getLines.toList
   }
   
 }

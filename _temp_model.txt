@@ -1,0 +1,7 @@
+Some text BEFORE the first injection point
+
+
+Some text AFTER the first injection point
+
+
+Some text AFTER the second injection point 
