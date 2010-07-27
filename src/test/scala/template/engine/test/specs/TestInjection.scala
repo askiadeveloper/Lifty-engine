@@ -10,11 +10,17 @@ import template.engine.test
 import net.liftweb.common.{Box, Empty, Failure, Full}
 
 class TestInjection extends FlatSpec with ShouldMatchers {
+  
+  object ModelNameArg extends Argument("modelName")
+  object UserNameArg extends Argument("userName")
+  
+  val userArgumentResults = ArgumentResult(ModelNameArg,"someModelName") :: 
+    ArgumentResult(UserNameArg,"someUserName") :: Nil
     
   val scalateBlank = Scalate(BlankProject, Nil)// don't care about the arguments. 
-  val scalateBasic = Scalate(BasicProject, Nil) 
+  val scalateBasic = Scalate(BasicProject, userArgumentResults) 
   val scalateModel = Scalate(Model,Nil)
-  val scalateUser = Scalate(User,Nil)
+  val scalateUser = Scalate(User,userArgumentResults) 
   
   object BlankProject extends Template with Create {
     def name = "blank"
@@ -29,7 +35,7 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     def files = Nil
     def arguments = Nil
     override def dependencies = List(BlankProject, User)
-    injectContentsOfFile("src/test/resources/basic_inject_Blank_Point.txt").into("src/test/resources/projectblank.txt").at("Point").inTemplate(BlankProject)  
+    injectContentsOfFile("src/test/resources/basic_inject_Blank_Point.txt").into("src/test/resources/projectblank.txt").at("Point")
   }
   
   object Model extends Template with Create {
@@ -46,9 +52,9 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     def arguments = Nil
     override def dependencies = List(Model)
 
-    injectContentsOfFile("src/test/resources/user_inject_Model_Point.txt").into("src/test/resources/model.txt").at("Point").inTemplate(Model)  
-    injectContentsOfFile("src/test/resources/user_inject_Model_Point2.txt").into("src/test/resources/model.txt").at("Point2").inTemplate(Model)  
-    injectContentsOfFile("src/test/resources/user_inject_Blank_Point.txt").into("src/test/resources/projectblank.txt").at("Point").inTemplate(BlankProject)  
+    injectContentsOfFile("src/test/resources/user_inject_Model_Point.ssp") into("src/test/resources/model.txt") at("Point")
+    injectContentsOfFile("src/test/resources/user_inject_Model_Point2.ssp").into("src/test/resources/model.txt").at("Point2")
+    injectContentsOfFile("src/test/resources/user_inject_Blank_Point.ssp").into("src/test/resources/projectblank.txt").at("Point")
   }
   
   /**
@@ -143,6 +149,8 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     val wantedResultS = Source.fromInputStream(wantedResultIs)
     
     resultS.getLines.toList should be === wantedResultS.getLines.toList
+    
+    file.delete
   }
   
 }

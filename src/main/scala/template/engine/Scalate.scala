@@ -77,23 +77,22 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     val is = new FileInputStream(file)
     val source = Source.fromInputStream(is)
     val regxp = RegularExpressions.INJECTION_POINT
-    
-    val lines: List[String] = (for (line <- source.getLines) yield {
+      
+    val text: String = (for (line <- source.getLines) yield {
       if(!regxp.findFirstIn(line).isEmpty) {
         val point = regxp.findFirstMatchIn(line).get.group(1)
-        injectionsForPointInFile(point, file).flatMap{ injection =>
+        injectionsForPointInFile(point, file).map{ injection =>
           val injectionFile = new File(injection.file)
-          val injectionIs = new FileInputStream(injectionFile)
-          Source.fromInputStream(injectionIs).getLines.toList ::: "\n" :: Nil //adds spacing
-        }
-      } else List(line)
-    }).toList.flatten
+          processTemplateInMemory(injectionFile) + "\n"
+        }.mkString("")
+      } else line
+    }).toList.mkString("")
     
     val newFile = new File(file.getAbsolutePath)
     file.delete
     newFile.createNewFile
     val out = new BufferedWriter(new FileWriter(newFile));
-    lines.foreach{ line => out.write(line) }
+    out.write(text)
     out.close
     newFile 
   }
@@ -146,6 +145,16 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     if (scalateBytecodeFolder.exists) FileHelper.recursiveDelete(scalateBytecodeFolder)
   }
   
+  
+  private def processTemplateInMemory(file: File): String = {
+    val sclateTemplate = engine.load(file.getAbsolutePath)
+    val buffer = new StringWriter()
+    val context = new DefaultRenderContext(new PrintWriter(buffer))
+    addArgumentsToContext(context)
+    sclateTemplate.render(context)
+    buffer.toString.split("\n").dropWhile( _ == "").mkString("\n")
+  }
+  
   /**
   * This will process a single scalate template file and save the file in the appropriate 
   * place
@@ -190,9 +199,14 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
       file.delete 
     }
   }
-      
-  // this runs through each of the ArgumentResults and adds them to the template context.
-  // repeatable arguments gets added as a list
+  
+  /**
+  * this runs through each of the ArgumentResults and adds them to the template context.
+  * repeatable arguments gets added as a list
+  * 
+  * @param  context The context to add the arguments to
+  *
+  */
   private def addArgumentsToContext(context: DefaultRenderContext): Unit = {
     // recursivly run through the list and add any repeatable argument to the
     // context as a list. 
