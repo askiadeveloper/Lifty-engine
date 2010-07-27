@@ -3,6 +3,7 @@ package template.engine
 import org.fusesource.scalate.{TemplateEngine,DefaultRenderContext}
 import template.util.{TemplateHelper, FileHelper}
 import java.io._
+import scala.io.{Source}
 import java.net.{URL, URISyntaxException}
 import scala.util.matching.Regex
 import net.liftweb.common._
@@ -78,7 +79,25 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   
   }
   
+  
+  def injectionPointsInFile(file: File): List[String] = {
+    val regxp = """\/{2}\#inject\spoint\:\s(\w*)""".r
+    val is = new FileInputStream(file)
+    val source = Source.fromInputStream(is)
+    (for ( line <- source.getLines if !regxp.findFirstIn(line).isEmpty) yield {
+      regxp.findFirstMatchIn(line).get.group(1)
+    }).toList
+  }
    
+  /**
+  * Finds all of the injections for the specific injection point 'point' in the file 'file'
+  * Only injections that are valid are returned i.e. only injections from files that are about
+  * to be created are accepted. 
+  * 
+  * @param  point The 
+  * @param  file  well isn't it obvious
+  * @return       dunno
+  */
   def injectionsForPointInFile(point: String, file: File) = {
          
     // get all the injections

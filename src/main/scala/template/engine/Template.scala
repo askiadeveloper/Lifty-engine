@@ -159,9 +159,7 @@ trait Template {
   }
   
   /**
-  * Gets all the arguments declared in the template and each of it's dependencies
-  * 
-  * @return                 dunno
+  * @return A list of arguments declared in the template and each of it's dependencies
   */
   def getAllArguments: List[BasicArgument] = {
     
@@ -188,16 +186,6 @@ trait Template {
   * @param  injection     the TemplateInjection to add
   */
   def addInjection(injection: TemplateInjection) = _injections ::= injection
-  
-  // /**
-  // * Adds the Template to the list of injector templates. This used so the template
-  // * knows which other templates might want to inject code into it.
-  // * 
-  // * @param  dependent   The dependent template
-  // */
-  // def addInjector(injector: Template): Unit = {
-  //   _injectors ::= injector
-  // }
   
   /**
   * Checks if the template declares any dependencies.

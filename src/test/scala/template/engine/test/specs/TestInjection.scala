@@ -9,10 +9,7 @@ import template.engine.test
 import net.liftweb.common.{Box, Empty, Failure, Full}
 
 class TestInjection extends FlatSpec with ShouldMatchers {
-  
-  // constants
-  val BLANK_PROJECT_FILE_PATH = "src/test/resources/projectblank.txt"
-  
+    
   val scalateBlank = Scalate(BlankProject, Nil)// don't care about the arguments. 
   val scalateBasic = Scalate(BasicProject, Nil) 
   val scalateModel = Scalate(Model,Nil)
@@ -21,7 +18,7 @@ class TestInjection extends FlatSpec with ShouldMatchers {
   object BlankProject extends Template with Create {
     def name = "blank"
     def description = ""
-    def files = TemplateFile(BLANK_PROJECT_FILE_PATH,"src/test/output/projectblank.txt") :: Nil
+    def files = TemplateFile("src/test/resources/projectblank.txt","src/test/output/projectblank.txt") :: Nil
     def arguments = Nil
   }
   
@@ -31,7 +28,7 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     def files = Nil
     def arguments = Nil
     override def dependencies = List(BlankProject, User)
-    injectContentsOfFile("src/test/resources/basic_inject.txt").into("src/test/resources/projectblank.txt").at("Point").inTemplate(BlankProject)  
+    injectContentsOfFile("src/test/resources/basic_inject_Blank_Point.txt").into("src/test/resources/projectblank.txt").at("Point").inTemplate(BlankProject)  
   }
   
   object Model extends Template with Create {
@@ -47,10 +44,10 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     def files = Nil
     def arguments = Nil
     override def dependencies = List(Model)
-    
-    injectContentsOfFile("src/test/resources/user_inject.txt").into("src/test/resources/model.txt").at("Point").inTemplate(Model)  
-    injectContentsOfFile("src/test/resources/user_inject.txt").into("src/test/resources/model.txt").at("Point2").inTemplate(Model)  
-    injectContentsOfFile("src/test/resources/user_inject.txt").into("src/test/resources/projectblank.txt").at("Point").inTemplate(BlankProject)  
+
+    injectContentsOfFile("src/test/resources/user_inject_Model_Point.txt").into("src/test/resources/model.txt").at("Point").inTemplate(Model)  
+    injectContentsOfFile("src/test/resources/user_inject_Model_Point2.txt").into("src/test/resources/model.txt").at("Point2").inTemplate(Model)  
+    injectContentsOfFile("src/test/resources/user_inject_Blank_Point.txt").into("src/test/resources/projectblank.txt").at("Point").inTemplate(BlankProject)  
   }
   
   /**
@@ -96,4 +93,18 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     injections.size should be === 1
     file.delete
   } 
+  
+  /**
+  *=======
+  * The following tests make sure that the the framework is able to point the correct 
+  * injection points in the different templates
+  *======== 
+  **/
+
+  "The model template" should "have 2 injection points: Point,Point2" in {
+    val file = FileHelper.loadFile(Model.files.first.file)
+    scalateModel.injectionPointsInFile(file) should be === List("Point","Point2")
+    file.delete
+  }
+  
 }

@@ -1,0 +1,5 @@
+Some text BEFORE the injection point
+
+//#inject point: Point
+
+Some text AFTER the injection point
