@@ -13,7 +13,10 @@ class TestInjection extends FlatSpec with ShouldMatchers {
   // constants
   val BLANK_PROJECT_FILE_PATH = "src/test/resources/projectblank.txt"
   
-  val scalteBasic = Scalate(BasicProject, Nil) // don't care about the arguments. 
+  val scalateBlank = Scalate(BlankProject, Nil)// don't care about the arguments. 
+  val scalateBasic = Scalate(BasicProject, Nil) 
+  val scalateModel = Scalate(Model,Nil)
+  val scalateUser = Scalate(User,Nil)
   
   object BlankProject extends Template with Create {
     def name = "blank"
@@ -46,6 +49,7 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     override def dependencies = List(Model)
     
     injectContentsOfFile("src/test/resources/user_inject.txt").into("src/test/resources/model.txt").at("Point").inTemplate(Model)  
+    injectContentsOfFile("src/test/resources/user_inject.txt").into("src/test/resources/model.txt").at("Point2").inTemplate(Model)  
     injectContentsOfFile("src/test/resources/user_inject.txt").into("src/test/resources/projectblank.txt").at("Point").inTemplate(BlankProject)  
   }
   
@@ -57,48 +61,39 @@ class TestInjection extends FlatSpec with ShouldMatchers {
   **/
   
   "When running BasicProject there" should "be 2 injections for projectblank.txt" in {
-    val fileName = User.injections(0).into.split("/").last
+    // testing that injections are allowed by templates that depend on it. 
+    // This also shows that it knows how to filter the points.
     val file = FileHelper.loadFile(BlankProject.files.first.file)
-    val injections = scalteBasic.injectionsForPointInFile("Point", file)
+    val injections = scalateBasic.injectionsForPointInFile("Point", file)
     injections.size should be === 2
     file.delete
   }
   
-  // "B" should "allow C to add something to it's templates" in {
-  //   // Because C depends on B it's okay for C to add lines to B. 
-  //   val fileName = C.injections(0).into.split("/").last
-  //   B.getInjectionsForFile(fileName) should be === List(C.injections(0))
-  // }
+  "When running Model there" should "be 0 injections for it's model.txt" in {
+    // testing that injections are now accepted if the file that wants to inject
+    // something isn't about to be created. 
+    val file = FileHelper.loadFile(Model.files.first.file)
+    val injections = scalateModel.injectionsForPointInFile("Point", file)
+    injections.size should be === 0
+    file.delete
+  }
   
-  // "B" should "be allowed to  add something to A" in {
-  //     // Because A depends on B it's okay for B to add lines on A
-  //     val fileName = B.injections(0).into.split("/").last
-  //     A.getInjectionsForFile(fileName) should be === List(B.injections(0))
-  //   }
-  //   
-  //   "D" should "Not be allowed to inject something into any template" in {
-  //     // There's not relationsship between D and any other template. 
-  //     val fileName = D.injections(0).into.split("/").last
-  //     A.getInjectionsForFile(fileName) should be === List(B.injections(0))
-  //   }
-  //   
-  //   // "E" should "Be allowed to add inject something to templates of A" in {
-  //   //   // Because E denends on B and B dependens on A
-  //   //   val fileName = E.injections(0).into.split("/").last
-  //   //   A.getInjectionsForFile(fileName) should be === List(E.injections(0))
-  //   // }
-  //   
-  //   "F" should "Be allowed to inject something to templates of B" in {
-  //     // Because F depends on C which Depends on B
-  //     val fileName = F.injections(0).into.split("/").last
-  //     B.getInjectionsForFile(fileName) should be === List(F.injections(0))
-  //   }
-  //   
-  //   "GroupArguments" should "be allowed for every template to add to every template" in {
-  //     // This is used when the user 'freehands' the templates through the console.
-  //     val fileName = D.injections(0).into.split("/").last
-  //     GroupTemplates(List(D,A)).getInjectionsForFile(fileName).size should be === List(B.injections(0),D.injections(0)).size
-  //   }
-    
+  "When running User there" should "be 1 injections for Model's model.txt" in {
+    // testing that injections are allowed by templates that depend on it. 
+    val file = FileHelper.loadFile(Model.files.first.file)
+    val injections = scalateUser.injectionsForPointInFile("Point", file)
+    injections.size should be === 1
+    file.delete
+  }
   
+  "When running a group of templates with User and ProjectBlank there" should "be 1 injection for projectblank.txt" in {
+    // Testing that a GroupTemplate allows all of the templates to inject code to each of the other templates 
+    // that are being created. 
+    val grp = GroupTemplates(List(BlankProject,User))
+    val file = FileHelper.loadFile(BlankProject.files.first.file)
+    val grpScalate = Scalate(grp,Nil);
+    val injections = grpScalate.injectionsForPointInFile("Point", file)
+    injections.size should be === 1
+    file.delete
+  } 
 }

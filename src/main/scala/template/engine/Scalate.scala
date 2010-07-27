@@ -79,22 +79,19 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   }
   
    
-  def injectionsForPointInFile(name: String, file: File) = {
+  def injectionsForPointInFile(point: String, file: File) = {
          
     // get all the injections
     val injections = template.injections :::
       template.getAllDependencies.flatMap( _.injections)
-    
-    println("injections: "+injections.size)
-    
+        
     // only the ones that have anything to do with this file
     val forFile = injections.filter{ injection =>  
-      println("temp: " + "_temp_"+injection.into.split("/").last)
-      println("filename: "+file.getName)
       "_temp_"+injection.into.split("/").last == file.getName
     }
     
-    forFile
+    // we only want injections for the current point
+    forFile.filter(_.point == point)
   } 
     
   // The version of Scalate I'm using (1.0 scala 2.7.7) doesn't allow you 

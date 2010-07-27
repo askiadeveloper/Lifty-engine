@@ -57,7 +57,7 @@ case class InjectableIntoFileWithPoint(injectableIntoFile: InjectableIntoFileTra
 * @param  dependentTemplate The template that wants to inject something into it. 
 * 
 */
-case class TemplateInjection(file: String, into: String, atPoint: String, template: Template, dependentTemplate: Template) {
+case class TemplateInjection(file: String, into: String, point: String, template: Template, dependentTemplate: Template) {
   
   dependentTemplate.addInjection(this)
   
