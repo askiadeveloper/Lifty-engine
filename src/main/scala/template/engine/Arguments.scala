@@ -37,17 +37,6 @@ trait BasicArgument {
        }
     }) :: Nil
 
-  //  Simply invokes the requirements on the arguments.
-  def parseList(list: List[String]): Box[List[ArgumentResult]] = {
-    val aLotOfBoxes = requirements.map( _.apply( findArgumentIn(list)))
-    BoxUtil.containsAnyFailures(aLotOfBoxes) match {
-      case true => 
-        Failure(aLotOfBoxes.filter( _.isInstanceOf[Failure]).map (_.asInstanceOf[Failure].msg).mkString("\n"))
-      case false => 
-        Full(aLotOfBoxes.filter(_.isInstanceOf[Full[_]]).flatMap(_.open_!))
-    }
-  }
-    
   override def toString: String = {
     val extras = if (isOptional || hasDefault) {
       ({if (isOptional) Some("optional") else None} :: 
@@ -56,22 +45,6 @@ trait BasicArgument {
       .filter(!_.isEmpty).map(_.get).mkString("(",",",")")
     } else ""
     "%s%s".format(name,extras)
-  }
-  
-  //#Protected
-  
-  //  Find the value(s) for this argument in a list of arguments-formatted
-  //  strings i.e. name=value
-  protected def findArgumentIn(in: List[String]): List[ArgumentResult] = {
-    val regxp = """%s=\w+""".format(this.name).r
-    
-    in.filter( str => !regxp.findFirstIn(str).isEmpty) 
-      .map{ argument: String => 
-        val nameAndValue = argument.split("=") 
-        val name = nameAndValue(0) 
-        val value = nameAndValue(1)
-        ArgumentResult(this, value)
-      }.toList
   }
 }
 

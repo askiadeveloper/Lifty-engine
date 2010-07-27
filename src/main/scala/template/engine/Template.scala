@@ -241,24 +241,7 @@ trait Template {
       case false => Full(argumentResults.map(_.open_!).reverse) // it's okay, I allready checked!
     }
   }
-  
-  /**
-  * Takes a list of arguemnt strings and maps them to ArgumentResults. The strings can be 
-  * in any order but should be formattet like this argumentName=value. 
-  * 
-  * @param  argumentsList The list of argument strings to parse
-  * @return               A box containing a list of ArgumentResults.
-  */
-  def parseNamedArguments(argumentsList: List[String]): Box[List[ArgumentResult]] = {
-    val listOfBoxes = this.getAllArguments.map( _.parseList(argumentsList))
-    BoxUtil.containsAnyFailures(listOfBoxes) match {
-      case true => 
-        Failure(listOfBoxes.filter( _.isInstanceOf[Failure]).map(_.asInstanceOf[Failure].msg).mkString("\n"))
-      case false => 
-        Full(listOfBoxes.filter(_.isInstanceOf[Full[_]]).flatMap(_.open_!))
-    }
-  }
-  
+    
   override def toString: String = {
     val name =        "  Name:          %s".format(this.name)
     val arguments =   "  Arguments:     %s".format(this.arguments.mkString(","))

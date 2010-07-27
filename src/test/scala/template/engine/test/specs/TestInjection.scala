@@ -2,7 +2,8 @@ package template.engine.test.specs
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
-import java.io.File
+import java.io._
+import scala.io.{Source}
 import template.engine._
 import template.util.{FileHelper}
 import template.engine.test
@@ -104,6 +105,29 @@ class TestInjection extends FlatSpec with ShouldMatchers {
   "The model template" should "have 2 injection points: Point,Point2" in {
     val file = FileHelper.loadFile(Model.files.first.file)
     scalateModel.injectionPointsInFile(file) should be === List("Point","Point2")
+    file.delete
+  }
+  
+  /**
+  *=======
+  * The following tests make sure that the the right content is injected
+  * into the right files at the right places
+  *======== 
+  **/
+  
+  "When running User something" should "get injected into the model template" in {
+    val file = FileHelper.loadFile(Model.files.first.file)
+    
+    val result = scalateUser.injectLines(file)
+    val resultIs = new FileInputStream(result)
+    val resultS = Source.fromInputStream(resultIs)
+    
+    val wantedResult = new File("src/test/resources/correct_results/_temp_model.txt")
+    val wantedResultIs = new FileInputStream(wantedResult)
+    val wantedResultS = Source.fromInputStream(wantedResultIs)
+    
+    resultS.getLines.toList should be === wantedResultS.getLines.toList
+    
     file.delete
   }
   

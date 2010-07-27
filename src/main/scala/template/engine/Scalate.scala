@@ -70,18 +70,42 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   /**
   * Prepares this one template file by injecting any code into the template that might be required by 
   * templates that depend on this one. 
-  * It will inject the lines into a temp. file that the framework has created leaving the original one
-  * intact.
+  * 
+  * @param  file  the file to inject lines into
   */
-  def injectLines(file: File) = {
+  def injectLines(file: File): File = {
+    val is = new FileInputStream(file)
+    val source = Source.fromInputStream(is)
+    val regxp = RegularExpressions.INJECTION_POINT
     
+    val lines: List[String] = (for (line <- source.getLines) yield {
+      if(!regxp.findFirstIn(line).isEmpty) {
+        val point = regxp.findFirstMatchIn(line).get.group(1)
+        injectionsForPointInFile(point, file).flatMap{ injection =>
+          val injectionFile = new File(injection.file)
+          val injectionIs = new FileInputStream(injectionFile)
+          Source.fromInputStream(injectionIs).getLines.toList ::: "\n" :: Nil //adds spacing
+        }
+      } else List(line)
+    }).toList.flatten
     
-  
+    val newFile = new File(file.getAbsolutePath)
+    file.delete
+    newFile.createNewFile
+    val out = new BufferedWriter(new FileWriter(newFile));
+    lines.foreach{ line => out.write(line) }
+    out.close
+    newFile 
   }
   
-  
+  /**
+  * Finds all of the injection points declared in the file 'file'
+  * 
+  * @param  file  The file to search through
+  * @return       A list of the names of each of the injection points
+  */
   def injectionPointsInFile(file: File): List[String] = {
-    val regxp = """\/{2}\#inject\spoint\:\s(\w*)""".r
+    val regxp = RegularExpressions.INJECTION_POINT
     val is = new FileInputStream(file)
     val source = Source.fromInputStream(is)
     (for ( line <- source.getLines if !regxp.findFirstIn(line).isEmpty) yield {
@@ -132,7 +156,8 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   */
   private def processSingleTemplate(templateFile: TemplateFile): (TemplateFile,Boolean) = {
     
-    val file = FileHelper.loadFile(templateFile.file)
+    val pureTemplateFile = FileHelper.loadFile(templateFile.file)
+    val file = injectLines(pureTemplateFile)
     val sclateTemplate = engine.load(file.getAbsolutePath)
     val destinationPath = TemplateHelper.replaceVariablesInPath(templateFile.destination,argumentResults)
     val buffer = new StringWriter()
