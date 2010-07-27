@@ -64,7 +64,6 @@ class TestTemplateCreating extends FlatSpec with ShouldMatchers {
 
  "create snippet with index with empty mypackage" should "create both templates" in  {
    val v = TestTemplateProcessor.processInput("create snippet with index with empty somevalforempy mypackage name ")
-   println(v)
    val f1 = new File("src/test/output/snippet.scala")
    val f2 = new File("src/test/output/empty.html")
    val f3 = new File("src/test/output/index.html")

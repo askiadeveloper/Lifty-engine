@@ -20,6 +20,10 @@ case class TemplateFile(file: String, destination: String)
 * 
 */
 trait Template {
+  
+  
+//  private var _injectors = List[Template]()
+  private var _injections = List[TemplateInjection]()
     
   /**
   * The name of the template. This is used to figure out which template the 
@@ -71,6 +75,14 @@ trait Template {
   * @return   The list of templates the template depends on
   */
   def dependencies = List[Template]() 
+    
+  /**
+  * This method is used as an entry point to the DSL. 
+  * 
+  * @param  path  path to the file whose content you want to inject
+  * @return       An instance of Injectable. This does nothing by itself. 
+  */
+  def injectContentsOfFile(path: String) = Injectable(path, this)
   
   /**
   * I really can't remember why I have this method. Sorry.
@@ -131,11 +143,24 @@ trait Template {
     }
     cleanList.reverse
   }
+
+  /**
+  * Gets all of the dependencies i.e. not just the direct dependencies but also the
+  * dependencies og the dependencies
+  * 
+  * @return All dependencies (deep)
+  */
+  def getAllDependencies: List[Template] = {
+    
+    def getDependencies(template: Template): List[Template] = 
+      template :: template.dependencies.flatMap(getDependencies(_))
+    
+    dependencies.flatMap(getDependencies(_))
+  }
   
   /**
   * Gets all the arguments declared in the template and each of it's dependencies
   * 
-  * @param  getAllArguments well isn't it obvious
   * @return                 dunno
   */
   def getAllArguments: List[BasicArgument] = {
@@ -151,6 +176,28 @@ trait Template {
     cleanList.reverse
     
   }
+
+  /**
+  * @return A list of TemplateInjections that the template wants to inject.
+  */
+  def injections: List[TemplateInjection] = _injections
+  
+  /**
+  * This adds a TemplateInjection to the list of TemplateInjections
+  * 
+  * @param  injection     the TemplateInjection to add
+  */
+  def addInjection(injection: TemplateInjection) = _injections ::= injection
+  
+  // /**
+  // * Adds the Template to the list of injector templates. This used so the template
+  // * knows which other templates might want to inject code into it.
+  // * 
+  // * @param  dependent   The dependent template
+  // */
+  // def addInjector(injector: Template): Unit = {
+  //   _injectors ::= injector
+  // }
   
   /**
   * Checks if the template declares any dependencies.

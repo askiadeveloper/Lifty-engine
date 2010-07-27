@@ -59,6 +59,8 @@ trait TemplateProcessor {
   */
   def processInput(args: String): Box[String] = {
 
+    CurrentProcessor.set(this)
+
     val argsArr = args.split(" ")
     val keyword = argsArr(0)
     val arguments = argsArr.toList - keyword
@@ -100,4 +102,14 @@ trait TemplateProcessor {
       case template :: rest => Full(template) 
       case Nil => Empty
   }
+}
+
+object CurrentProcessor {
+  
+  private var processor: TemplateProcessor = null
+  
+  def set(newProcessor: TemplateProcessor) = processor = newProcessor
+  
+  def get = processor
+  
 }

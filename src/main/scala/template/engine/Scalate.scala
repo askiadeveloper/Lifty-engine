@@ -65,6 +65,37 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     
     Full(CommandResult("%s%s%s%s".format(header,arguments,files,notice)))
   }
+  
+  /**
+  * Prepares this one template file by injecting any code into the template that might be required by 
+  * templates that depend on this one. 
+  * It will inject the lines into a temp. file that the framework has created leaving the original one
+  * intact.
+  */
+  def injectLines(file: File) = {
+    
+    
+  
+  }
+  
+   
+  def injectionsForPointInFile(name: String, file: File) = {
+         
+    // get all the injections
+    val injections = template.injections :::
+      template.getAllDependencies.flatMap( _.injections)
+    
+    println("injections: "+injections.size)
+    
+    // only the ones that have anything to do with this file
+    val forFile = injections.filter{ injection =>  
+      println("temp: " + "_temp_"+injection.into.split("/").last)
+      println("filename: "+file.getName)
+      "_temp_"+injection.into.split("/").last == file.getName
+    }
+    
+    forFile
+  } 
     
   // The version of Scalate I'm using (1.0 scala 2.7.7) doesn't allow you 
   // change the cache settings. The 2.0 brach does so this can be removed later on
@@ -114,10 +145,8 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
         (templateFile, false)
       }
     } finally {
-      // clean up in case the temp filse was generated.
-      if (GlobalConfiguration.runningAsJar) {
-        file.delete 
-      }
+      // Remove the temp file.
+      file.delete 
     }
   }
       

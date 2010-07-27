@@ -74,9 +74,7 @@ object TemplateHelper {
         case e: Exception => e.printStackTrace
         false
       } finally {
-        if (GlobalConfiguration.runningAsJar) {
-          tempFile.delete 
-        }
+        tempFile.delete 
       }
     } else false
   }
