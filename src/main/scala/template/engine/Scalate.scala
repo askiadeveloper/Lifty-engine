@@ -147,12 +147,17 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   
   
   private def processTemplateInMemory(file: File): String = {
-    val sclateTemplate = engine.load(file.getAbsolutePath)
-    val buffer = new StringWriter()
-    val context = new DefaultRenderContext(new PrintWriter(buffer))
-    addArgumentsToContext(context)
-    sclateTemplate.render(context)
-    buffer.toString.split("\n").dropWhile( _ == "").mkString("\n")
+    val template = FileHelper.loadFile(file.getAbsolutePath)
+    try {
+      val sclateTemplate = engine.load(template.getAbsolutePath)
+      val buffer = new StringWriter()
+      val context = new DefaultRenderContext(new PrintWriter(buffer))
+      addArgumentsToContext(context)
+      sclateTemplate.render(context)
+      buffer.toString.split("\n").dropWhile( _ == "").mkString("\n")
+    } finally {
+      template.delete
+    }
   }
   
   /**

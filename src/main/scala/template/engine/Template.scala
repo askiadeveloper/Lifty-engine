@@ -21,8 +21,6 @@ case class TemplateFile(file: String, destination: String)
 */
 trait Template {
   
-  
-//  private var _injectors = List[Template]()
   private var _injections = List[TemplateInjection]()
     
   /**
@@ -204,7 +202,7 @@ trait Template {
   def parseArguments(argumentsList: List[String]): Box[List[ArgumentResult]] = {
     parseIndexedArguments(addUnderscores(argumentsList))
   }
-  
+
   /**
   * Takes a list of argument strings and maps them to ArgumentResuts in the order typed
   * 
