@@ -60,8 +60,8 @@ object TemplateHelper {
     val toFile = new File(currentPath+"/"+to)
     val tempFile = FileHelper.loadFile(from)
 
-    if (IOHelper.safeToCreateFile(toFile)){
-      try {
+    try {
+      if (IOHelper.safeToCreateFile(toFile)){
         val is = new FileInputStream(tempFile)
         val in = scala.io.Source.fromInputStream(is)
         FileHelper.createFolderStructure(to)
@@ -70,13 +70,13 @@ object TemplateHelper {
         in.getLines.foreach(out.write(_))
         out.close
         true
-      } catch {
-        case e: Exception => e.printStackTrace
-        false
-      } finally {
-        tempFile.delete 
-      }
-    } else false
+      } else false
+    } catch {
+      case e: Exception => e.printStackTrace
+      false
+    } finally {
+      tempFile.delete 
+    }
   }
   
   /**
