@@ -155,17 +155,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
       
     // Get all the valid injections, i.e. injections that have anything to do 
     // with the above files
-    val validInjections = injections.filter{ injection => 
-      println(injection.into)
-      allFiles.contains(injection.into)
-    }
-    
-    println("all files:")
-    println(allFiles)
-    println("all injections:")
-    println(injections)
-    println("valid injections:")
-    println(validInjections)
+    val validInjections = injections.filter( injection => allFiles.contains(injection.into))
 
     // get the ones that are injections, but not valid.
     injections.diff(validInjections)
