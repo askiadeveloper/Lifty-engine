@@ -45,12 +45,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
       case (_,true) => true
       case (_,false) => false
     }}.map{ case(template,true) => template}
-    
-    template.postRenderAction(argumentResults)
-    template.dependencies.foreach(_.postRenderAction(argumentResults))
-  
-    cleanScalateCache
-      
+          
     // pretty printing 
     val header = "Running %s with the following arguments:\n".format(template.name)
     val arguments = "\n%s\n".format(argumentResults.map(arg => arg.argument.name+" = "+arg.value).mkString("\n"))
@@ -63,9 +58,9 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
       case Full(notice) => "\n\nNotice:\n%s\n".format(notice)
       case _ => ""
     }
-    
+        
     val messageUnusedInjections = if (unusedInjections.size > 0) {
-        "\n\nThe template was not able inject the following: %s".format(this.unusedInjections.map{
+        "\n\nThe template was not able inject the following: %s".format(unusedInjections.map{
           injection => 
             "\n\nCode:\n%s\n\ninto:\n%s at %s".format(
               processTemplateInMemory(new File(injection.file)),
@@ -74,6 +69,11 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
             )
         }.mkString("\n\n"))
     } else ""
+    
+    template.postRenderAction(argumentResults)
+    template.dependencies.foreach(_.postRenderAction(argumentResults))
+  
+    cleanScalateCache
         
     Full(CommandResult("%s%s%s%s%s".format(header,arguments,files,notice,messageUnusedInjections)))
   }
@@ -182,15 +182,28 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   }
   
   
+  /**
+  * This simply processes template and returns the content as a string. If the file has the type
+  * .ssp it is rendered with scalate. If not the content is just copied.
+  * 
+  * @param  file  The path to the file you want to process/copy
+  * @return       A string with the copied/rendered content
+  */
   private def processTemplateInMemory(file: File): String = {
     val template = FileHelper.loadFile(file.getAbsolutePath)
     try {
-      val sclateTemplate = engine.load(template.getAbsolutePath)
-      val buffer = new StringWriter()
-      val context = new DefaultRenderContext(new PrintWriter(buffer))
-      addArgumentsToContext(context)
-      sclateTemplate.render(context)
-      buffer.toString.split("\n").dropWhile( _ == "").mkString("\n")
+      if (template.getAbsolutePath.split("/").last.contains(".ssp")) {
+        val sclateTemplate = engine.load(template.getAbsolutePath)
+        val buffer = new StringWriter()
+        val context = new DefaultRenderContext(new PrintWriter(buffer))
+        addArgumentsToContext(context)
+        sclateTemplate.render(context)
+        buffer.toString.split("\n").dropWhile( _ == "").mkString("\n")
+      } else {
+        val is = new FileInputStream(template)
+        val in = scala.io.Source.fromInputStream(is)
+        in.getLines.toList.mkString("")
+      }
     } finally {
       template.delete
     }
