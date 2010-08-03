@@ -74,6 +74,11 @@ class TestTemplateCreating extends FlatSpec with ShouldMatchers {
    f2.delete
    f3.delete
  }
+ 
+ // "test" should "test" in {
+ //   println(TestTemplateProcessor.processInput("create user"))
+ //   true should be === true
+ // }
 
   
 }

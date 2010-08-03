@@ -64,7 +64,18 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
       case _ => ""
     }
     
-    Full(CommandResult("%s%s%s%s".format(header,arguments,files,notice)))
+    val messageUnusedInjections = if (unusedInjections.size > 0) {
+        "\n\nThe template was not able inject the following: %s".format(this.unusedInjections.map{
+          injection => 
+            "\n\nCode:\n%s\n\ninto:\n%s at %s".format(
+              processTemplateInMemory(new File(injection.file)),
+              injection.into,
+              injection.point
+            )
+        }.mkString("\n\n"))
+    } else ""
+        
+    Full(CommandResult("%s%s%s%s%s".format(header,arguments,files,notice,messageUnusedInjections)))
   }
   
   /**

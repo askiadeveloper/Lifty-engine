@@ -17,7 +17,7 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
   CurrentProcessor.set(this)
   
   def templates = TestTemplate :: Snippet :: TestTemplate3 :: 
-                  DependentSnippet :: IndexTemplate :: EmptyTemplate :: Nil
+                  DependentSnippet :: IndexTemplate :: EmptyTemplate :: Model2 :: User2 :: Nil
   override def commands = (TestCommand1(this) :: TestCommand2(this) :: TestCommand3(this) :: Nil) ::: super.commands
     
   object TestTemplate extends Template with Create {
@@ -76,6 +76,32 @@ object TestTemplateProcessor extends StandAloneTemplateProcessor {
     }
     def files = Nil
   }
+  
+  // for injection purposes
+  // --------------------------
+  object Model2 extends Template with Create {
+    def name = "model"
+    def description = ""
+    def files = TemplateFile("src/test/resources/model.txt","src/test/output/model.txt") :: Nil
+    def arguments = Nil
+  }
+  
+  object User2 extends Template with Create {
+    def name = "user"
+    def description = ""
+    def files = Nil
+    def arguments = Nil
+    override def dependencies = List(Model2)
+
+    injectContentsOfFile("src/test/resources/user_inject_Model_Point.ssp") into("model.txt") at("Point")
+    injectContentsOfFile("src/test/resources/user_inject_Model_Point2.ssp").into("model.txt").at("Point2")
+    injectContentsOfFile("src/test/resources/user_inject_Blank_Point.ssp").into("projectblank.txt").at("Point")
+  }
+  // --------------------------
+  
+  // ------------
+  // commands
+  // ------------
   
   case class TestCommand1(processor: TemplateProcessor) extends Command {
     def keyword = "command1"
