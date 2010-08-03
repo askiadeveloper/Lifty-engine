@@ -21,7 +21,6 @@ class TestInjection extends FlatSpec with ShouldMatchers {
   val scalateBasic = Scalate(BasicProject, userArgumentResults) 
   val scalateModel = Scalate(Model,Nil)
   val scalateUser = Scalate(User,userArgumentResults) 
-  val scalateFake = Scalate(Fake,Nil)
   
   object BlankProject extends Template with Create {
     def name = "blank"
@@ -56,16 +55,6 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     injectContentsOfFile("src/test/resources/user_inject_Model_Point.ssp") into("model.txt") at("Point")
     injectContentsOfFile("src/test/resources/user_inject_Model_Point2.ssp").into("model.txt").at("Point2")
     injectContentsOfFile("src/test/resources/user_inject_Blank_Point.ssp").into("projectblank.txt").at("Point")
-  }
-  
-  object Fake extends Template with Create {
-    def name = "fake"
-    def description = ""
-    def files = Nil
-    def arguments = Nil
-    
-    injectContentsOfFile("src/test/resources/fake.ssp") into("model.txt") at("Point")
-    
   }
   
   /**
