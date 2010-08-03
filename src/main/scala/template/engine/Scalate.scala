@@ -61,13 +61,13 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
         
     val messageUnusedInjections = if (unusedInjections.size > 0) {
       val stroke = "-----------------------------------------------"
-      "\n\nThe template was not able inject the following: %s\n%s\n%s".format(
+      "\n\nThe template was not able inject the following: \n%s\n%s\n%s".format(
         stroke,
         unusedInjections.map{
         injection => 
           "\n\nCode:\n%s\n\ninto: %s at %s".format(
             processTemplateInMemory(new File(injection.file)),
-            injection.into,
+            injection.into.split("\\.").first,
             injection.point
           )
       }.mkString("\n\n"),
