@@ -135,6 +135,41 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     // we only want injections for the current point
     forFile.filter(_.point == point)
   } 
+  
+  /**
+  * This will return a list of all the unused injections. I.e. if one of the dependencies of this template
+  * declares an injection that wants to inject something into a file that is not schedueled for creating 
+  * then that injections is "unused".
+  * 
+  * @return A list of unused injections
+  */
+  def unusedInjections: List[TemplateInjection] = {
+    // this should be get all of the injections, then all of the valid injections and return the diff.
+    
+     // Get all the possible injections
+    val injections = template.injections :::
+      template.getAllDependencies.flatMap( _.injections)
+      
+    // all the template files
+    val allFiles = (template.files ::: template.getAllDependencies.flatMap(_.files)).map(_.file.split("/").last)
+      
+    // Get all the valid injections, i.e. injections that have anything to do 
+    // with the above files
+    val validInjections = injections.filter{ injection => 
+      println(injection.into)
+      allFiles.contains(injection.into)
+    }
+    
+    println("all files:")
+    println(allFiles)
+    println("all injections:")
+    println(injections)
+    println("valid injections:")
+    println(validInjections)
+
+    // get the ones that are injections, but not valid.
+    injections.diff(validInjections)
+  }
     
   // The version of Scalate I'm using (1.0 scala 2.7.7) doesn't allow you 
   // change the cache settings. The 2.0 brach does so this can be removed later on

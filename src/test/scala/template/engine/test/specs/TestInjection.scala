@@ -21,6 +21,7 @@ class TestInjection extends FlatSpec with ShouldMatchers {
   val scalateBasic = Scalate(BasicProject, userArgumentResults) 
   val scalateModel = Scalate(Model,Nil)
   val scalateUser = Scalate(User,userArgumentResults) 
+  val scalateFake = Scalate(Fake,Nil)
   
   object BlankProject extends Template with Create {
     def name = "blank"
@@ -35,7 +36,7 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     def files = Nil
     def arguments = Nil
     override def dependencies = List(BlankProject, User)
-    injectContentsOfFile("src/test/resources/basic_inject_Blank_Point.txt").into("src/test/resources/projectblank.txt").at("Point")
+    injectContentsOfFile("src/test/resources/basic_inject_Blank_Point.txt").into("projectblank.txt").at("Point")
   }
   
   object Model extends Template with Create {
@@ -52,9 +53,19 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     def arguments = Nil
     override def dependencies = List(Model)
 
-    injectContentsOfFile("src/test/resources/user_inject_Model_Point.ssp") into("src/test/resources/model.txt") at("Point")
-    injectContentsOfFile("src/test/resources/user_inject_Model_Point2.ssp").into("src/test/resources/model.txt").at("Point2")
-    injectContentsOfFile("src/test/resources/user_inject_Blank_Point.ssp").into("src/test/resources/projectblank.txt").at("Point")
+    injectContentsOfFile("src/test/resources/user_inject_Model_Point.ssp") into("model.txt") at("Point")
+    injectContentsOfFile("src/test/resources/user_inject_Model_Point2.ssp").into("model.txt").at("Point2")
+    injectContentsOfFile("src/test/resources/user_inject_Blank_Point.ssp").into("projectblank.txt").at("Point")
+  }
+  
+  object Fake extends Template with Create {
+    def name = "fake"
+    def description = ""
+    def files = Nil
+    def arguments = Nil
+    
+    injectContentsOfFile("src/test/resources/fake.ssp") into("model.txt") at("Point")
+    
   }
   
   /**
@@ -152,5 +163,20 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     
     file.delete
   }
+  
+  /**
+  *=======
+  * The following tests make sure that the the right injections are listed as unused.
+  *======== 
+  **/
+
+  "When running BasicProject there" should "be 0 unused injection" in {
+    scalateBasic.unusedInjections.size should be === 0
+  }
+
+  "When running User there" should "be 1 unused injection" in {
+    scalateUser.unusedInjections.size should be === 1
+  }
+  
   
 }
