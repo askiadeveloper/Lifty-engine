@@ -12,7 +12,7 @@
 |
 |==============================================================================================*/
 
-package template.engine
+package org.lifty.engine
 
 import net.liftweb.common.{Box, Empty, Failure, Full}
 

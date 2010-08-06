@@ -1,4 +1,4 @@
-package template.engine
+package org.lifty.engine
 
 import sbt._
 import processor.{Processor, ProcessorResult}

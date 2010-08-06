@@ -1,7 +1,7 @@
-package template.engine
+package org.lifty.engine
 
 import net.liftweb.common.{Box, Empty, Failure, Full}
-import template.util.{BoxUtil, IOHelper, TemplateHelper}
+import org.lifty.util.{BoxUtil, IOHelper, TemplateHelper}
 
 trait BasicArgument {
   val name: String

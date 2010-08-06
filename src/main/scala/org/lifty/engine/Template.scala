@@ -1,10 +1,9 @@
-package template.engine
+package org.lifty.engine
 
 import net.liftweb.common.{Box, Empty, Failure, Full}
-import template.util.{BoxUtil, TemplateHelper}
 import java.io.{File}
-import template.engine.commands.{CommandResult}
-import template.util.IOHelper
+import org.lifty.engine.commands.{CommandResult}
+import org.lifty.util.{BoxUtil, TemplateHelper, IOHelper}
 
 /**
 * A template file is used to keep a relation between a path to a file

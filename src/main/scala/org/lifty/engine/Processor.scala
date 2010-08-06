@@ -1,12 +1,12 @@
-package template.engine
+package org.lifty.engine
 
 import sbt._
 import processor.{Processor, ProcessorResult}
 import sbt.processor.BasicProcessor
 import net.liftweb.common.{Box, Empty, Failure, Full}
 import java.io.File
-import template.util.{FileHelper,TemplateHelper}
-import template.engine.commands._
+import org.lifty.util.{FileHelper,TemplateHelper}
+import org.lifty.engine.commands._
 
 trait TemplateProcessor {
   

@@ -1,15 +1,15 @@
-package template.engine
+package org.lifty.engine
 
 import org.fusesource.scalate.{TemplateEngine,DefaultRenderContext}
-import template.util.{TemplateHelper, FileHelper}
+import org.lifty.util.{TemplateHelper, FileHelper}
 import java.io._
 import scala.io.{Source}
 import java.net.{URL, URISyntaxException}
 import scala.util.matching.Regex
 import net.liftweb.common._
-import template.engine.commands.{CommandResult}
-import template.util.IOHelper
-import template.util.TemplateHelper._
+import org.lifty.engine.commands.{CommandResult}
+import org.lifty.util.IOHelper
+import org.lifty.util.TemplateHelper._
 
 case class Scalate(template: Template with Create, argumentResults: List[ArgumentResult]) {
     

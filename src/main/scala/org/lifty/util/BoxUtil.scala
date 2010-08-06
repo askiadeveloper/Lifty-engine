@@ -1,4 +1,4 @@
-package template.util
+package org.lifty.util
 
 import net.liftweb.common.{Box, Empty, Failure, Full}
 

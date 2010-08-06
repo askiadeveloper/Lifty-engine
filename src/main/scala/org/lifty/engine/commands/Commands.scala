@@ -1,8 +1,8 @@
-package template.engine.commands
+package org.lifty.engine.commands
 
 import net.liftweb.common._
-import template.engine._
-import template.util.BoxUtil._
+import org.lifty.engine._
+import org.lifty.util.BoxUtil._
 
 trait Command {
   val processor: TemplateProcessor

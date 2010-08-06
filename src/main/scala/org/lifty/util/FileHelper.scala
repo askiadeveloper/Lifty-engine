@@ -1,7 +1,7 @@
-package template.util
+package org.lifty.util
 
 import java.io.{File, BufferedWriter, FileWriter, FileInputStream}
-import template.engine._
+import org.lifty.engine._
 
 /**
 * Object to help dealing with the annoyance of dealing with 

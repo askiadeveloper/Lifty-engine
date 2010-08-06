@@ -1,10 +1,10 @@
-package template.util
+package org.lifty.util
 
-import template.engine.{ArgumentResult, GlobalConfiguration}
 import java.io._
 import java.util.{Enumeration}
 import java.util.jar._
 import net.liftweb.common.{Box, Empty, Failure, Full}
+import org.lifty.engine.{ArgumentResult, GlobalConfiguration}
 
 /**
 * This object is used to help with gerneral you might need when writig your templates

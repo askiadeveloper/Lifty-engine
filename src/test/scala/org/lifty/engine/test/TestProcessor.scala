@@ -1,9 +1,9 @@
-package template.engine.test
+package org.lifty.engine.test
 
-import template.engine._
-import template.util._
-import template.engine.TemplateFile
-import template.engine.commands._
+import org.lifty.engine._
+import org.lifty.util._
+import org.lifty.engine.TemplateFile
+import org.lifty.engine.commands._
 import net.liftweb.common.{Box, Empty, Failure, Full}
 import java.io.BufferedReader;
 import java.io.IOException;

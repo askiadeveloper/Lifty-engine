@@ -1,11 +1,11 @@
-package template.engine
+package org.lifty.engine
 
 import sbt._
 import processor.{Processor, ProcessorResult}
 import sbt.processor.BasicProcessor
 import java.io.{File}
 import net.liftweb.common.{Box, Empty, Failure, Full}
-import template.util.{FileHelper}
+import org.lifty.util.{FileHelper}
 
 /**
 * This is the class you want to extend if you're creating an SBT processor

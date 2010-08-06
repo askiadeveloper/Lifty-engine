@@ -1,12 +1,12 @@
-package template.engine.test.specs
+package org.lifty.engine.test.specs
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import java.io._
 import scala.io.{Source}
-import template.engine._
-import template.util.{FileHelper}
-import template.engine.test
+import org.lifty.engine._
+import org.lifty.util.{FileHelper}
+import org.lifty.engine.test
 import net.liftweb.common.{Box, Empty, Failure, Full}
 
 class TestInjection extends FlatSpec with ShouldMatchers {

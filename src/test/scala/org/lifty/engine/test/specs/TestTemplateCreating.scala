@@ -1,10 +1,10 @@
-package template.engine.test.specs
+package org.lifty.engine.test.specs
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import java.io.File
-import template.engine._
-import template.engine.test
+import org.lifty.engine._
+import org.lifty.engine.test
 import net.liftweb.common.{Box, Empty, Failure, Full}
 
 class TestTemplateCreating extends FlatSpec with ShouldMatchers {

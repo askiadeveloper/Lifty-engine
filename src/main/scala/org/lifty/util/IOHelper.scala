@@ -1,4 +1,4 @@
-package template.util
+package org.lifty.util
 
 import java.io.{BufferedReader, InputStreamReader, File}
 import sbt._
