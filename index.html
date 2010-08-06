@@ -1,80 +1,215 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>
+      Lifty/Lifty-engine @ GitHub
+    </title>
+    <link rel="stylesheet" href="http://gist.github.com/stylesheets/gist/embed.css">
+    <style type="text/css">
+/*<![CDATA[*/
+body {
+	margin-top: 1.0em;
+	background-color: #ffffff;
+  font-family: "Helvetica,Arial,FreeSans";
+	color: #000000;
+}
+#container {
+  margin: 0 auto;
+  width: 800px;
+}
+h1 { font-size: 3.8em; color: #000000; margin-bottom: 3px; }
+h1 .small { font-size: 0.4em; }
+h1 a { text-decoration: none }
+h2 { font-size: 1.5em; color: #000000; }
+h3 { text-align: left; color: #000000; }
+pre, .gist-file {font-size: 13px !important;}
+a { color: #000000; }
+p { 	line-height: 1.5em; }
+.download { float: right; }
 
-	<title>Lifty/Lifty-engine @ GitHub</title>
-	
-	<style type="text/css">
-		body {
-  		margin-top: 1.0em;
-  		background-color: #74dafc;
-		  font-family: "Helvetica,Arial,FreeSans";
-  		color: #000000;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-		h1 { font-size: 3.8em; color: #8b2503; margin-bottom: 3px; }
-		h1 .small { font-size: 0.4em; }
-		h1 a { text-decoration: none }
-		h2 { font-size: 1.5em; color: #8b2503; }
-    h3 { text-align: center; color: #8b2503; }
-    a { color: #8b2503; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-		pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
-	</style>
-	
-</head>
-
-<body>
-  <a href="http://github.com/Lifty/Lifty-engine"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-
-  <div id="container">
-
-    <div class="download">
-      <a href="http://github.com/Lifty/Lifty-engine/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/Lifty/Lifty-engine/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
-    </div>
-
-    <h1><a href="http://github.com/Lifty/Lifty-engine">Lifty-engine</a>
-      <span class="small">by <a href="http://github.com/Lifty">Lifty</a></span></h1>
-
-    <div class="description">
-      Lifty-engine is a framework that helps you develop SBT processors which generate source files.
-    </div>
-
-    <h2>Authors</h2>
-<p>Mads Hartmann (mads379@gmail.com)<br/><br/>      </p>
-<h2>Contact</h2>
-<p>Lifty (lifty.organization@gmail.com)<br/>      </p>
-
-
-    <h2>Download</h2>
+    /*]]>*/
+    </style>
+  </head>
+  <body>
     <p>
-      You can download this project in either
-      <a href="http://github.com/Lifty/Lifty-engine/zipball/master">zip</a> or
-      <a href="http://github.com/Lifty/Lifty-engine/tarball/master">tar</a> formats.
+      <a href="http://github.com/Lifty/Lifty-engine"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
     </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/Lifty/Lifty-engine</pre>
-    </p>
+    <div id="container">
 
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/Lifty/Lifty-engine">Lifty/Lifty-engine</a>
+      <h1>
+        <a href="http://github.com/Lifty/Lifty-engine">Lifty Engine</a>
+      </h1>
+      
+      <ul>
+        <li><a href="#authors">Authors</a></li>
+        <li><a href="#description">Description</a></li>
+        <li><a href="#project_information">Project Information</a></li>
+        <li>
+            <a href="#your_first_processor">Creating your first processor</a>
+            <ul>
+              <li><a href="#hello_world">A hello world processor</a></li>
+              <li><a href="#improving_it">Improving the processor</a></li>
+            </ul>
+          
+        </li>
+        <li><a href="#getting_the_code">Getting the code</a></li>
+        <li><a href="#license">License</a></li>
+      </ul>
+      
+      <h2 id="authors">Authors</h2>
+      <p>Mads Hartmann (mads379@gmail.com)</p>
+      
+      <h2 id="description">Description</h2>
+        <p>The development of this project started as my Google summer of code project in 2010</p>
+        <p>
+          In few words the project aims to make it a lot easier for people to develop <a href="http://code.google.com/p/simple-build-tool/" target="_blank">SBT</a>
+          processors which generates source files. Lifty Engine was developed by Mads Hartmann Jensen during Google Summer of Code 2010. 
+          David Pollak and Timothy Perret were both mentors and without them this project wouldn't have existed. Thanks guys.
+        </p>
+        <p>To see what you're able to create with this project check out <a href="http://lifty.github.com/Lifty" target="_blank">Lifty</a></p>
+
+      <h2 id="project_information">Project information</h2>
+      <p>The project is hosted on <a href="http://www.scala-tools.org" target="_blank">Scala-tools</a></p>
+      <ul>
+        <li><strong>Group</strong>: org.lifty </li>
+        <li><strong>Artifact</strong>: lifty-engine_2.7.7</li>
+        <li><strong>Version</strong>: 0.3</li>
+      </ul>
+      <p>In sbt you would depend on the project like this:</p>
+      
+      
+      <div id="gist-504492" class="gist">
+            <div class="gist-file">
+              <div class="gist-data gist-syntax">
+                  <div class="gist-highlight"><pre><div class="line" id="LC4"><br></div><div class="line" id="LC5">&nbsp;&nbsp;<span class="k">val</span> <span class="n">scalatools_release</span> <span class="k">=</span> <span class="s">"Scala Tools Releases"</span> <span class="n">at</span> <span class="s">"http://scala-tools.org/repo-releases/"</span></div><div class="line" id="LC6">&nbsp;&nbsp;<span class="k">val</span> <span class="n">scalatools_snapshots</span> <span class="k">=</span> <span class="s">"Scala Tools Snapshot"</span> <span class="n">at</span> <span class="s">"http://scala-tools.org/repo-snapshots/"</span></div><div class="line" id="LC7"><br><div class="line" id="LC7"><br></div><div class="line" id="LC8">&nbsp;&nbsp;<span class="k">val</span> <span class="n">sbt_template_engine</span> <span class="k">=</span> <span class="s">"org.lifty"</span> <span class="o">%%</span> <span class="s">"lifty-engine"</span> <span class="o">%</span> <span class="s">"0.3"</span></div></div></pre></div>
+              </div>
+      </div>
+      <h2 id="your_first_processor">Creating your first processor</h2>
+      <h3 id="hello_world">A hello world processor</h3>
+      <p>I'll walk you through creating your first SBT processor using Lifty Engine. First off clone this blank processor from my Github repository</p>
+      <div class="gist">
+        <div class="gist-file">
+          <div class="gist-data gist-syntax">
+            <div class="gist-highlight">
+            <pre><div class="line"><span>git clone git://github.com/mads379/Sample-SBT-Processor.git</span></div></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p>Great, now open op the project in your favorite editor (Textmate ftw.) and add this project as a dependency in project/build/sample_sbt_processor.scala. The file should end up looking something like this:</p>
+      
+      <script src="http://gist.github.com/504492.js?file=minimal_sbt_template_processor_project.scala"></script>
+
+      <p>Right, that's all the dependencies we need. Lets create the processor. All you need to do to create a processor is to mix in the SBTTemplateProcessor trait and implement the templates method which should return a List[Template]. Edit the file src/main/scala/com/sidewayscoding/Processor.scala so it looks like this:</p> 
+      
+<script src="http://gist.github.com/504486.js?file=minimal_sbt_template_processor.scala"></script>
+
+      <p>Now we just need to create a file named greetings.ssp and put it in the src/main/resources/ folder. Put the following the in the file:</p>
+      
+      <script src="http://gist.github.com/504523.js?file=greetings.ssp"></script>
+
+      <p>And that's it. You've just created a very simple SBT Processor that generates source code (or well, a text file in this case). To try out your 
+        processor run the following in SBT</p>
+      
+        <div class="gist">
+          <div class="gist-file">
+            <div class="gist-data gist-syntax">
+              <div class="gist-highlight">
+              <pre><div class="line"><span>> publish-local</span><br><span>> *myprocessor is com.sidewayscoding sample_sbt_processor 1.0</span><br><span>> myprocessor create hello</span></div></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      <h3 id="improving_it">Improving the processor</h3>
+      <p>That was pretty simple. Lets take a look at some of the features that allow you to be a bit more creative with your templates. Templates can depend on other templates and inject lines of code into files created by other templates at pre-defined injection points. <strong>Don't worry</strong> the framework will never try to tamper with your source files. The injection of code happens in-memory before the template is handed to Scalate for the rendering. It goes something like this: When it's about to render a .ssp file it checks with any of the other templates that are scheduled for creation (i.e. dependencies) if that have any injections for any of the injection points declared in the file. Enough chatter, lets play around with it. Add the following template to your src/main/scala/com/sidewayscoding/Processor.scala file:</p>
+      
+      <script src="http://gist.github.com/504558.js?file=MyOtherTemplate.scala"></script>
+
+      <p>Now we have to update the greetings.ssp to include an injection point named farewell.</p>
+      
+      <script src="http://gist.github.com/504567.js?file=greetings2.ssp"></script>
+      
+      <p>And create the farewell_injection.ssp file</p>
+      
+      <script src="http://gist.github.com/504569.js?file=farewell.ssp"></script>
+
+      <p>If you add the new template to the list of templates in the processor you're good to go.</p>
+      <p>If you want to try out the processor you have to remove the old one first of course. First off remove the following folder: project/boot/scala-2.7.7/sbt-processors/com.sidewayscoding and in SBT run</p>
+
+      <div class="gist">
+        <div class="gist-file">
+          <div class="gist-data gist-syntax">
+            <div class="gist-highlight">
+            <pre><div class="line"><span>*remove myprocessor</span></div></pre>
+            </div>
+          </div>
+        </div>
+      </div>  
+      
+      <p>Now you can add the processor as you did earlier and create your newly added template like this:</p>
+      
+      <div class="gist">
+        <div class="gist-file">
+          <div class="gist-data gist-syntax">
+            <div class="gist-highlight">
+            <pre><div class="line"><span>lift create goodbye fish</span></div></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+            
+      <p>Of course we could've just created a single template that took two arguments but then you wouldn't have known about injections and dependencies ;) Besides having "static" dependencies the user can mix templates in SBT by writing stuff like this: "processor create template with otherTemplate with thirdTemplate" and all of the template files will get processed. This is extremely cool if you structure your templates in a modular way. In the Lift Processor you can create a new project with a user model simply by writing: "lift create project-blank with user" and the correct things will get added to Boot.scala - pretty nifty.</p>
+        
+      <p>I hope that this little guide is enough to get you started. You can also check out my <a href="http://github.com/Lifty/Lifty">Lift Processor</a> for a more elaborate example - If you have any problems or if you've created an awesome processor that you want me to know about don't hesitate to contact me at mads379 at gmail dot com.</p>  
+
+      <h2 id="getting_the_code">Getting the code</h2>
+
+      <p>
+        You can clone the project with <a href="http://git-scm.com">Git</a> by running:
+      </p>
+      <div class="gist">
+        <div class="gist-file">
+          <div class="gist-data gist-syntax">
+            <div class="gist-highlight">
+            <pre><div class="line"><span>git clone git://github.com/Lifty/Lifty-engine.git</span></div></pre>
+            </div>
+          </div>
+        </div>
+      </div>      
+      
+      <h2 id="license">License</h2>
+      <p>Copyright 2010 Mads Hartmann Jensen</p>
+      <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in 
+         compliance with the License. You may obtain a copy of the License at</p>
+      <p><a href="http://www.apache.org/licenses/LICENSE-2.0" target="_Blank">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+      <p>
+        Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on 
+        an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific 
+        language governing permissions and limitations under the License.
+      </p>
+      <div class="footer">
+        get the source code on GitHub : <a href="http://github.com/Lifty/Lifty-engine">Lifty/Lifty-engine</a>
+      </div>
     </div>
+    
+    <script type="text/javascript">
 
-  </div>
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-13155106-3']);
+      _gaq.push(['_trackPageview']);
 
-  
-</body>
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </body>
 </html>
