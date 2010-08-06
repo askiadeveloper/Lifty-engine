@@ -31,7 +31,7 @@ trait Template {
   * @return       The name of the template
   */
   def name: String
-  
+
   /**
   * This is the list of arguments that the template needs. 
   * 
