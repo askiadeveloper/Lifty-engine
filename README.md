@@ -1,5 +1,5 @@
-Lifty (Framework)
-===
+Lifty Engine
+==============
 
 The development of this project started as my Google summer of code project in 2010
 
@@ -7,4 +7,4 @@ In few words the project aims to make it a lot easier for people to develop SBT 
 
 To see what you're able to create with this project check out [Lifty](http://mads379.github.com/Lifty-processor/ "Lifty").
 
-Check out the [site](http://mads379.github.com/Lifty-framework/ "site") for more information.
+Check out the [site](http://mads379.github.com/Lifty-engine/ "site") for more information.
