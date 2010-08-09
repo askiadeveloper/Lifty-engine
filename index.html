@@ -64,7 +64,6 @@ p { 	line-height: 1.5em; }
       <p>Mads Hartmann (mads379@gmail.com)</p>
       
       <h2 id="description">Description</h2>
-        <p>The development of this project started as my Google summer of code project in 2010</p>
         <p>
           In few words the project aims to make it a lot easier for people to develop <a href="http://code.google.com/p/simple-build-tool/" target="_blank">SBT</a>
           processors which generates source files. Lifty Engine was developed by Mads Hartmann Jensen during Google Summer of Code 2010. 
@@ -85,7 +84,7 @@ p { 	line-height: 1.5em; }
       <div id="gist-504492" class="gist">
             <div class="gist-file">
               <div class="gist-data gist-syntax">
-                  <div class="gist-highlight"><pre><div class="line" id="LC4"><br></div><div class="line" id="LC5">&nbsp;&nbsp;<span class="k">val</span> <span class="n">scalatools_release</span> <span class="k">=</span> <span class="s">"Scala Tools Releases"</span> <span class="n">at</span> <span class="s">"http://scala-tools.org/repo-releases/"</span></div><div class="line" id="LC6">&nbsp;&nbsp;<span class="k">val</span> <span class="n">scalatools_snapshots</span> <span class="k">=</span> <span class="s">"Scala Tools Snapshot"</span> <span class="n">at</span> <span class="s">"http://scala-tools.org/repo-snapshots/"</span></div><div class="line" id="LC7"><br><div class="line" id="LC7"><br></div><div class="line" id="LC8">&nbsp;&nbsp;<span class="k">val</span> <span class="n">sbt_template_engine</span> <span class="k">=</span> <span class="s">"org.lifty"</span> <span class="o">%%</span> <span class="s">"lifty-engine"</span> <span class="o">%</span> <span class="s">"0.3"</span></div></div></pre></div>
+                  <div class="gist-highlight"><pre><div class="line" id="LC4"><br></div><div class="line" id="LC5">&nbsp;&nbsp;<span class="k">val</span> <span class="n">scalatools_release</span> <span class="k">=</span> <span class="s">"Scala Tools Releases"</span> <span class="n">at</span> <span class="s">"http://scala-tools.org/repo-releases/"</span></div><div class="line" id="LC6">&nbsp;&nbsp;<span class="k">val</span> <span class="n">scalatools_snapshots</span> <span class="k">=</span> <span class="s">"Scala Tools Snapshot"</span> <span class="n">at</span> <span class="s">"http://scala-tools.org/repo-snapshots/"</span></div><div class="line" id="LC7"><br><div class="line" id="LC7"><br></div><div class="line" id="LC8">&nbsp;&nbsp;<span class="k">val</span> <span class="n">lifty_engine</span> <span class="k">=</span> <span class="s">"org.lifty"</span> <span class="o">%%</span> <span class="s">"lifty-engine"</span> <span class="o">%</span> <span class="s">"0.3"</span></div></div></pre></div>
               </div>
       </div>
       <h2 id="your_first_processor">Creating your first processor</h2>
@@ -108,7 +107,7 @@ p { 	line-height: 1.5em; }
       
 <script src="http://gist.github.com/504486.js?file=minimal_sbt_template_processor.scala"></script>
 
-      <p>Now we just need to create a file named greetings.ssp and put it in the src/main/resources/ folder. Put the following the in the file:</p>
+      <p>Now we just need to create a file named greetings.ssp and put it in the src/main/resources/ folder. SSP stands for Scala Server Pages. Scalate has a nice reference on SSP <a href="http://scalate.fusesource.org/documentation/ssp-reference.html" target="_blank">here</a>. Put the following the in the file:</p>
       
       <script src="http://gist.github.com/504523.js?file=greetings.ssp"></script>
 
@@ -126,7 +125,7 @@ p { 	line-height: 1.5em; }
         </div>
         
       <h3 id="improving_it">Improving the processor</h3>
-      <p>That was pretty simple. Lets take a look at some of the features that allow you to be a bit more creative with your templates. Templates can depend on other templates and inject lines of code into files created by other templates at pre-defined injection points. <strong>Don't worry</strong> the framework will never try to tamper with your source files. The injection of code happens in-memory before the template is handed to Scalate for the rendering. It goes something like this: When it's about to render a .ssp file it checks with any of the other templates that are scheduled for creation (i.e. dependencies) if that have any injections for any of the injection points declared in the file. Enough chatter, lets play around with it. Add the following template to your src/main/scala/com/sidewayscoding/Processor.scala file:</p>
+      <p>That was pretty simple. Lets take a look at some of the features that allow you to be a bit more creative with your templates. Templates can depend on other templates and inject lines of code into files created by other templates at pre-defined injection points. <strong>Don't worry</strong> the framework will never try to tamper with your source files. The injection of code happens in-memory before the template is handed to <a href="http://scalate.fusesource.org/" target="_blank">Scalate</a> for the rendering. It goes something like this: When it's about to render a .ssp file it checks with any of the other templates that are scheduled for creation (i.e. dependencies) if they have any injections for any of the injection points declared in the file. Great, that's enough chatter for now, lets play around with it. Add the following template to your src/main/scala/com/sidewayscoding/Processor.scala file:</p>
       
       <script src="http://gist.github.com/504558.js?file=MyOtherTemplate.scala"></script>
 
@@ -163,7 +162,7 @@ p { 	line-height: 1.5em; }
         </div>
       </div>
             
-      <p>Of course we could've just created a single template that took two arguments but then you wouldn't have known about injections and dependencies ;) Besides having "static" dependencies the user can mix templates in SBT by writing stuff like this: "processor create template with otherTemplate with thirdTemplate" and all of the template files will get processed. This is extremely cool if you structure your templates in a modular way. In the Lift Processor you can create a new project with a user model simply by writing: "lift create project-blank with user" and the correct things will get added to Boot.scala - pretty nifty.</p>
+      <p>Of course we could've just created a single template that took two arguments but then you wouldn't have known about injections and dependencies ;) <br > Besides having "static" dependencies the user can mix templates in SBT by writing stuff like this: "processor create template with otherTemplate with thirdTemplate" and all of the template files will get processed. This is extremely cool if you structure your templates in a modular way. In the <a href="http://lifty.github.com/Lifty/" target="_blank">Lifty processor</a> (Processor for Lift projects) you can create a new project with a user model simply by writing: "lift create project-blank with user" and the correct things will get added to Boot.scala - pretty nifty.</p>
         
       <p>I hope that this little guide is enough to get you started. You can also check out my <a href="http://github.com/Lifty/Lifty">Lift Processor</a> for a more elaborate example - If you have any problems or if you've created an awesome processor that you want me to know about don't hesitate to contact me at mads379 at gmail dot com.</p>  
 
