@@ -103,7 +103,7 @@ p { 	line-height: 1.5em; }
       
       <script src="http://gist.github.com/504492.js?file=minimal_sbt_template_processor_project.scala"></script>
 
-      <p>Right, that's all the dependencies we need. Lets create the processor. All you need to do to create a processor is to mix in the SBTTemplateProcessor trait and implement the templates method which should return a List[Template]. Edit the file src/main/scala/com/sidewayscoding/Processor.scala so it looks like this:</p> 
+      <p>Right, that's all the dependencies we need. In sbt run reload followed by update so it will fetch the dependencies. Now, Lets create the processor. All you need to do to create a processor is to mix in the SBTTemplateProcessor trait and implement the templates method which should return a List[Template]. Edit the file src/main/scala/com/sidewayscoding/Processor.scala so it looks like this:</p> 
       
 <script src="http://gist.github.com/504486.js?file=minimal_sbt_template_processor.scala"></script>
 
