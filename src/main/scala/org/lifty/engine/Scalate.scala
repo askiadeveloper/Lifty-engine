@@ -144,7 +144,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
         
     // only the ones that have anything to do with this file
     val forFile = injections.filter{ injection =>  
-      "_temp_"+injection.into.split(File.separator).last == file.getName
+      "_temp_"+injection.into.split(File.separator.toCharArray.toList.head).last == file.getName
     }
     
     // we only want injections for the current point
@@ -166,7 +166,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
       template.getAllDependencies.flatMap( _.injections)
       
     // all the template files
-    val allFiles = (template.files ::: template.getAllDependencies.flatMap(_.files)).map(_.file.split(File.separator).last)
+    val allFiles = (template.files ::: template.getAllDependencies.flatMap(_.files)).map(_.file.split(File.separator.toCharArray.toList.head).last)
       
     // Get all the valid injections, i.e. injections that have anything to do 
     // with the above files
@@ -196,7 +196,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   private def processTemplateInMemory(file: File): String = {
     val template = FileHelper.loadFile(file.getAbsolutePath)
     try {
-      if (template.getAbsolutePath.split(File.separator).last.contains(".ssp")) {
+      if (template.getAbsolutePath.split(File.separator.toCharArray.toList.head).last.contains(".ssp")) {
         val sclateTemplate = engine.load(template.getAbsolutePath)
         val buffer = new StringWriter()
         val context = new DefaultRenderContext(new PrintWriter(buffer))

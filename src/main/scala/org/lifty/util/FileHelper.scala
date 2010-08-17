@@ -51,8 +51,8 @@ object FileHelper {
   */
   def createFolderStructure(path: String) {
     val currentPath = new File("").getAbsolutePath
-    val dirpath = currentPath + File.separator + (path.split(File.separator)
-      .toList-path.split(File.separator).last)
+    val dirpath = currentPath + File.separator + (path.split(File.separator.toCharArray.toList.head)
+      .toList-path.split(File.separator.toCharArray.toList.head).last)
       .mkString(File.separator)
     new File(dirpath).mkdirs
   }
@@ -66,7 +66,7 @@ object FileHelper {
   * @return       dunno
   */
   def loadFile(path: String): File = {
-    val tempFileName = "_temp_"+path.split(File.separator).last
+    val tempFileName = "_temp_"+path.split(File.separator.toCharArray.toList.head).last
     val safePath = path.toCharArray.toList match {
       case arr if arr.head == '/' => OSSpecificRoot + arr.slice(1,arr.size-1).mkString("")
       case arr => arr.mkString("")
