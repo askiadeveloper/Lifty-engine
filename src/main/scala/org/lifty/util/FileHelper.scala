@@ -51,21 +51,26 @@ object FileHelper {
   */
   def createFolderStructure(path: String) {
     val currentPath = new File("").getAbsolutePath
-    val dirpath = currentPath + File.pathSeparator + (path.split(File.pathSeparator)
-      .toList-path.split(File.pathSeparator).last)
-      .mkString(File.pathSeparator)
+    val dirpath = currentPath + File.separator + (path.split(File.separator)
+      .toList-path.split(File.separator).last)
+      .mkString(File.separator)
     new File(dirpath).mkdirs
   }
   
   /**
   * Loads a file from a string with the path to the file. It will copy the original file 
   * into a new one with the prefix _temp_ and return that file.
+  * If the first char is a / it will convert it to the OS specific root.
   * 
   * @param  path  well isn't it obvious
   * @return       dunno
   */
   def loadFile(path: String): File = {
-    val tempFileName = "_temp_"+path.split(File.pathSeparator).last
+    val tempFileName = "_temp_"+path.split(File.separator).last
+    val safePath = path.toCharArray.toList match {
+      case arr if arr.head == '/' => OSSpecificRoot + arr.slice(1,arr.size-1).mkString("")
+      case arr => arr.mkString("")
+    }
     try {
       val is = if (!GlobalConfiguration.runningAsJar) { // we're not running as a jar.
         new FileInputStream(new File(path))
@@ -85,6 +90,13 @@ object FileHelper {
         e.printStackTrace
         new File(tempFileName)
       }
+    }
+  }
+  
+  def OSSpecificRoot: String = {
+    File.separator match {
+      case """/""" => """/"""
+      case """\""" => """\\\\"""
     }
   }
   

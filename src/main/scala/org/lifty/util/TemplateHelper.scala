@@ -19,7 +19,7 @@ object TemplateHelper {
   * @param  thePackage  the package to convert
   * @return             a path formatted string
   */
-  def pathOfPackage(thePackage :String) = thePackage.replace(".",File.pathSeparator )
+  def pathOfPackage(thePackage :String) = thePackage.replace(".",File.separator )
   
   
   /**
@@ -29,7 +29,7 @@ object TemplateHelper {
   * @param  path  well isn't it obvious
   * @return       dunno
   */
-  def packageOfPath(path :String) = path.replace("src/main/scala/","").replace(File.pathSeparator,".")
+  def packageOfPath(path :String) = path.replace("src/main/scala/","").replace(File.separator,".")
  
   /**
   * Takes any number of strings (paths) and creates a directory for each
@@ -57,7 +57,7 @@ object TemplateHelper {
   def copy(from: String, to:String): Boolean = {
     
     val currentPath = new File("").getAbsolutePath // TODO: Not sure this is needed.
-    val toFile = new File(currentPath + File.pathSeparator + to)
+    val toFile = new File(currentPath + File.separator + to)
     val tempFile = FileHelper.loadFile(from)
 
     try {

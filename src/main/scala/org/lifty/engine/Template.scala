@@ -7,14 +7,14 @@ import org.lifty.util.{BoxUtil, TemplateHelper, IOHelper}
 
 /**
 * A template file is used to keep a relation between a path to a file
-* and where you want to place that file onces it has been rendered/copied
+* and where you want to place that file once it has been rendered/copied
 * 
 */
 case class TemplateFile(file: String, destination: String)
 
 /**
 * A template is something you want your processor to be able to creates. 
-* Create an object or class that mixis in this trait and hand it to the 
+* Create an object or class that mixins in this trait and hand it to the 
 * processor and the framework takes care of the rest.
 * 
 */
@@ -24,7 +24,7 @@ trait Template {
     
   /**
   * The name of the template. This is used to figure out which template the 
-  * user is trying to invoke when writig processorName create <templateName>.
+  * user is trying to invoke when writing processorName create <templateName>.
   * 
   * @param  name  The name of the template
   * @return       The name of the template
@@ -40,10 +40,10 @@ trait Template {
   def arguments: List[BasicArgument]
   
   /**
-  * Override this to provide a message for the user once the template has sucessfully
+  * Override this to provide a message for the user once the template has successfully
   * been processed.
   * 
-  * @return  The notice to prnt
+  * @return  The notice to print
   */
   def notice(args: List[ArgumentResult]): Box[String] = Empty
   
