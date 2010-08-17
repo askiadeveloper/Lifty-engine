@@ -1,8 +1,8 @@
 package org.lifty.util
 
 import java.io._
-import java.util.{Enumeration}
 import java.util.jar._
+import java.util.{Enumeration}
 import net.liftweb.common.{Box, Empty, Failure, Full}
 import org.lifty.engine.{ArgumentResult, GlobalConfiguration}
 
@@ -19,7 +19,7 @@ object TemplateHelper {
   * @param  thePackage  the package to convert
   * @return             a path formatted string
   */
-  def pathOfPackage(thePackage :String) = thePackage.replace(".","/")
+  def pathOfPackage(thePackage :String) = thePackage.replace(".",File.pathSeparator )
   
   
   /**
@@ -29,7 +29,7 @@ object TemplateHelper {
   * @param  path  well isn't it obvious
   * @return       dunno
   */
-  def packageOfPath(path :String) = path.replace("src/main/scala/","").replace("/",".")
+  def packageOfPath(path :String) = path.replace("src/main/scala/","").replace(File.pathSeparator,".")
  
   /**
   * Takes any number of strings (paths) and creates a directory for each
@@ -57,7 +57,7 @@ object TemplateHelper {
   def copy(from: String, to:String): Boolean = {
     
     val currentPath = new File("").getAbsolutePath // TODO: Not sure this is needed.
-    val toFile = new File(currentPath+"/"+to)
+    val toFile = new File(currentPath + File.pathSeparator + to)
     val tempFile = FileHelper.loadFile(from)
 
     try {

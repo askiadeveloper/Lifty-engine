@@ -10,7 +10,7 @@ import org.lifty.engine._
 object FileHelper {
   
   /**
-  * This methods searches the files and subfolders (recursivly) for a file
+  * This methods searches the files and subfolders (recursively) for a file
   * with the name specified
   * 
   * @param  dir   The directory to search through
@@ -51,7 +51,9 @@ object FileHelper {
   */
   def createFolderStructure(path: String) {
     val currentPath = new File("").getAbsolutePath
-    val dirpath = currentPath +"/"+ (path.split("/").toList-path.split("/").last).mkString("/")
+    val dirpath = currentPath + File.pathSeparator + (path.split(File.pathSeparator)
+      .toList-path.split(File.pathSeparator).last)
+      .mkString(File.pathSeparator)
     new File(dirpath).mkdirs
   }
   
@@ -63,7 +65,7 @@ object FileHelper {
   * @return       dunno
   */
   def loadFile(path: String): File = {
-    val tempFileName = "_temp_"+path.split("/").last
+    val tempFileName = "_temp_"+path.split(File.pathSeparator).last
     try {
       val is = if (!GlobalConfiguration.runningAsJar) { // we're not running as a jar.
         new FileInputStream(new File(path))
