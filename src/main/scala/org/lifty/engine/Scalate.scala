@@ -153,7 +153,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   
   /**
   * This will return a list of all the unused injections. I.e. if one of the dependencies of this template
-  * declares an injection that wants to inject something into a file that is not schedueled for creating 
+  * declares an injection that wants to inject something into a file that is not scheduled for creating 
   * then that injections is "unused".
   * 
   * @return A list of unused injections
@@ -214,12 +214,12 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   }
   
   /**
-  * This will process a single scalate template file and save the file in the appropriate 
+  * This will process a single Scalate template file and save the file in the appropriate 
   * place
   * 
   * @param  templateFile  The template file to process
   * @return               A tuple with the template file and boolean indicating 
-  *                       if it suceeded
+  *                       if it succeeded
   */
   private def processSingleTemplate(templateFile: TemplateFile): (TemplateFile,Boolean) = {
     
