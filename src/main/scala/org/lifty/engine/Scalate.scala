@@ -225,7 +225,16 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     
     val pureTemplateFile = FileHelper.loadFile(templateFile.file)
     val file = injectLines(pureTemplateFile)
-    val sclateTemplate = engine.load(file.getAbsolutePath)
+    
+   
+    val safePath = { // damn you windows, seriously.
+      file.getAbsolutePath.toCharArray.toList match {
+        case charArr if charArr(1) == ':' => """\\\""" + charArr.slice(2,charArr.size-1)
+        case charArr => charArr.mkString("")
+      }
+    }
+    
+    val sclateTemplate = engine.load(safePath)
     val destinationPath = TemplateHelper.replaceVariablesInPath(templateFile.destination,argumentResults)
     val buffer = new StringWriter()
     val context = new DefaultRenderContext(new PrintWriter(buffer))
