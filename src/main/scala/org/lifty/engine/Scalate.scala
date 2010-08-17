@@ -229,7 +229,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
    
     val safePath = { // damn you windows, seriously.
       file.getAbsolutePath.toCharArray.toList match {
-        case charArr if charArr(1) == ':' => """\\\""" + charArr.slice(2,charArr.size-1)
+        case charArr if charArr(1) == ':' => "file:" + charArr.mkString("")
         case charArr => charArr.mkString("")
       }
     }
