@@ -6,10 +6,9 @@ import java.util.jar.Attributes.Name._
 class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ProcessorProject(info) {	
 	
 	val scalatools_release = "Scala Tools Releases" at "http://scala-tools.org/repo-releases/"
-	val scalatools_snapshots = "Scala Tools Snapshot" at "http://scala-tools.org/repo-snapshots/"
 	
 	val liftcommon = "net.liftweb" % "lift-common" % "2.0-M5" % "compile->default"
-  val scalate = "com.sidewayscoding" % "scalate-core" % "1.0-SNAPSHOT"
+  val scalate = "com.sidewayscoding" %% "scalate-core" % "1.0" % "compile->default"
 	val scalatest = "org.scalatest" % "scalatest" % "1.0" % "test"
 	
 	override def unmanagedClasspath = super.unmanagedClasspath +++ 

@@ -229,12 +229,12 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
    
     val safePath = { // damn you windows, seriously.
       file.getAbsolutePath.toCharArray.toList match {
-        case charArr if charArr(1) == ':' => "file:" + charArr.mkString("")
+        case charArr if charArr(1) == ':' => file.toURI.toString
         case charArr => charArr.mkString("")
       }
     }
     
-    val sclateTemplate = engine.load(safePath)
+    val sclateTemplate = engine.loadTemporary(file.getAbsolutePath)
     val destinationPath = TemplateHelper.replaceVariablesInPath(templateFile.destination,argumentResults)
     val buffer = new StringWriter()
     val context = new DefaultRenderContext(new PrintWriter(buffer))
