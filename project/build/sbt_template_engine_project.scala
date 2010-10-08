@@ -20,8 +20,7 @@ class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ProcessorProject(
 	
 	// PUBLISHING
 	override def managedStyle = ManagedStyle.Maven
-  // val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
-  val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/snapshots/"
+  val publishTo = "Scala Tools Nexus" at "http://nexus.scala-tools.org/content/repositories/releases/"
 	Credentials(Path.userHome / "dev" / ".nexus_credentials", log) 
 	
 }
