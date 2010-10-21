@@ -199,7 +199,7 @@ trait Template {
   * @return A box containing a list of ArgumentResults.
   */
   def parseArguments(argumentsList: List[String]): Box[List[ArgumentResult]] = {
-    parseIndexedArguments(addUnderscores(argumentsList))
+    parseIndexedArguments(addQuestionmarks(argumentsList))
   }
 
   /**
@@ -219,15 +219,23 @@ trait Template {
       val value = argumentsList(i)
       argumentResults :::= (arg match {
         case arg: Default if value == "_" => arg.default match {
-          case Full(str) => Full(ArgumentResult(arg,str)) :: Nil
+          case Full(str) => 
+            Full(ArgumentResult(arg,str)) :: Nil
           case Empty => 
-            val requestMsg = "No default value found for %s. Please enter a value: ".format(arg.name)
+            val requestMsg = "%s: ".format(arg.name)
             Full(ArgumentResult(arg,IOHelper.requestInput(requestMsg))) :: Nil
           case Failure(msg,_,_) => Failure(msg) :: Nil
         }
-        case arg: Optional if value == "_" => Full(ArgumentResult(arg,"")) :: Nil
-        case arg: BasicArgument if value == "_" => 
-          val requestMsg = "Please enter a value for '%s': ".format(arg.name)
+        case arg: Default if value == "?" => 
+          val dflt = arg.default.openOr("")
+          val requestMsg = "%s [%s]: ".format(arg.name, dflt)
+          IOHelper.requestInput(requestMsg) match {
+            case "" => Full(ArgumentResult(arg,dflt)) :: Nil 
+            case str => Full(ArgumentResult(arg,str)) :: Nil 
+          }
+        case arg: Optional if (value == "_" || value == "?" ) => Full(ArgumentResult(arg,"")) :: Nil
+        case arg: BasicArgument if (value == "_" || value == "?" ) => 
+          val requestMsg = "%s: ".format(arg.name)
           Full(ArgumentResult(arg,IOHelper.requestInput(requestMsg))) :: Nil
         case arg: Repeatable if isRepeatable(value) => value.split(",").map( v => Full(ArgumentResult(arg,v))).toList
         case arg: BasicArgument => Full(ArgumentResult(arg,value)) :: Nil
@@ -256,13 +264,13 @@ trait Template {
   }
   
   /**
-  * Replaces "" with _ and adds _ for each missing (non-optional) argument.
+  * Replaces "" with ? and adds ? for each missing (non-optional) argument.
   * 
   * @param  args  List of arguments to convert
   * @return       A list of argument strings
   */
-  private def addUnderscores(args: List[String]): List[String] = {
-    args.map( str => if(str.matches("")) "_" else str ) ::: (for (i <- 0 to getAllArguments.size - args.size-1) yield { "_" }).toList 
+  private def addQuestionmarks(args: List[String]): List[String] = {
+    args.map( str => if(str.matches("")) "?" else str ) ::: (for (i <- 0 to getAllArguments.size - args.size-1) yield { "?" }).toList 
   }
   
   /**
