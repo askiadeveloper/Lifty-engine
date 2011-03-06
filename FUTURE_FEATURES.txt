@@ -1,7 +1,0 @@
-Future work on Lifty & Lifty-engine
-
-- Arguments should work sort-of like SBT. You you don't supply any arguments it should request input with a default suggestion. 
-- It should be possible to put templates online.
-  - Create a format for configuration of templates (instead of instances of Template)
-  - Add some sort of versioning so it knows if it should download the templates
-  - Create a update-templates command to Lifty-engine
