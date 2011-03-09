@@ -33,6 +33,8 @@ class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ParentProject(inf
   }
 
   class LiftyEngine(info: ProjectInfo) extends ProcessorProject(info) { 
+    
+    override def version = OpaqueVersion("0.6")
         
     override def libraryDependencies = Set(
       "net.liftweb" % "lift-common" % "2.0-M5" % "compile->default",

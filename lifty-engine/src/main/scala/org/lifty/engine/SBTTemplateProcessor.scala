@@ -21,7 +21,7 @@ trait SBTTemplateProcessor extends BasicProcessor with TemplateProcessor {
   def apply(project: Project, args: String) = { 
     sbtLogger = SBTLogger(project.log)
     val scalatePath = { // TODO: Must be a prettier way to do this! 
-      val scalateJarName = "scalate-core_2.7.7-1.0.jar"
+      val scalateJarName = "scalate-fork_2.7.7-1.1-PATCHED.jar"
       val base =  project.info.bootPath.absolutePath
       val f = new File(base)
       FileHelper.findFileInDir(f,scalateJarName) match { 
