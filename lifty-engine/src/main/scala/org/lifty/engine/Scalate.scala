@@ -18,7 +18,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     if (GlobalConfiguration.scalaLibraryPath != "") {
       e.classpath = (GlobalConfiguration.scalaLibraryPath :: 
                           GlobalConfiguration.scalaCompilerPath ::
-                          GlobalConfiguration.scalatePath :: Nil).mkString(":")
+                          GlobalConfiguration.scalatePath :: Nil).mkString(":") //TODO: Perhabs : isn't windows compatible
     }
     e
   }

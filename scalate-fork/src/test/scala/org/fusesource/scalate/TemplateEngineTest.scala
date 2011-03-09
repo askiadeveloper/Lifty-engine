@@ -30,7 +30,7 @@ import org.fusesource.scalate._
 class TemplateEngineTest extends FunSuite {
 
   val templateEngine = new TemplateEngine
-  templateEngine.workingDirectoryRoot = new File("target/test-data/TemplateEngineTest")
+  templateEngine.workingDirectoryRoot = new File(List("target","test-data","TemplateEngineTest").mkString(java.io.File.separator))
 
   test("parse attribute declaration") {
     info("ok")

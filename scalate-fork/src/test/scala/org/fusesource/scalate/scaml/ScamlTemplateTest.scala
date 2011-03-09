@@ -673,7 +673,7 @@ The bean is blue
   }
 
   var engine = new TemplateEngine
-  engine.workingDirectoryRoot = new File("target/test-data/"+(this.getClass.getName))
+  engine.workingDirectoryRoot = new File("target"+java.io.File.separator+"test-data"+java.io.File.separator+(this.getClass.getName))
 
   def render(content:String): String = {
 
@@ -694,7 +694,7 @@ The bean is blue
     context.attributes += "context"-> context
     context.attributes += "bean"-> Bean("red", 10)
 
-    val template = engine.loadTemporary("/org/fusesource/scalate/scaml/test.scaml", new Binding("context", context.getClass.getName, true))
+    val template = engine.loadTemporary(java.io.File.separator+List("org","fusesource","scalate","scaml","test.scaml").mkString(java.io.File.separator), new Binding("context", context.getClass.getName, true))
     template.render(context)
     out.close
     buffer.toString
