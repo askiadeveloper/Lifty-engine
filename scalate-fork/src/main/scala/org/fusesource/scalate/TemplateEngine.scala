@@ -93,7 +93,7 @@ class TemplateEngine {
    * Does no caching; useful for temporary templates or temapltes created dynamically such as from the contents of a message
    */
   def loadTemporary(uri: String, bindings: Binding*) = {
-
+        
     val argsList = bindings.toList;
     val timestamp = Platform.currentTime
 
@@ -182,7 +182,13 @@ class TemplateEngine {
     val code = codeGenerator(uri).generate(this, uri, bindings)
 
     // Write the source code to file..
-    val sourceFile = new File(sourceDirectory, uri+".scala")
+    val sourceFile = {
+      java.io.File.separator match {
+        case "/"  => new File(sourceDirectory, uri.split("/").last+".scala")
+        case "\\" => new File(sourceDirectory, uri.split("""\\""").last+".scala")
+      }
+    }
+        
     sourceFile.getParentFile.mkdirs
     IOUtil.writeBinaryFile(sourceFile, code.source.getBytes("UTF-8"))
 
