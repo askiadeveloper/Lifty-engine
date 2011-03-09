@@ -2,7 +2,6 @@ import sbt._
 
 class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ParentProject(info) {  
   
-  // subprojects 
   lazy val scalate_fork = project("scalate-fork", "scalate-fork", new ScalateFork(_))
   lazy val lifty_engine = project("lifty-engine", "lifty-engine", new LiftyEngine(_), scalate_fork)
   
@@ -11,8 +10,7 @@ class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ParentProject(inf
       As long as SBT isn't able to use Scala 2.8.x this project is needed. It's a patched
       version of Scalate that compiles under Scala 2.7.7. 
     */
-
-    override def version = OpaqueVersion("1.1")
+    override def version = OpaqueVersion("1.1-PATCHED")
     
     lazy val maven  = MavenRepository("Maven Central Repo","http://repo1.maven.org/maven2/")
     lazy val javam2 = MavenRepository("java.net Maven 2 Repo", "http://download.java.net/maven/2")
@@ -23,8 +21,7 @@ class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ParentProject(inf
       "opensymphony" % "sitemesh" % "2.3" % "compile->default",
       "log4j" % "log4j" % "1.2.14" % "compile->default",
       "org.scalatest" % "scalatest" % "1.0" % "test",
-      "junit" % "junit" % "4.5" % "test"
-    ) ++ super.libraryDependencies
+      "junit" % "junit" % "4.5" % "test") 
     
     override def unmanagedClasspath = super.unmanagedClasspath +++ 
       (Path.fromFile(buildScalaInstance.compilerJar)) +++ 
@@ -39,8 +36,7 @@ class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ParentProject(inf
         
     override def libraryDependencies = Set(
       "net.liftweb" % "lift-common" % "2.0-M5" % "compile->default",
-      "org.scalatest" % "scalatest" % "1.0" % "test"
-    ) ++ super.libraryDependencies
+      "org.scalatest" % "scalatest" % "1.0" % "test") 
 
     override def unmanagedClasspath = super.unmanagedClasspath +++ 
       (Path.fromFile(buildScalaInstance.compilerJar)) +++ 
