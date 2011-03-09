@@ -154,12 +154,12 @@ abstract class AbstractCodeGenerator[T] extends CodeGenerator
   }
 
   protected def extractPackageAndClassNames(uri: String): (String, String) = {
-    val normalizedURI = new URI(uri).normalize
-    val SPLIT_ON_LAST_SLASH_REGEX = Pattern.compile("^(.*)/([^/]*)$")
+    val normalizedURI = new URI("file://"+uri.replace("\\","/")).normalize
+    val SPLIT_ON_LAST_SLASH_REGEX = Pattern.compile("^(file://)(.*)/([^/]*)$")
     val matcher = SPLIT_ON_LAST_SLASH_REGEX.matcher(normalizedURI.toString)
     if (matcher.matches == false) throw new TemplateException("Internal error: unparseable URI [" + uri + "]")
-    val packageName = matcher.group(1).replaceAll("[^A-Za-z0-9_/]", "_").replaceAll("/", ".").replaceFirst("^\\.", "")
-    val cn = "$_scalate_$" + matcher.group(2).replace('.', '_')
+    val packageName = matcher.group(2).replaceAll("[^A-Za-z0-9_/]", "_").replaceAll("/", ".").replaceFirst("^\\.", "")
+    val cn = "$_scalate_$" + matcher.group(3).replace('.', '_')
     (packageName, cn)
   }
 
