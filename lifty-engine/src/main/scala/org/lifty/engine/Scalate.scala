@@ -57,7 +57,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     val arguments = "\n%s\n".format(argumentResults.map(arg => arg.argument.name+" = "+arg.value).mkString("\n"))
     val files = "\nResulted in the creation of the following files:\n%s"
       .format((processedFiles ::: copiedFiles).map{ path => 
-        "  " + TemplateHelper.replaceVariablesInPath(TemplateHelper.convertToOSSpecificPath(path.destination),argumentResults)
+        "  " + TemplateHelper.replaceVariablesInPath(TemplateHelper.printablePath(path.destination),argumentResults)
       }.mkString("\n"))
     
     val notice = template.notice(argumentResults) match {
@@ -188,6 +188,8 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     val scalateSourceFolder = new File("source")
     if (scalateSourceFolder.exists) FileHelper.recursiveDelete(scalateSourceFolder)
     if (scalateBytecodeFolder.exists) FileHelper.recursiveDelete(scalateBytecodeFolder)
+    // remove all files that start with _temp_ (this is needed on windows. not sure why)
+    for ( file <- new File(".").listFiles; if file.getName.startsWith("_temp_")) { file.delete() }
   }
   
   
@@ -229,9 +231,9 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   private def processSingleTemplate(templateFile: TemplateFile): (TemplateFile,Boolean) = {
     
     val pureTemplateFile = FileHelper.loadFile(templateFile.file)
-    val file = injectLines(pureTemplateFile)
+    val injectedTemplateFile = injectLines(pureTemplateFile)
     
-    val sclateTemplate = engine.loadTemporary(file.getAbsolutePath)
+    val sclateTemplate = engine.loadTemporary(injectedTemplateFile.getAbsolutePath)
     val destinationPath = TemplateHelper.convertToOSSpecificPath(
       TemplateHelper.replaceVariablesInPath(templateFile.destination,argumentResults))
     val buffer = new StringWriter()
@@ -242,10 +244,10 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     try {
       FileHelper.createFolderStructure(destinationPath)
       val currentPath = new File("").getAbsolutePath // TODO: Not sure this is needed.
-      val file = new File(currentPath+File.separator+destinationPath)
-      if (IOHelper.safeToCreateFile(file)) {
-          file.createNewFile
-          val out = new BufferedWriter(new FileWriter(file));
+      val outputFile = new File(currentPath+File.separator+destinationPath)
+      if (IOHelper.safeToCreateFile(outputFile)) {
+          outputFile.createNewFile
+          val out = new BufferedWriter(new FileWriter(outputFile));
           out.write(buffer.toString);
           out.close();
           (templateFile, true)
@@ -261,7 +263,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
       }
     } finally {
       // Remove the temp file.
-      file.delete 
+      injectedTemplateFile.delete 
     }
   }
   

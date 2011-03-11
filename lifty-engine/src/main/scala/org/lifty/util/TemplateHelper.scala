@@ -120,4 +120,11 @@ object TemplateHelper {
     }
   }
   
+  def printablePath(path: String) = {
+    java.io.File.separator match {
+      case "/"  => path
+     	case "\\" => path.replace("/","\\") 
+    }
+  }
+  
 }
