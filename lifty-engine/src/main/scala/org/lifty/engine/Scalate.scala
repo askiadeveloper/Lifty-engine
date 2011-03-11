@@ -11,6 +11,12 @@ import org.lifty.engine.commands.{CommandResult}
 import org.lifty.util.IOHelper
 import org.lifty.util.TemplateHelper._
 
+/*
+  NOTE!!! Some places in this file I've used / in a string instead of File.separator. This is because that 
+  the Lifty processor has a lot of paths hard-coded with the / path. This will get fixed in future versions
+  but until then leave the /'s be!
+*/
+
 case class Scalate(template: Template with Create, argumentResults: List[ArgumentResult]) {
     
   val engine = {
@@ -27,7 +33,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   * Run scalate on all of the template files the Template specifies
   */
   def run: Box[CommandResult] = { 
-    
+        
     // if the template has any dependencies, we need t process those files aswell
     val templateFiles = template.getAllFiles
     
@@ -51,7 +57,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     val arguments = "\n%s\n".format(argumentResults.map(arg => arg.argument.name+" = "+arg.value).mkString("\n"))
     val files = "\nResulted in the creation of the following files:\n%s"
       .format((processedFiles ::: copiedFiles).map{ path => 
-        "  " + TemplateHelper.replaceVariablesInPath(path.destination,argumentResults)
+        "  " + TemplateHelper.replaceVariablesInPath(TemplateHelper.convertToOSSpecificPath(path.destination),argumentResults)
       }.mkString("\n"))
     
     val notice = template.notice(argumentResults) match {
@@ -89,6 +95,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   * @param  file  the file to inject lines into
   */
   def injectLines(file: File): File = {
+
     val is = new FileInputStream(file)
     val source = Source.fromInputStream(is)
     val regxp = RegularExpressions.INJECTION_POINT
@@ -140,13 +147,11 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
          
     // get all the injections
     val injections = template.injections :::
-      template.getAllDependencies.flatMap( _.injections)
-        
+      template.getAllDependencies.flatMap( _.injections)   
     // only the ones that have anything to do with this file
     val forFile = injections.filter{ injection =>  
-      "_temp_"+injection.into.split(File.separator.toCharArray.toList.head).last == file.getName
+      "_temp_"+injection.into.split(File.separator.charAt(0)).last == file.getName
     }
-    
     // we only want injections for the current point
     forFile.filter(_.point == point)
   } 
@@ -166,14 +171,14 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
       template.getAllDependencies.flatMap( _.injections)
       
     // all the template files
-    val allFiles = (template.files ::: template.getAllDependencies.flatMap(_.files)).map(_.file.split(File.separator.toCharArray.toList.head).last)
+    val allFiles = (template.files ::: template.getAllDependencies.flatMap(_.files)).map(_.file.split("/").last) 
       
     // Get all the valid injections, i.e. injections that have anything to do 
     // with the above files
     val validInjections = injections.filter( injection => allFiles.contains(injection.into))
 
     // get the ones that are injections, but not valid.
-    injections.diff(validInjections)
+    injections filter ( (injection) => !validInjections.contains(injection))
   }
     
   // The version of Scalate I'm using (1.0 scala 2.7.7) doesn't allow you 
@@ -196,8 +201,8 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   private def processTemplateInMemory(file: File): String = {
     val template = FileHelper.loadFile(file.getAbsolutePath)
     try {
-      if (template.getAbsolutePath.split(File.separator.toCharArray.toList.head).last.contains(".ssp")) {
-        val sclateTemplate = engine.load(template.getAbsolutePath)
+      if (template.getAbsolutePath.split(File.separator.charAt(0)).last.contains(".ssp")) {
+        val sclateTemplate = engine.load(TemplateHelper.convertToOSSpecificPath(template.getAbsolutePath))
         val buffer = new StringWriter()
         val context = new DefaultRenderContext(new PrintWriter(buffer))
         addArgumentsToContext(context)
@@ -226,16 +231,9 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
     val pureTemplateFile = FileHelper.loadFile(templateFile.file)
     val file = injectLines(pureTemplateFile)
     
-   
-    val safePath = { // damn you windows, seriously.
-      file.getAbsolutePath.toCharArray.toList match {
-        case charArr if charArr(1) == ':' => file.toURI.toString
-        case charArr => charArr.mkString("")
-      }
-    }
-    
     val sclateTemplate = engine.loadTemporary(file.getAbsolutePath)
-    val destinationPath = TemplateHelper.replaceVariablesInPath(templateFile.destination,argumentResults)
+    val destinationPath = TemplateHelper.convertToOSSpecificPath(
+      TemplateHelper.replaceVariablesInPath(templateFile.destination,argumentResults))
     val buffer = new StringWriter()
     val context = new DefaultRenderContext(new PrintWriter(buffer))
     addArgumentsToContext(context)

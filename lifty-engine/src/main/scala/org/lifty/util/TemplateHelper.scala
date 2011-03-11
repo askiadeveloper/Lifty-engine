@@ -57,28 +57,32 @@ object TemplateHelper {
   def copy(from: String, to:String): Boolean = {
     
     val currentPath = new File("").getAbsolutePath // TODO: Not sure this is needed.
-    val toFile = new File(currentPath + File.separator + to)
+    val toFile = new File(convertToOSSpecificPath(to))
     val tempFile = FileHelper.loadFile(from)
 
     try {
       if (IOHelper.safeToCreateFile(toFile)){
         val is = new FileInputStream(tempFile)
         val in = scala.io.Source.fromInputStream(is)
-        FileHelper.createFolderStructure(to)
-        toFile.createNewFile
-        val out = new BufferedWriter(new FileWriter(toFile));
-        in.getLines.foreach(out.write(_))
-        out.close
-        true
+                
+        FileHelper.createFolderStructure(toFile.getPath)
+        if (toFile.createNewFile == true) {
+          val out = new BufferedWriter(new FileWriter(toFile));
+          in.getLines.foreach(out.write(_))
+          out.close
+          true
+        } else { throw new Exception("Wasn't able to create a new file for: %s".format(toFile.getPath)) }
       } else false
     } catch {
-      case e: Exception => e.printStackTrace
+      case e: Exception => 
+        println("Wasn't able to copy file from %s to %s".format(tempFile.getPath, toFile.getPath))
+        e.printStackTrace
       false
     } finally {
       tempFile.delete 
     }
   }
-  
+
   /**
   * looks through the path string for any variables (i.e ${someVal}) and replaces
   * it with the acctual value passed to the operation
@@ -106,6 +110,13 @@ object TemplateHelper {
         newPath
       }
       case _ => path
+    }
+  }
+  
+  def convertToOSSpecificPath(path: String) = {
+     java.io.File.separator match {
+      case "/"  => path
+     	case "\\" => path.replace("/","""\\""") 
     }
   }
   

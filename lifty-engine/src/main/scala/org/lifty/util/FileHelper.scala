@@ -60,23 +60,34 @@ object FileHelper {
   /**
   * Loads a file from a string with the path to the file. It will copy the original file 
   * into a new one with the prefix _temp_ and return that file.
-  * If the first char is a / it will convert it to the OS specific root.
   * 
   * @param  path  well isn't it obvious
   * @return       dunno
   */
   def loadFile(path: String): File = {
-    val tempFileName = "_temp_"+path.split(File.separator.toCharArray.toList.head).last
-    val safePath = path.toCharArray.toList match {
-      case arr if arr.head == '/' => OSSpecificRoot + arr.slice(1,arr.size-1).mkString("")
-      case arr => arr.mkString("")
+    
+    val tempFileName: String = {
+      if      (path.contains("/"))  "_temp_"+path.split("/").last
+      else if (path.contains('\\')) "_temp_"+path.split('\\').last
+      else                          "_temp_"+path
     }
-    try {
-      val is = if (!GlobalConfiguration.runningAsJar) { // we're not running as a jar.
-        new FileInputStream(new File(path))
-      } else {
-        this.getClass().getResourceAsStream(path) 
-      }
+    
+    val resourcePath: String = { java.io.File.separator match {
+      case "/"  => path
+      case "\\" => {
+        path.replace('\\','/') match {
+          case p if p.charAt(1) == ':' => p.slice(2,p.length)
+          case p => p
+      }}
+    }}     
+
+    val is = if (!GlobalConfiguration.runningAsJar) { // we're not running as a jar.
+      new FileInputStream(new File(path))
+    } else {
+      // the path for a resource inside a jar is a path with / separations
+      this.getClass().getResourceAsStream(resourcePath) 
+    }
+    if (is != null) {
       val in = scala.io.Source.fromInputStream(is)
       val file = new File(tempFileName)
       createFolderStructure(file.getPath)
@@ -85,19 +96,10 @@ object FileHelper {
       in.getLines.foreach{ line => out.write(line) }
       out.close
       file
-    } catch {
-      case e: Exception => {
-        e.printStackTrace
-        new File(tempFileName)
-      }
+    } else {
+      throw new Exception("FileHelper wasn't able to load resource with path %s from the jar".format(resourcePath))
     }
-  }
-  
-  def OSSpecificRoot: String = {
-    File.separator match {
-      case """/""" => """/"""
-      case """\""" => """\\\\"""
-    }
-  }
-  
+  } 
+
+
 }
