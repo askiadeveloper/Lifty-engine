@@ -1,6 +1,6 @@
 package org.lifty.util
 
-import java.io.{File, BufferedWriter, FileWriter, FileInputStream}
+import java.io.{File, BufferedWriter, FileWriter, FileInputStream, InputStreamReader, BufferedReader}
 import org.lifty.engine._
 
 /**
@@ -99,6 +99,18 @@ object FileHelper {
     } else {
       throw new Exception("FileHelper wasn't able to load resource with path %s from the jar".format(resourcePath))
     }
+  }
+  
+  def readContentsOfFile(inputStream: java.io.InputStream): String = {
+    val in = new BufferedReader(new InputStreamReader(inputStream))
+    var lines: List[String] = Nil
+    var line = in.readLine()
+    while (line != null) {
+      lines = lines ::: List(line)
+      line = in.readLine()
+    }
+    in.close()
+    lines.mkString("\n")
   } 
 
 

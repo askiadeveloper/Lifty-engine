@@ -128,13 +128,13 @@ class TestInjection extends FlatSpec with ShouldMatchers {
     
     val result = scalateUser.injectLines(file)
     val resultIs = new FileInputStream(result)
-    val resultS = Source.fromInputStream(resultIs)
+    val resultS = FileHelper.readContentsOfFile(resultIs)
     
     val wantedResult = new File(TestHelper.makeProperPath(List("lifty-engine","src","test","resources","correct_results","_temp_model_running_user.txt")))
     val wantedResultIs = new FileInputStream(wantedResult)
-    val wantedResultS = Source.fromInputStream(wantedResultIs)
+    val wantedResultS = FileHelper.readContentsOfFile(wantedResultIs)
     
-    resultS.getLines.toList should be === wantedResultS.getLines.toList
+    resultS should be === wantedResultS
     
     file.delete
   }
