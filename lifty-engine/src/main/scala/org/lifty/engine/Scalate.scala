@@ -3,7 +3,6 @@ package org.lifty.engine
 import org.fusesource.scalate.{TemplateEngine,DefaultRenderContext}
 import org.lifty.util.{TemplateHelper, FileHelper}
 import java.io._
-import scala.io.{Source}
 import java.net.{URL, URISyntaxException}
 import scala.util.matching.Regex
 import net.liftweb.common._
@@ -97,10 +96,9 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   def injectLines(file: File): File = {
 
     val is = new FileInputStream(file)
-    val source = Source.fromInputStream(is)
     val regxp = RegularExpressions.INJECTION_POINT
       
-    val text: String = (for (line <- source.getLines) yield {
+    val text: String = (for (line <- FileHelper.readContentsOfFileAsList(is)) yield {
       if(!regxp.findFirstIn(line).isEmpty) {
         val point = regxp.findFirstMatchIn(line).get.group(1)
         injectionsForPointInFile(point, file).map{ injection =>
@@ -128,8 +126,8 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
   def injectionPointsInFile(file: File): List[String] = {
     val regxp = RegularExpressions.INJECTION_POINT
     val is = new FileInputStream(file)
-    val source = Source.fromInputStream(is)
-    (for ( line <- source.getLines if !regxp.findFirstIn(line).isEmpty) yield {
+    val lines = FileHelper.readContentsOfFileAsList(is)
+    (for ( line <- lines if !regxp.findFirstIn(line).isEmpty) yield {
       regxp.findFirstMatchIn(line).get.group(1)
     }).toList
   }
@@ -212,8 +210,7 @@ case class Scalate(template: Template with Create, argumentResults: List[Argumen
         buffer.toString.split("\n").dropWhile( _ == "").mkString("\n")
       } else {
         val is = new FileInputStream(template)
-        val in = scala.io.Source.fromInputStream(is)
-        in.getLines.toList.mkString("")
+        FileHelper.readContentsOfFileAsList(is).mkString("")
       }
     } finally {
       template.delete

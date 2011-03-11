@@ -102,16 +102,25 @@ object FileHelper {
   }
   
   def readContentsOfFile(inputStream: java.io.InputStream): String = {
+    readContentsOfFileAsList(inputStream).mkString("")
+  } 
+  
+  def readContentsOfFileAsList(inputStream: java.io.InputStream): List[String] = {
     val in = new BufferedReader(new InputStreamReader(inputStream))
     var lines: List[String] = Nil
     var line = in.readLine()
     while (line != null) {
-      lines = lines ::: List(line)
+      val prevLine = line
       line = in.readLine()
+      if (line == null) {
+        lines = lines ::: List(prevLine)
+      } else {
+        lines = lines ::: List(prevLine+"\n")
+      }
     }
     in.close()
-    lines.mkString("\n")
-  } 
+    lines
+  }
 
 
 }

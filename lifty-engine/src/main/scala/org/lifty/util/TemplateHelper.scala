@@ -63,12 +63,10 @@ object TemplateHelper {
     try {
       if (IOHelper.safeToCreateFile(toFile)){
         val is = new FileInputStream(tempFile)
-        val in = scala.io.Source.fromInputStream(is)
-                
         FileHelper.createFolderStructure(toFile.getPath)
         if (toFile.createNewFile == true) {
           val out = new BufferedWriter(new FileWriter(toFile));
-          in.getLines.foreach(out.write(_))
+          out.write(FileHelper.readContentsOfFile(is))
           out.close
           true
         } else { throw new Exception("Wasn't able to create a new file for: %s".format(toFile.getPath)) }
