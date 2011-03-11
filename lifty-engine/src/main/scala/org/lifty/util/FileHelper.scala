@@ -88,12 +88,12 @@ object FileHelper {
       this.getClass().getResourceAsStream(resourcePath) 
     }
     if (is != null) {
-      val in = scala.io.Source.fromInputStream(is)
       val file = new File(tempFileName)
       createFolderStructure(file.getPath)
       file.createNewFile
       val out = new BufferedWriter(new FileWriter(file));
-      in.getLines.foreach{ line => out.write(line) }
+      val txt = readContentsOfFile(is) 
+      out.write(txt)
       out.close
       file
     } else {
