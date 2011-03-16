@@ -61,7 +61,14 @@ class ScalaCompiler(bytecodeDirectory: File, classpath: String) extends Logging 
     def useCP = if (classpath != null) {
       classpath
     } else {
-      (classLoaderList(Thread.currentThread.getContextClassLoader) ::: classLoaderList(getClass) ::: classLoaderList(ClassLoader.getSystemClassLoader) ).mkString(java.io.File.pathSeparator)
+      // giant ass hack to get the classpath to work. Please do not fiddle with this only I know why it works
+      // - Mads
+      (classLoaderList(Thread.currentThread.getContextClassLoader) ::: 
+       classLoaderList(getClass) ::: 
+       classLoaderList(ClassLoader.getSystemClassLoader) )
+       .mkString(java.io.File.pathSeparator)   // sperating classpath paths correctly
+       .mkString("\"","","\"")                 // wrap the entire classpath in quotes to avoid white-space issues
+       .replace("%20"," ")                     // replace %20 added in AbstractCodeGenerator withe spaces.
     }
 
     fine("using classpath: " + useCP)

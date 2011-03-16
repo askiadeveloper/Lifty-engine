@@ -10,18 +10,19 @@ class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ParentProject(inf
       As long as SBT isn't able to use Scala 2.8.x this project is needed. It's a patched
       version of Scalate that compiles under Scala 2.7.7. 
     */
-    override def version = OpaqueVersion("1.1-PATCHED")
+    override def version = OpaqueVersion("1.2-PATCHED")
     
-    lazy val maven  = MavenRepository("Maven Central Repo","http://repo1.maven.org/maven2/")
-    lazy val javam2 = MavenRepository("java.net Maven 2 Repo", "http://download.java.net/maven/2")
+    // lazy val maven  = MavenRepository("Maven Central Repo","http://repo1.maven.org/maven2/")
+    // lazy val javam2 = MavenRepository("java.net Maven 2 Repo", "http://download.java.net/maven/2")
     
-    override def libraryDependencies = Set(
-      "javax.servlet" % "servlet-api" % "2.5" % "compile->default",
-      "com.sun.jersey" % "jersey-server" % "1.1.5" % "compile->default",
-      "opensymphony" % "sitemesh" % "2.3" % "compile->default",
-      "log4j" % "log4j" % "1.2.14" % "compile->default",
-      "org.scalatest" % "scalatest" % "1.0" % "test",
-      "junit" % "junit" % "4.5" % "test") 
+    // When publishing comment these out. I have no idea how to remove them from the POM.
+    // override def libraryDependencies = Set(
+    //   "javax.servlet" % "servlet-api" % "2.5" % "compile->default",
+    //   "com.sun.jersey" % "jersey-server" % "1.1.5" % "compile->default",
+    //   "opensymphony" % "sitemesh" % "2.3" % "compile->default",
+    //   "log4j" % "log4j" % "1.2.14" % "compile->default",
+    //   "org.scalatest" % "scalatest" % "1.0" % "test",
+    //   "junit" % "junit" % "4.5" % "test") 
     
     override def unmanagedClasspath = super.unmanagedClasspath +++ 
       (Path.fromFile(buildScalaInstance.compilerJar)) +++ 
@@ -34,7 +35,7 @@ class SimpleBuildToolTemplateEngine(info: ProjectInfo) extends ParentProject(inf
 
   class LiftyEngine(info: ProjectInfo) extends ProcessorProject(info) { 
     
-    override def version = OpaqueVersion("0.6")
+    override def version = OpaqueVersion("0.6.1")
         
     override def libraryDependencies = Set(
       "net.liftweb" % "lift-common" % "2.0-M5" % "compile->default",
