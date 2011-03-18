@@ -1,9 +1,0 @@
-Some text BEFORE the first injection point
-
-//#inject point: Point
-
-Some text AFTER the first injection point
-
-//#inject point: Point2
-
-Some text AFTER the second injection point 

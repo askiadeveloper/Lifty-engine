@@ -1,9 +1,0 @@
-Some text BEFORE the first injection point
-
-user_inject_Model_Point.txt
-
-Some text AFTER the first injection point
-
-someModelName user_inject_Model_Point2.txt someUserName
-
-Some text AFTER the second injection point 

@@ -1,0 +1,18 @@
+{
+    "repository" : "http://lifty.github.com/Lifty/templates",
+    "templates" : [
+        {   "name"          : "snippet",
+            "description"   : "creates a snippet",
+            "arguments"     : [
+                {   "name"          :   "snippetName" },
+                {   "name"          :   "snippetpack",
+                    "default"       :   "{package}"}
+            ],
+            "files"         : [
+                {   "file"          : "snippet.ssp",
+                    "destination"   : "src/main/scala/${snippetpack}/${snippetName}.scala"
+                }
+            ]
+        }
+  ]
+}
