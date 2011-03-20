@@ -1,0 +1,24 @@
+(
+ ; So it can display the package browser properly
+ :project-package "org.lifty"
+
+ ; SBT configuration
+ :use-sbt t
+ :sbt-subprojects (
+   (:name "lifty-engine" :deps ())
+   (:name "lifty-plugin" :deps ("lifty-engine"))
+ )
+
+ ; This is needed because SBT no longer copies the jars to the project folders
+ ; as ENSIME would expect.
+ :compile-jars ("/Users/Mads/.ivy2/cache/net.liftweb/lift-json_2.8.1/jars/lift-json_2.8.1-2.3-M1.jar"
+                "/Users/Mads/.ivy2/cache/com.googlecode.scalaz/scalaz-core_2.8.0/jars/scalaz-core_2.8.0-5.0.jar")
+
+ ; So it knows where to look
+ :root-dir "/Users/Mads/dev/projects/lifty-engine/"
+
+ ; Arguments given to Scalariform when formatting
+ :formatting-prefs (
+   :rewriteArrowSymbols t
+ )
+)
