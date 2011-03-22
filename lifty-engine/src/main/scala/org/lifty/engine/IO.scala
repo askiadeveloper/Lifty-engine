@@ -1,20 +1,12 @@
 package org.lifty.engine
 
-import org.lifty.engine._ 
+/* This file contains all of the code that is related to IO. Time will show if this
+ * seperation makes sense at all.*/
 
-/*
-  At some point I have to figure out how to use the cake-pattern. Potentially 
-  I might have to create the appropriate InputReader and pass it along to all
-  methods using the ReaderMonad. This way the actual application can use a 
-  real input service and the tests can use a fake one. 
-*/
-
-trait InputReader {
-  def readLine(message: String): String
+object JLineInputComponent {
+  def requestInput(msg: String) = "...." // TODO: Use JLine for this
 }
 
-object IO {
-  
-  def requestInputForArgument(argument: Argument) = "\n"
-  
+object InputEmulatorComponent {
+  def requestInput(msg: String) = "emulatedInput"
 }

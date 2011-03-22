@@ -1,7 +1,7 @@
 package org.lifty.engine
 
 /*
-  The following are the data classes that are used internally 
+  The following are the data classes that are used internally
 */
 
 trait Command                           { val keyword: String }
@@ -12,19 +12,19 @@ object TemplatesCommand extends Command { val keyword = "templates"}
 case class Error(
   message:          String)
 
-case class Environment( 
+case class Environment(
   template:         Template,
   values:           Map[String,String])
 
 /*
-  The following are the case classes needed to describe a Lifty-engine application 
-  in JSON 
+  The following are the case classes needed to describe a Lifty-engine application
+  in JSON
 */
 
 case class Description(
-  repository:     String, 
+  repository:     String,
   templates:      List[Template])
-  
+
 case class Template(
   name:           String,
   description:    String,
@@ -32,7 +32,7 @@ case class Template(
   arguments:      List[Argument],
   files:          List[TemplateFile],
   injections:     List[TemplateInjection],
-  dependencies:   List[TemplateReference]) 
+  dependencies:   List[TemplateReference])
 
 case class TemplateFile(
   file:           String,   // The scalate template to render
@@ -44,10 +44,10 @@ case class Argument(
   default:      Option[String],
   optional:     Option[Boolean],
   repeatable:   Option[Boolean])
-  
+
 case class TemplateInjection(
-  file:         String, 
-  into:         String, 
+  file:         String,
+  into:         String,
   point:        String
 )
 

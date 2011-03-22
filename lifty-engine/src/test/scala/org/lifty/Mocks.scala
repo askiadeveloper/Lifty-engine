@@ -1,11 +1,9 @@
-package test.scala.org.lifty 
-
-import org.lifty.engine._
+package org.lifty.engine
 
 object Mocks {
-  
+
   /*
-    This is the templates portion of the AST that I would expect when reading 
+    This is the templates portion of the AST that I would expect when reading
     the test-descriptor.json file.
   */
   val templatesAST = List(Template(
@@ -13,7 +11,7 @@ object Mocks {
     "creates a snippet",
     None,
     List(
-      Argument("snippetName",None,None,None), 
+      Argument("snippetName",None,None,None),
       Argument("snippetpack",Some("{package}"),None,None)
     ),
     List(
@@ -22,6 +20,6 @@ object Mocks {
     List(),
     List()
   ))
-  
+
 }
 

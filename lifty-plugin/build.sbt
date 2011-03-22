@@ -1,7 +1,7 @@
 sbtPlugin := true
 
-version := "0.1"
+version := "1.7"
 
-name := "xlifty"
+name := "lifty"
 
 organization := "org.lifty"
