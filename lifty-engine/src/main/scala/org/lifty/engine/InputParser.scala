@@ -45,7 +45,7 @@ trait InputParser {
 
     // request input for an argument that is missing
     val requestInputForMissingArgument = (argument: Argument) => {
-      val value = this.inputComponent.requestInput("Enter value for: ")
+      val value = this.inputComponent.requestInput("Enter value for %s: ".format(argument.name))
       (argument.name, value) // TODO: This is a side-effect. IO-Monad?
     }
 
