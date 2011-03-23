@@ -19,6 +19,7 @@ trait InputParser {
         case TemplatesCommand.keyword => (TemplatesCommand, arguments.tail).success
         case HelpCommand.keyword => (HelpCommand, arguments.tail).success
         case CreateCommand.keyword => (CreateCommand, arguments.tail).success
+        case UpdateTemplatesCommand.keyword => (UpdateTemplatesCommand,Nil).success
         case command => Error("No command named %s".format(command)).fail
       }
     } else { Error("You have to supply an argument").fail }

@@ -1,6 +1,6 @@
 package org.lifty.engine
 
-import java.net.{ URL }
+import java.net.{ URL, URI }
 import scalaz._
 import Scalaz._
 
@@ -68,6 +68,14 @@ trait LiftyEngineComponent extends InputParser {
           (template, rest) = templateResult
           env <- parseArguments(template, rest)
         } yield env.toString
+
+      case UpdateTemplatesCommand => 
+        (description.templates.flatMap { _.files } map { file => 
+          (file.file, description.repository +"/"+ file.file) // '/' is okay. It's a URI
+        } map { case (filePath, uri) => 
+          TemplateDownloader.downloadTemplate(new URI(uri),filePath) // SIDEEFFECT
+          "Downloaded template: %s".format(uri)
+        }).mkString("\n").success
 
       case _ =>
         Error("Command doesn't exist").fail

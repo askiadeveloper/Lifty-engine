@@ -1,5 +1,5 @@
 {
-    "repository" : "http://lifty.github.com/Lifty/templates",
+    "repository" : "http://pixelresort.com/lifty-templates",
     "templates" : [
         {   "name"          : "snippet",
             "description"   : "creates a snippet",

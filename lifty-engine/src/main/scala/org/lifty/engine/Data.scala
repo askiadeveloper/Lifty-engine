@@ -4,10 +4,11 @@ package org.lifty.engine
   The following are the data classes that are used internally
 */
 
-trait Command                           { val keyword: String }
-object HelpCommand      extends Command { val keyword = "help"}
-object CreateCommand    extends Command { val keyword = "create"}
-object TemplatesCommand extends Command { val keyword = "templates"}
+trait  Command                                { val keyword: String }
+object HelpCommand            extends Command { val keyword = "help"}
+object CreateCommand          extends Command { val keyword = "create"}
+object TemplatesCommand       extends Command { val keyword = "templates"}
+object UpdateTemplatesCommand extends Command { val keyword = "update-templates"}
 
 case class Error(
   message:          String)
