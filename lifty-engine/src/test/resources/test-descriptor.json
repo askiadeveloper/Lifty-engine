@@ -1,7 +1,7 @@
 {
     "sources" : [
       { "name" : "snippet",
-        "url"  : "https://github.com/Lifty/Lifty-engine/tree/xlifty/lifty-engine/src/test/resources/snippet.ssp"
+        "url"  : "https://raw.github.com/Lifty/Lifty-engine/xlifty/lifty-engine/src/test/resources/snippet.ssp"
       }
     ],
     "templates" : [
