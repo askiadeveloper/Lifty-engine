@@ -1,5 +1,9 @@
 {
-    "repository" : "http://pixelresort.com/lifty-templates",
+    "sources" : [
+      { "name" : "snippet",
+        "url"  : "https://github.com/Lifty/Lifty-engine/tree/xlifty/lifty-engine/src/test/resources/snippet.ssp"
+      }
+    ],
     "templates" : [
         {   "name"          : "snippet",
             "description"   : "creates a snippet",
