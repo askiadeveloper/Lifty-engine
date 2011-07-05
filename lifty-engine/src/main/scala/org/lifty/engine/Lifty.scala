@@ -23,37 +23,53 @@ trait Lifty extends InputParser {
   // executes the appropriate actions - if the input is valid it will
   // return a string describing what it created - otherwise an error
   // to display to the user.
-  def run(args: List[String]): Validation[Error, String] = {    
-    args.headOption.flatMap { recipeName => 
-      for {
-        recipe          <- storageComponent.recipe(recipeName).unsafePerformIO.toOption        // TODO: Performing IO, deal with failure
-        description     <- DescriptionLoader.load(recipe.descriptor).unsafePerformIO.toOption  // TODO: Performing IO, Deal with failure 
-        parseCmdResult  <- parseCommand(args.toList).toOption
-        (command, rest) = parseCmdResult
-      } yield runCommand(description, command, rest)
-    } getOrElse( Error("No such recipe").fail )
+  def run(args: List[String]): Validation[Error, String] = {        
+    (for {
+      parseCmdResult  <- parseCommand(args.toList).toOption
+      (command, rest) = parseCmdResult
+    } yield runCommand(command, rest)) getOrElse( Error("No such command").fail )
   }
 
   // Given a Command and a list og arguments this will run the actions
   // associated with the Command and return the result as a String.
-  private def runCommand(recipeDescription: Description, command: Command, args: List[String]): Validation[Error, String] = {
+  private def runCommand(command: Command, args: List[String]): Validation[Error, String] = {    
     command match {
-      case TemplatesCommand =>
-        (for {
-          template <- recipeDescription.templates
-          output = "%s\n%s".format(template.name, template.arguments.map("  " + _.name).mkString("\n"))
-        } yield output).mkString("\n").success
+      
+      case RecipesCommand => {
+        storageComponent.allRecipes.unsafePerformIO.map(_.toString).mkString("\n").success
+      }
+
+      case LearnCommand => {
+        "Not yet supported".success
+      }
+      
+      case TemplatesCommand => {
+        args.headOption.map { name => 
+          descriptionOfRecipe(name).flatMap { description => 
+            (for {
+              template <- description.templates
+              output = "%s\n%s".format(template.name, template.arguments.map("  " + _.name).mkString("\n"))
+            } yield output).mkString("\n").success
+          }
+        } getOrElse( Error("You have to supply the name of the recipe").fail ) 
+      }
 
       case HelpCommand =>
         "you invoked the help command".success
 
-      case CreateCommand =>
-        for {
-          templateResult <- parseTemplate(recipeDescription, args)
-          (template, rest) = templateResult
-          env <- parseArguments(template, rest)
-        } yield env.toString
-
+      case CreateCommand => {
+        args.headOption.map { name => 
+          descriptionOfRecipe(name).flatMap { description => 
+            parseTemplate(description, args).flatMap { tuple => 
+              val (template,rest) = tuple
+              parseArguments(template, rest).flatMap { env => 
+                env.toString.success
+              }
+            }
+          }
+        } getOrElse( Error("You have to supply the name of the recipe").fail )
+      }
+        
       // TODO: Re-implement this so it compiles again
       // case UpdateTemplatesCommand => 
       //   (description.templates.flatMap { _.files } map { file => 
@@ -66,6 +82,13 @@ trait Lifty extends InputParser {
       case _ =>
         Error("Command doesn't exist").fail
     }
+  }
+  
+  private def descriptionOfRecipe(recipeName: String): Validation[Error,Description] = {
+    // TODO: Performs IO 
+    storageComponent.recipe(recipeName).unsafePerformIO.flatMap { recipe => 
+      DescriptionLoader.load(recipe.descriptor).unsafePerformIO
+    } 
   }
 }
 
