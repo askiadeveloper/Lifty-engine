@@ -8,8 +8,7 @@ import org.lifty.engine._
 
 class DescriptionLoaderTest extends FlatSpec with ShouldMatchers {
 
-  val descriptorFile   = new File("lifty-engine/src/test/resources/test-descriptor.json")
-  val descriptorEither = DescriptionLoader.load(descriptorFile.toURI.toURL)
+  val descriptorEither = DescriptionLoader.load(Mocks.URI_TO_TEST_DESCRIPTION)
 
   "Parsing of test-descriptor.json" should "find 1 template" in  {
     descriptorEither.fold(

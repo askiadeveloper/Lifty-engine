@@ -7,7 +7,7 @@ import java.io.{ File }
 
 class InputParserTest extends FlatSpec with ShouldMatchers {
 
-  val engineInstance = new LiftyEngineTestInstance(new File("lifty-engine/src/test/resources/test-descriptor.json").toURI.toURL)
+  val engineInstance = new LiftyEngineTestInstance(Mocks.URI_TO_TEST_DESCRIPTION)
 
   "Parsing input 'create x y z'" should "find the CreateCommand and the list x y z" in  {
     val arguments = "create" :: "x" :: "y" :: "z" :: Nil

@@ -11,10 +11,7 @@ object Main {
 
   def main(args: Array[String]): Unit = {
 
-    val url = new File("lifty-engine/src/test/resources/test-descriptor.json").toURI.toURL
-    val liftyEngineInstance = new LiftyEngineInstance(url)
-
-    liftyEngineInstance.run(args.toList).fold(
+    LiftyInstance.run(args.toList).fold(
       e => println(e.message),
       s => println(s)
     )
